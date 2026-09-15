@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ámbito 4.º ESO · Tecnología</title>
+<style>
+:root {
+  --bg:#f4f7fb; --card:#fff; --ink:#172033; --muted:#60708a;
+  --line:#dfe6ef; --green:#3bb273; --yellow:#f3c94f; --red:#e65c5c;
+  --accent:#4f6df5; --shadow:0 12px 35px rgba(24,39,75,.09);
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+a{color:inherit;text-decoration:none}
+.hero{min-height:54vh;padding:55px 7vw 45px;background:linear-gradient(135deg,#101a32,#243a67 60%,#4f6df5);color:white;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;right:-100px;top:-130px;background:rgba(255,255,255,.09)}
+.hero .tag{display:inline-block;padding:7px 12px;border:1px solid rgba(255,255,255,.28);border-radius:999px;font-size:.86rem;letter-spacing:.04em}
+h1{font-size:clamp(2.4rem,6vw,5.3rem);line-height:.98;margin:20px 0 18px;max-width:850px}
+.hero p{font-size:1.15rem;max-width:720px;color:#e6ecfa}
+.nav{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:10px}
+.nav a{padding:9px 14px;border-radius:999px;font-weight:700;font-size:.9rem}
+.nav a:hover{background:#eef2ff;color:var(--accent)}
+.wrap{width:min(1180px,90vw);margin:auto}
+section{padding:70px 0}
+.section-head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:28px}
+.kicker{text-transform:uppercase;font-size:.78rem;font-weight:800;letter-spacing:.12em;color:var(--accent)}
+h2{font-size:clamp(2rem,4vw,3rem);margin:5px 0}
+.sub{color:var(--muted);max-width:700px}
+.legend{display:flex;gap:10px;flex-wrap:wrap}
+.pill{padding:7px 12px;border-radius:999px;font-weight:800;font-size:.8rem}
+.pill.g{background:#e4f7ed;color:#18764b} .pill.y{background:#fff5cf;color:#8b6800} .pill.r{background:#fde5e5;color:#a62f2f}
+.eval{border-radius:26px;padding:28px;margin:20px 0;box-shadow:var(--shadow);background:white;border:1px solid var(--line);border-left:8px solid var(--green)}
+.eval.second{border-left-color:var(--yellow)} .eval.third{border-left-color:var(--red)}
+.eval-top{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.eval h3{font-size:1.5rem;margin:0}
+.sessions{font-weight:800;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:22px}
+.topic-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 7px 24px rgba(24,39,75,.06)}
+.topic-card h3{margin:6px 0 12px;font-size:1.25rem}
+.topic-card p{color:#48566d;font-size:.94rem}
+.badge{font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.sa{margin-top:18px;background:#172033;color:white;border-radius:18px;padding:16px 19px}
+.sa strong{color:#b9c8ff}
+.grade-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.grade{background:white;border:1px solid var(--line);border-radius:22px;padding:25px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.grade .num{font-size:3rem;font-weight:950;line-height:1}
+.grade h3{margin:10px 0 7px} .grade p{color:var(--muted);font-size:.94rem}
+.bar{height:9px;background:#edf1f6;border-radius:10px;overflow:hidden;margin-top:15px}
+.bar i{display:block;height:100%;background:currentColor;width:var(--w)}
+.g1{color:#6b7280} .g2{color:#5c6ff0} .g3{color:#e08b3f}
+.criteria{background:#101a32;color:white;border-radius:28px;padding:32px}
+.criteria h2{margin-top:0}
+.criteria details{border-top:1px solid rgba(255,255,255,.14);padding:17px 0}
+.criteria summary{cursor:pointer;font-weight:800}
+.criteria p{color:#cbd5e7}
+footer{padding:35px 0 55px;color:var(--muted);text-align:center}
+@media(max-width:650px){section{padding:48px 0}.hero{padding-top:40px}.section-head{display:block}}
+</style>
+
+<style>
+.eval-card{padding:28px;margin-bottom:24px;border-radius:22px;background:rgba(255,255,255,.96);box-shadow:0 12px 35px rgba(15,23,42,.08)}
+.eval-card.green{border-left:7px solid #22c55e}.eval-card.yellow{border-left:7px solid #eab308}.eval-card.red{border-left:7px solid #ef4444}
+.eval-top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:22px}
+.eval-top h3{margin:7px 0 0;font-size:1.55rem}.eval-top strong{font-size:.9rem;white-space:nowrap;opacity:.7}
+.eval-tag{font-size:.72rem;font-weight:800;letter-spacing:.08em}
+.unit{padding:20px 0;border-top:1px solid rgba(15,23,42,.09)}
+.unit h4{margin:0 0 12px;font-size:1.05rem}
+.unit ul{margin:0;padding-left:22px}.unit li{margin:7px 0;line-height:1.48}
+.sa{margin-top:18px;padding:15px 17px;border-radius:14px;background:rgba(15,23,42,.045);font-weight:700}
+.sa span{display:inline-block;margin-right:8px;font-size:.75rem;letter-spacing:.06em}
+.empty-note{opacity:.72;margin:0;line-height:1.5}
+@media(max-width:700px){.eval-top{flex-direction:column}.eval-card{padding:21px}}
+</style>
+
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <span class="tag">4.º ESO · ÁMBITO</span>
+    <h1>Tu curso.<br>Tu proyecto.<br>Tu tecnología.</h1>
+    <p>Una hoja de ruta visual para saber qué vamos a aprender, cuándo lo trabajaremos y cómo se valorará tu trabajo.</p>
+  </div>
+</header>
+<nav class="nav">
+  <a href="#curso">🧭 Curso</a><a href="#evaluaciones">📚 Evaluaciones</a><a href="#calificacion">📊 Calificación</a><a href="#criterios">✅ Qué se valorará</a>
+</nav>
+
+<main>
+<section id="curso">
+<div class="wrap">
+  <div class="section-head">
+    <div><div class="kicker">Mapa del curso</div><h2>Aprender haciendo</h2><p class="sub">El curso combina resolución de problemas, diseño, electrónica, fabricación, programación, robótica, digitalización y sostenibilidad.</p></div>
+    <div class="legend"><span class="pill g">1.ª evaluación</span><span class="pill y">2.ª evaluación</span><span class="pill r">3.ª evaluación</span></div>
+  </div>
+</div>
+</section>
+
+<section id="evaluaciones" class="section">
+  <div class="section-head">
+    <span class="eyebrow">EL VIAJE DEL CURSO</span>
+    <h2>¿Qué vamos a aprender?</h2>
+    <p>Los contenidos están organizados por evaluaciones. Cada una combina conocimientos, actividades prácticas y una Situación de Aprendizaje.</p>
+  </div>
+
+  <div class="eval-grid">
+
+    <article class="eval-card green">
+      <div class="eval-top">
+        <div><span class="eval-tag">1.ª EVALUACIÓN</span><h3>Crear soluciones tecnológicas</h3></div>
+        <strong>22 sesiones</strong>
+      </div>
+
+      <div class="unit">
+        <h4>UD1 · Proceso de resolución de problemas</h4>
+        <ul>
+          <li>Proceso de resolución de problemas.</li>
+          <li>Fases de un proyecto tecnológico.</li>
+          <li>Estudio de necesidades del centro, locales, regionales, etc.</li>
+          <li>Planteamiento de proyectos colaborativos o cooperativos.</li>
+          <li>Técnicas de <b>Design Thinking</b> para la resolución de problemas y aplicaciones prácticas.</li>
+          <li>Aplicaciones CAD en 2D y 3D para representar esquemas, circuitos, planos y objetos sencillos.</li>
+          <li>Emprendimiento, resiliencia, perseverancia y creatividad desde una perspectiva interdisciplinar.</li>
+          <li>Autoconfianza e iniciativa.</li>
+          <li>El error, la reevaluación y la depuración como parte del proceso de aprendizaje.</li>
+        </ul>
+      </div>
+
+      <div class="unit">
+        <h4>UD2 · Entorno Personal de Aprendizaje (PLE)</h4>
+        <ul>
+          <li>Instalaciones en viviendas: eléctricas, fontanería, gas, aire acondicionado y domóticas.</li>
+          <li>Ahorro energético en una vivienda.</li>
+          <li>Análisis de facturas y buenas prácticas de ahorro.</li>
+          <li>Diseño y montaje de una instalación eléctrica de una vivienda.</li>
+          <li>Tecnologías emergentes y desarrollo sostenible.</li>
+          <li>Valoración crítica de la contribución a los <b>Objetivos de Desarrollo Sostenible (ODS)</b>.</li>
+        </ul>
+      </div>
+
+      <div class="sa"><span>SA 1</span> Instalación eléctrica de una vivienda</div>
+    </article>
+
+    <article class="eval-card yellow">
+      <div class="eval-top">
+        <div><span class="eval-tag">2.ª EVALUACIÓN</span><h3>Electrónica y tecnologías emergentes</h3></div>
+        <strong>22 sesiones</strong>
+      </div>
+
+      <div class="unit">
+        <h4>UD3 · Electrónica</h4>
+        <ul>
+          <li>Electrónica básica para el montaje de esquemas y circuitos físicos o simulados.</li>
+          <li>Medida de magnitudes eléctricas fundamentales con el polímetro.</li>
+          <li>Resistencias fijas y variables.</li>
+          <li>Diodos, condensadores, relés y transistores.</li>
+          <li>Aplicación de la <b>Ley de Ohm</b>.</li>
+          <li>Cálculo de valores de consumo eléctrico.</li>
+          <li>Aplicación de la electrónica en proyectos.</li>
+          <li>Técnicas de fabricación manual y mecánica. Aplicaciones prácticas.</li>
+        </ul>
+      </div>
+
+      <div class="unit">
+        <h4>UD4 · Tecnologías emergentes</h4>
+        <ul>
+          <li>Técnicas de fabricación digital.</li>
+          <li>Diseño e impresión 3D, aplicaciones prácticas y normas de seguridad e higiene.</li>
+          <li>Acceso a comunidades colaborativas abiertas.</li>
+          <li>Herramientas digitales para elaborar, publicar y difundir documentación técnica e información multimedia mediante blogs y páginas web.</li>
+          <li>Publicación y difusión responsable en redes.</li>
+          <li>Netiqueta, configuración segura de redes sociales y gestión de identidades virtuales.</li>
+          <li>Protección de datos.</li>
+          <li>Sistemas de comunicación e Internet.</li>
+          <li>Configuración de una red doméstica y conexión de dispositivos.</li>
+          <li>Seguridad en la red: riesgos, amenazas y ataques.</li>
+          <li>Detección de posibles fraudes al acceder a páginas web.</li>
+          <li>Medidas de protección: antivirus, cortafuegos y servidores proxy.</li>
+          <li>Bienestar digital, prácticas seguras y gestión de riesgos.</li>
+          <li>Prevención del acceso a contenidos inadecuados o susceptibles de generar adicciones.</li>
+          <li>Propiedad intelectual y licencias <b>Creative Commons</b>.</li>
+          <li>Normas para licenciar un trabajo.</li>
+          <li>Gestiones administrativas: servicios públicos en línea y certificados digitales.</li>
+          <li>DNI electrónico, firma electrónica y CSV.</li>
+          <li>Comercio electrónico: compras seguras, formas de pago y criptomonedas.</li>
+        </ul>
+      </div>
+
+      <div class="sa"><span>SA 2</span> Circuitos neumáticos característicos</div>
+    </article>
+
+    <article class="eval-card red">
+      <div class="eval-top">
+        <div><span class="eval-tag">3.ª EVALUACIÓN</span><h3>Control, programación y robótica</h3></div>
+        <strong>20 sesiones</strong>
+      </div>
+
+      <div class="unit">
+        <h4>UD5 · Sistemas de control</h4>
+        <ul>
+          <li>El ordenador y los dispositivos móviles como elementos de programación y control.</li>
+          <li>Espacios compartidos y discos virtuales.</li>
+          <li>Configuración de dispositivos y resolución de problemas técnicos sencillos.</li>
+          <li>Resolución de problemas mediante <b>algoritmos</b>.</li>
+          <li>Aspectos esenciales de la <b>inteligencia artificial</b>: historia, factores que han influido en su desarrollo y funcionamiento.</li>
+          <li>Reconocimiento de textos y números.</li>
+          <li>Ética y aspectos legales de la inteligencia artificial.</li>
+          <li>Aplicaciones de la IA en la vida real y nuevas tendencias.</li>
+          <li>Electrónica digital básica.</li>
+          <li>Introducción al álgebra de Boole.</li>
+          <li>Puertas lógicas y montaje/simulación de circuitos lógicos.</li>
+          <li>Sistemas de control programado.</li>
+          <li>Microcontroladores, sensores y actuadores.</li>
+          <li>Sistemas de control en lazo abierto y en lazo cerrado.</li>
+          <li>Montaje físico de sistemas de control mediante componentes electrónicos y/o simuladores.</li>
+          <li>Elementos mecánicos, electrónicos y neumáticos aplicados a la robótica.</li>
+          <li>Interpretación de esquemas de circuitos sencillos.</li>
+          <li>Montaje físico o simulado.</li>
+          <li>Diseño, construcción y control de robots sencillos.</li>
+          <li>Programación de robots mediante lenguajes de programación de bloques.</li>
+          <li>Telecomunicaciones en sistemas de control digital.</li>
+          <li><b>Internet de las cosas (IoT)</b>: elementos, comunicaciones y control.</li>
+          <li>Diseño de sistemas IoT y programación del sistema mediante bloques.</li>
+        </ul>
+      </div>
+
+      <div class="unit">
+        <h4>UD6 · Pensamiento computacional</h4>
+        <p class="empty-note">Desarrollo del pensamiento computacional dentro de las actividades de programación, control y resolución de problemas.</p>
+      </div>
+
+      <div class="sa"><span>SA 3</span> Circuito que, detectando calor o luz, hace funcionar otro elemento</div>
+    </article>
+
+  </div>
+</section>
+<section id="calificacion">
+<div class="wrap">
+  <div class="section-head"><div><div class="kicker">Cómo se calcula</div><h2>Tu nota, en claro</h2><p class="sub">La calificación combina observación, desempeño y rendimiento.</p></div></div>
+  <div class="grade-grid">
+<article class="grade g1">
+      <div class="num">5%</div><h3>Observación</h3><p>Registro anecdótico · Cuaderno del profesor</p><div class="bar" style="--w:5%"><i></i></div>
+    </article><article class="grade g2">
+      <div class="num">35%</div><h3>Desempeño</h3><p>Cuaderno · Cuestionarios Moodle · Actividades prácticas · Proyectos · Tareas · Presentaciones orales</p><div class="bar" style="--w:35%"><i></i></div>
+    </article><article class="grade g3">
+      <div class="num">60%</div><h3>Rendimiento</h3><p>Prueba escrita y/o oral de rendimiento · prácticas no guiadas</p><div class="bar" style="--w:60%"><i></i></div>
+    </article>
+  </div>
+</div>
+</section>
+
+<section id="criterios">
+<div class="wrap">
+<div class="criteria">
+<div class="kicker" style="color:#b9c8ff">Instrumentos de evaluación</div>
+<h2>¿Qué se tendrá en cuenta?</h2>
+<details><summary>📓 Cuaderno del alumno</summary><p>Completo · ejercicios y tareas corregidas · ordenado y limpio · caligrafía cuidada · faltas de ortografía · diseño de portada · entrega en plazo</p></details><details><summary>🧠 Cuestionarios Moodle</summary><p>Prevalecerán actividades de tipo test o respuesta corta.</p></details><details><summary>🛠️ Actividades prácticas de clase</summary><p>Se valorará el desarrollo y la actitud junto al resultado final. En trabajos cooperativos cada alumno podrá tener calificación diferente según su desempeño. También se tendrá en cuenta la creatividad y el interés por la innovación.</p></details>
+<details><summary>📌 Reglas importantes</summary>
+<p>La nota final de junio es la media aritmética de las notas de las tres evaluaciones. La recuperación de una evaluación suspensa será posterior a la evaluación y habrá recuperación por trimestre y final en junio.</p>
+<p>En caso de copiar o hablar en exámenes, falsificación, suplantación de personalidad o copiar trabajos de compañeros o de internet, la nota será de 0 en ese examen o trabajo.</p>
+</details>
+</div>
+</div>
+</section>
+</main>
+<footer><div class="wrap">Ámbito 4.º ESO · Una guía para aprender, crear y mejorar.</div></footer>
+</body>
+</html>
