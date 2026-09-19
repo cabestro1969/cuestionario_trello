@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Cuestionario · Control y Robótica — Arduino</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f2ec;
+    --ink:#17221f;
+    --ink-soft:#4a5750;
+    --teal:#0d6e7c;
+    --teal-deep:#093f47;
+    --copper:#c1622d;
+    --line:#c9c2ae;
+    --hole:#8a9990;
+    --pad-bg:#fffdf8;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 1px 1px, var(--hole) 1px, transparent 1.6px) 0 0/26px 26px,
+      var(--paper);
+    color:var(--ink);
+    font-family:"Source Serif 4", Georgia, serif;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;
+    padding:0 0 60px;
+  }
+  ::selection{ background:transparent; }
+
+  .no-print-bar{
+    position:sticky; top:0; z-index:50;
+    background:var(--teal-deep);
+    color:#eef4f2;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 22px;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:13px;
+    box-shadow:0 2px 10px rgba(0,0,0,.18);
+  }
+  .no-print-bar span{opacity:.8;}
+  .no-print-bar button{
+    background:var(--copper);
+    color:#fff8f2;
+    border:none;
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:600;
+    font-size:13px;
+    padding:9px 18px;
+    border-radius:3px;
+    cursor:pointer;
+    letter-spacing:.02em;
+  }
+  .no-print-bar button:hover{ background:#a94f21; }
+
+  header.hero{
+    position:relative;
+    background:linear-gradient(135deg,var(--teal-deep) 0%, var(--teal) 62%, #12959f 100%);
+    color:#f2f7f5;
+    padding:46px 8vw 60px;
+    overflow:hidden;
+  }
+  header.hero::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0; height:26px;
+    background:repeating-linear-gradient(90deg, var(--copper) 0 26px, transparent 26px 52px);
+    opacity:.55;
+  }
+  .eyebrow{
+    font-family:"JetBrains Mono", monospace;
+    font-size:12.5px;
+    letter-spacing:.06em;
+    color:#bfe6df;
+  }
+  h1{
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:700;
+    font-size:clamp(30px,4.2vw,46px);
+    margin:10px 0 6px;
+    line-height:1.05;
+  }
+  .hero-sub{
+    max-width:640px;
+    font-size:17px;
+    color:#dcece7;
+    line-height:1.5;
+  }
+  .hero-meta{
+    margin-top:28px;
+    display:flex; gap:34px; flex-wrap:wrap;
+    font-family:"JetBrains Mono",monospace;
+    font-size:12.5px;
+    color:#cfe9e2;
+  }
+  .hero-meta div span{display:block; color:#8fd0c3; font-size:11px; margin-bottom:3px;}
+  .fill{
+    border:none; border-bottom:1px solid #cfe9e2;
+    background:transparent;
+    display:inline-block; min-width:170px;
+    font-family:"Source Serif 4", Georgia, serif;
+    font-size:14px;
+    color:#f2f7f5;
+    padding:2px 2px 4px;
+  }
+  .fill::placeholder{ color:#9fd6cb; opacity:.8; }
+
+  main{
+    max-width:900px;
+    margin:0 auto;
+    padding:0 8vw;
+  }
+  .intro-strip{
+    margin-top:-30px;
+    background:var(--pad-bg);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:20px 26px;
+    font-size:14.5px;
+    color:var(--ink-soft);
+    box-shadow:0 8px 24px rgba(9,63,71,.08);
+  }
+
+  section.block{ margin-top:52px; }
+  .block-head{
+    display:flex; align-items:baseline; gap:14px;
+    border-bottom:2px solid var(--teal);
+    padding-bottom:10px;
+    margin-bottom:24px;
+  }
+  .block-num{
+    font-family:"JetBrains Mono",monospace;
+    font-size:13px;
+    color:#fff;
+    background:var(--copper);
+    padding:3px 9px;
+    border-radius:2px;
+  }
+  .block-title{
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:600;
+    font-size:21px;
+    color:var(--teal-deep);
+  }
+
+  .q{
+    margin:0 0 26px;
+    padding-left:18px;
+    border-left:3px solid #d9d2bc;
+  }
+  .q-text{ font-size:16px; line-height:1.55; margin-bottom:10px; }
+  .q-text b{ font-family:"Space Grotesk",sans-serif; font-weight:600; color:var(--teal-deep); }
+  .q-hint{ font-family:"JetBrains Mono",monospace; font-size:11.5px; color:#8a8168; margin-bottom:8px; }
+
+  .answer-line{
+    border:none; border-bottom:1px solid #8f8a72;
+    background:transparent;
+    width:100%;
+    font-family:"Source Serif 4",serif;
+    font-size:15px;
+    padding:6px 2px;
+    color:var(--ink);
+  }
+  textarea.answer-line{ border:1px solid #b9b19a; border-radius:3px; resize:vertical; min-height:64px; }
+
+  .opts{ display:flex; flex-direction:column; gap:8px; margin-top:4px;}
+  .opt{ display:flex; align-items:center; gap:10px; font-size:15px; }
+  .opt input{ width:15px; height:15px; accent-color:var(--teal); }
+
+  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .three-col{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  @media (max-width:640px){ .two-col,.three-col{ grid-template-columns:1fr; } }
+
+  figure{ margin:0; text-align:center; }
+  figcaption{ font-family:"JetBrains Mono",monospace; font-size:11px; color:#7c7a68; margin-top:6px; }
+
+  .diagram-card, .code-card{
+    background:var(--pad-bg);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:16px;
+  }
+  .code-card{
+    font-family:"JetBrains Mono",monospace;
+    font-size:12.6px;
+    line-height:1.62;
+    color:#1c2723;
+    background:#f4f7f1;
+    border-left:4px solid var(--teal);
+    white-space:pre;
+    overflow-x:auto;
+  }
+  .code-card .k{color:#0d6e7c; font-weight:600;}
+  .code-card .n{color:#c1622d;}
+  .code-card .c{color:#8a9990; font-style:italic;}
+
+  table.color-table{ width:100%; border-collapse:collapse; font-size:13px; font-family:"JetBrains Mono",monospace;}
+  table.color-table th, table.color-table td{ border:1px solid var(--line); padding:6px 8px; text-align:center; }
+  table.color-table th{ background:#eef0e5; }
+
+  .band{ display:inline-block; width:14px; height:34px; border:1px solid rgba(0,0,0,.25); vertical-align:middle; margin:0 1px;}
+
+  footer{
+    max-width:900px; margin:70px auto 0; padding:0 8vw;
+    font-family:"JetBrains Mono",monospace; font-size:11.5px; color:#8a8168;
+    display:flex; justify-content:space-between; border-top:1px solid var(--line); padding-top:16px;
+  }
+
+  @media print{
+    body{ background:#fff; -webkit-user-select:auto; user-select:auto; }
+    .no-print-bar{ display:none; }
+    header.hero{ padding:26px 6vw 34px; }
+    header.hero::after{ height:14px; }
+    section.block{ page-break-inside:avoid; margin-top:30px; }
+    .q{ page-break-inside:avoid; }
+    main{ padding:0 6vw; }
+  }
+</style>
+</head>
+<body oncopy="return false" oncut="return false" onselectstart="return false" oncontextmenu="return false">
+
+<div class="no-print-bar">
+  <span>Documento protegido — solo lectura y respuesta en papel/impresión</span>
+  <button onclick="window.print()">Descargar / Imprimir en PDF</button>
+</div>
+
+<header class="hero">
+  <div class="eyebrow">CONTROL Y ROBÓTICA · CONTROL PROGRAMADO CON ARDUINO</div>
+  <h1>Cuestionario: introducción a Arduino y primeros ejercicios</h1>
+  <p class="hero-sub">Repaso de la placa Arduino Uno, señales digitales y analógicas, componentes electrónicos básicos, el IDE de Arduino y los primeros programas con LEDs.</p>
+  <div class="hero-meta">
+    <div><span>Nombre y apellidos</span><input class="fill" type="text"></div>
+    <div><span>Curso / grupo</span><input class="fill" type="text"></div>
+    <div><span>Fecha</span><input class="fill" type="text"></div>
+  </div>
+</header>
+
+<main>
+<div class="intro-strip">
+  Responde a las siguientes preguntas basándote en la presentación <b>«Control y Robótica — Control programado Arduino»</b>. Algunas preguntas incluyen esquemas o fragmentos de código: obsérvalos con atención antes de contestar.
+</div>
+
+<!-- SECCIÓN 1 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">01</span><span class="block-title">La placa Arduino Uno</span></div>
+
+  <div class="q">
+    <div class="q-text"><b>1.</b> Observa el esquema de la placa Arduino Uno y escribe, junto a cada número, el nombre del elemento señalado.</div>
+    <div class="diagram-card">
+      <svg viewBox="0 0 640 260" width="100%" role="img" aria-label="Esquema simplificado de la placa Arduino Uno">
+        <rect x="60" y="40" width="480" height="170" rx="8" fill="#0d6e7c" stroke="#093f47" stroke-width="2"/>
+        <rect x="30" y="70" width="40" height="50" fill="#c1622d"/>
+        <text x="50" y="100" font-size="10" fill="#fff" text-anchor="middle" font-family="JetBrains Mono, monospace">USB</text>
+        <circle cx="1" cy="0" r="0" opacity="0"/>
+        <!-- marker 1: USB -->
+        <circle cx="30" cy="60" r="10" fill="#fff" stroke="#0d6e7c" stroke-width="2"/><text x="30" y="64" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace" fill="#093f47">1</text>
+        <!-- reset button -->
+        <circle cx="440" cy="70" r="9" fill="#e3573c"/>
+        <circle cx="440" cy="45" r="10" fill="#fff" stroke="#0d6e7c" stroke-width="2"/><text x="440" y="49" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace" fill="#093f47">2</text>
+        <!-- microcontroller -->
+        <rect x="230" y="100" width="120" height="46" fill="#1c1c1c"/>
+        <circle cx="290" cy="90" r="10" fill="#fff" stroke="#0d6e7c" stroke-width="2"/><text x="290" y="94" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace" fill="#093f47">3</text>
+        <!-- digital pins -->
+        <rect x="230" y="40" width="220" height="10" fill="#222"/>
+        <circle cx="450" cy="30" r="10" fill="#fff" stroke="#0d6e7c" stroke-width="2"/><text x="450" y="34" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace" fill="#093f47">4</text>
+        <!-- analog pins -->
+        <rect x="360" y="200" width="150" height="10" fill="#222"/>
+        <circle cx="510" cy="225" r="10" fill="#fff" stroke="#0d6e7c" stroke-width="2"/><text x="510" y="229" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace" fill="#093f47">5</text>
+        <!-- power jack -->
+        <rect x="60" y="150" width="34" height="30" fill="#333"/>
+        <circle cx="60" cy="195" r="10" fill="#fff" stroke="#0d6e7c" stroke-width="2"/><text x="60" y="199" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace" fill="#093f47">6</text>
+      </svg>
+    </div>
+    <div class="two-col" style="margin-top:14px;">
+      <div>1. <input class="answer-line" type="text"></div>
+      <div>2. <input class="answer-line" type="text"></div>
+      <div>3. <input class="answer-line" type="text"></div>
+      <div>4. <input class="answer-line" type="text"></div>
+      <div>5. <input class="answer-line" type="text"></div>
+      <div>6. <input class="answer-line" type="text"></div>
+    </div>
+  </div>
+
+  <div class="q">
+    <div class="q-text"><b>2.</b> Completa las características técnicas de la placa Arduino Uno:</div>
+    <div class="two-col">
+      <div>Microcontrolador: <input class="answer-line" type="text"></div>
+      <div>Voltaje operativo: <input class="answer-line" type="text"></div>
+      <div>Nº de pines digitales: <input class="answer-line" type="text"></div>
+      <div>Nº de pines de entrada analógica: <input class="answer-line" type="text"></div>
+      <div>Velocidad del reloj: <input class="answer-line" type="text"></div>
+      <div>Memoria SRAM: <input class="answer-line" type="text"></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN 2 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">02</span><span class="block-title">Señales digitales y analógicas</span></div>
+
+  <div class="q">
+    <div class="q-text"><b>3.</b> Indica si cada afirmación es <b>verdadera (V)</b> o <b>falsa (F)</b>.</div>
+    <div class="opts">
+      <div class="opt"><input type="text" style="width:28px;text-align:center;" maxlength="1"> Una variable digital solo puede tomar dos estados, encendido o apagado.</div>
+      <div class="opt"><input type="text" style="width:28px;text-align:center;" maxlength="1"> Una variable analógica puede tomar infinitos valores entre dos límites.</div>
+      <div class="opt"><input type="text" style="width:28px;text-align:center;" maxlength="1"> El sonido, la temperatura o el vídeo son señales de tipo digital.</div>
+      <div class="opt"><input type="text" style="width:28px;text-align:center;" maxlength="1"> El interruptor del timbre de una casa es un buen ejemplo de señal digital.</div>
+    </div>
+  </div>
+
+  <div class="q">
+    <div class="q-text"><b>4.</b> En una señal digital, ¿qué rango de voltaje se interpreta como estado <b>«1» / HIGH</b> y cuál como <b>«0» / LOW</b>?</div>
+    <div class="two-col">
+      <div>HIGH (1): <input class="answer-line" type="text" placeholder="rango de voltios"></div>
+      <div>LOW (0): <input class="answer-line" type="text" placeholder="rango de voltios"></div>
+    </div>
+  </div>
+
+  <div class="q">
+    <div class="q-text"><b>5.</b> Clasifica estos componentes como <b>entrada</b> o <b>salida</b>, y como <b>digital</b> o <b>análoga</b>:</div>
+    <div class="three-col">
+      <div>Pulsador → <input class="answer-line" type="text"></div>
+      <div>LED → <input class="answer-line" type="text"></div>
+      <div>Reed switch → <input class="answer-line" type="text"></div>
+      <div>Fotocelda → <input class="answer-line" type="text"></div>
+      <div>Motor DC → <input class="answer-line" type="text"></div>
+      <div>Potenciómetro → <input class="answer-line" type="text"></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN 3 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">03</span><span class="block-title">Sistemas electrónicos</span></div>
+
+  <div class="q">
+    <div class="q-text"><b>6.</b> Completa el esquema general de un sistema electrónico escribiendo la función de cada bloque.</div>
+    <div class="diagram-card">
+      <svg viewBox="0 0 560 130" width="100%" role="img" aria-label="Entradas, procesadores y salidas">
+        <rect x="10" y="30" width="150" height="60" fill="none" stroke="#0d6e7c" stroke-width="2" rx="4"/>
+        <text x="85" y="65" font-size="13" text-anchor="middle" font-family="Space Grotesk, sans-serif" fill="#093f47">ENTRADAS</text>
+        <rect x="205" y="30" width="150" height="60" fill="none" stroke="#0d6e7c" stroke-width="2" rx="4"/>
+        <text x="280" y="65" font-size="13" text-anchor="middle" font-family="Space Grotesk, sans-serif" fill="#093f47">PROCESADORES</text>
+        <rect x="400" y="30" width="150" height="60" fill="none" stroke="#0d6e7c" stroke-width="2" rx="4"/>
+        <text x="475" y="65" font-size="13" text-anchor="middle" font-family="Space Grotesk, sans-serif" fill="#093f47">SALIDAS</text>
+        <path d="M160 55 L205 55" stroke="#c1622d" stroke-width="2" marker-end="url(#arrow)"/>
+        <path d="M355 55 L400 55" stroke="#c1622d" stroke-width="2" marker-end="url(#arrow)"/>
+        <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#c1622d"/></marker></defs>
+      </svg>
+    </div>
+    <div class="two-col" style="margin-top:12px;">
+      <div>Entradas: <input class="answer-line" type="text"></div>
+      <div>Procesadores: <input class="answer-line" type="text"></div>
+    </div>
+    <div style="margin-top:12px;">Salidas: <input class="answer-line" type="text"></div>
+  </div>
+
+  <div class="q">
+    <div class="q-text"><b>7.</b> Pon un ejemplo (distinto a los vistos en clase) de sistema electrónico que tenga una entrada analógica y una salida digital, o viceversa. Explica brevemente cómo funciona.</div>
+    <textarea class="answer-line" rows="3"></textarea>
+  </div>
+</section>
+
+<!-- SECCIÓN 4 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">04</span><span class="block-title">LED, resistencias y Ley de Ohm</span></div>
+
+  <div class="q">
+    <div class="q-text"><b>8.</b> Observa el símbolo del LED y responde: ¿por qué es importante respetar la polaridad al conectarlo?</div>
+    <div class="diagram-card" style="max-width:260px;margin:0 auto;">
+      <svg viewBox="0 0 200 90" width="100%" role="img" aria-label="Símbolo del LED">
+        <line x1="20" y1="45" x2="80" y2="45" stroke="#17221f" stroke-width="2"/>
+        <polygon points="80,25 80,65 120,45" fill="none" stroke="#17221f" stroke-width="2"/>
+        <line x1="120" y1="25" x2="120" y2="65" stroke="#17221f" stroke-width="2"/>
+        <line x1="120" y1="45" x2="180" y2="45" stroke="#17221f" stroke-width="2"/>
+        <text x="15" y="42" font-size="14" fill="#c1622d">+</text>
+        <text x="185" y="42" font-size="14" fill="#0d6e7c">−</text>
+      </svg>
+    </div>
+    <textarea class="answer-line" rows="2" style="margin-top:10px;"></textarea>
+  </div>
+
+  <div class="q">
+    <div class="q-text"><b>9.</b> Usa el triángulo de la Ley de Ohm para despejar cada fórmula:</div>
+    <div class="three-col">
+      <div>V = <input class="answer-line" type="text"></div>
+      <div>I = <input class="answer-line" type="text"></div>
+      <div>R = <input class="answer-line" type="text"></div>
+    </div>
+  </div>
+
+  <div class="q">
+    <div class="q-text"><b>10.</b> Calcula el valor de cada resistencia a partir del código de colores de sus bandas, usando la tabla de la presentación.</div>
+    <div class="two-col">
+      <div class="diagram-card">
+        <svg viewBox="0 0 220 70" width="100%" role="img" aria-label="Resistencia 1">
+          <line x1="0" y1="35" x2="220" y2="35" stroke="#b8946a" stroke-width="5"/>
+          <rect x="60" y="12" width="130" height="46" rx="10" fill="#e9d6ad" stroke="#b8946a"/>
+          <rect x="78" y="12" width="10" height="46" fill="#5a3a22"/>
+          <rect x="100" y="12" width="10" height="46" fill="#1a1a1a"/>
+          <rect x="122" y="12" width="10" height="46" fill="#c0392b"/>
+        </svg>
+        <figcaption>Bandas: marrón · negro · rojo</figcaption>
+        Valor: <input class="answer-line" type="text" placeholder="Ω">
+      </div>
+      <div class="diagram-card">
+        <svg viewBox="0 0 220 70" width="100%" role="img" aria-label="Resistencia 2">
+          <line x1="0" y1="35" x2="220" y2="35" stroke="#b8946a" stroke-width="5"/>
+          <rect x="60" y="12" width="130" height="46" rx="10" fill="#e9d6ad" stroke="#b8946a"/>
+          <rect x="78" y="12" width="10" height="46" fill="#e6c419"/>
+          <rect x="100" y="12" width="10" height="46" fill="#8e44ad"/>
+          <rect x="122" y="12" width="10" height="46" fill="#e67e22"/>
+        </svg>
+        <figcaption>Bandas: amarillo · violeta · naranja</figcaption>
+        Valor: <input class="answer-line" type="text" placeholder="Ω">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN 5 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">05</span><span class="block-title">El IDE de Arduino</span></div>
+
+  <div class="q">
+    <div class="q-text"><b>11.</b> ¿Qué significa la sigla IDE y qué elementos incluye un entorno de este tipo?</div>
+    <textarea class="answer-line" rows="3"></textarea>
+  </div>
+
+  <div class="q">
+    <div class="q-text"><b>12.</b> Explica la diferencia entre las funciones <code>setup()</code> y <code>loop()</code> en un programa de Arduino.</div>
+    <textarea class="answer-line" rows="3"></textarea>
+  </div>
+</section>
+
+<!-- SECCIÓN 6 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">06</span><span class="block-title">Analiza el código: los primeros programas</span></div>
+
+  <div class="q">
+    <div class="q-text"><b>13.</b> Este es el programa <i>Blink</i> (encender y apagar un LED). Responde a las preguntas.</div>
+    <div class="code-card">void <span class="k">setup</span>() {
+  <span class="k">pinMode</span>(13, <span class="n">OUTPUT</span>);
+}
+
+void <span class="k">loop</span>() {
+  <span class="k">digitalWrite</span>(13, <span class="n">HIGH</span>);  <span class="c">// enciende el LED</span>
+  <span class="k">delay</span>(1000);              <span class="c">// espera</span>
+  <span class="k">digitalWrite</span>(13, <span class="n">LOW</span>);   <span class="c">// apaga el LED</span>
+  <span class="k">delay</span>(1000);              <span class="c">// espera</span>
+}</div>
+    <div style="margin-top:12px;">a) ¿Qué hace la instrucción <code>pinMode(13, OUTPUT)</code>? <textarea class="answer-line" rows="2"></textarea></div>
+    <div style="margin-top:10px;">b) ¿Qué unidad utiliza la función <code>delay()</code> y cuánto tiempo estará encendido el LED en cada ciclo? <input class="answer-line" type="text"></div>
+    <div style="margin-top:10px;">c) Si cambiamos <code>delay(1000)</code> por <code>delay(250)</code> en ambas líneas, ¿qué efecto observaríamos en el LED? <input class="answer-line" type="text"></div>
+  </div>
+
+  <div class="q">
+    <div class="q-text"><b>14.</b> Compara estos dos fragmentos de código, correspondientes a los ejercicios «2 LEDs intermitentes» y «2 LEDs alternos». ¿Qué diferencia de comportamiento producen?</div>
+    <div class="two-col">
+      <div class="code-card">digitalWrite(5, HIGH);
+digitalWrite(6, HIGH);
+delay(1000);
+digitalWrite(5, LOW);
+digitalWrite(6, LOW);
+delay(1000);</div>
+      <div class="code-card">digitalWrite(5, HIGH);
+digitalWrite(6, LOW);
+delay(1000);
+digitalWrite(5, LOW);
+digitalWrite(6, HIGH);
+delay(1000);</div>
+    </div>
+    <textarea class="answer-line" rows="3" style="margin-top:10px;"></textarea>
+  </div>
+
+  <div class="q">
+    <div class="q-text"><b>15.</b> El siguiente fragmento pertenece al programa del semáforo. Ordena la secuencia de colores que se muestra, indicando cuánto tiempo permanece encendido cada uno.</div>
+    <div class="code-card">digitalWrite(led_AMBAR, HIGH);
+digitalWrite(led_VERDE, LOW);
+delay(500);
+digitalWrite(led_ROJO, HIGH);
+digitalWrite(led_AMBAR, LOW);
+delay(2000);
+digitalWrite(led_ROJO, LOW);
+digitalWrite(led_VERDE, HIGH);
+delay(2000);</div>
+    <textarea class="answer-line" rows="3" style="margin-top:10px;" placeholder="1º ... 2º ... 3º ..."></textarea>
+  </div>
+
+  <div class="q">
+    <div class="q-text"><b>16.</b> En el ejercicio del cruce de semáforos, cuando el <b>Semáforo 1</b> está en <b>verde</b>, ¿en qué color debe estar el <b>Semáforo 2</b> según la tabla de la presentación? Razona por qué tiene sentido esa combinación en un cruce real.</div>
+    <textarea class="answer-line" rows="3"></textarea>
+  </div>
+
+  <div class="q">
+    <div class="q-text"><b>17.</b> En el ejercicio de la secuencia tipo «estela» con 3 LEDs, el código enciende los LEDs rojo, ámbar y verde uno detrás de otro y después los apaga en el mismo orden, todo con un retardo de 100 ms. Describe con tus palabras el efecto visual que se consigue y para qué otro tipo de proyecto podría servir este patrón.</div>
+    <textarea class="answer-line" rows="3"></textarea>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span>Control y Robótica · Control programado con Arduino</span>
+  <span>Cuestionario de repaso — no reproducir sin autorización</span>
+</footer>
+
+<script>
+  document.addEventListener('keydown', function(e){
+    const k = e.key ? e.key.toLowerCase() : '';
+    const blockedCombo = (e.ctrlKey || e.metaKey) && ['c','x','u','s','p','a'].includes(k);
+    if (blockedCombo || k === 'printscreen') {
+      // Allow Ctrl/Cmd+P so users can still use the browser's own print dialog if the button fails.
+      if (k !== 'p') { e.preventDefault(); }
+    }
+  });
+  document.addEventListener('copy', e => e.preventDefault());
+  document.addEventListener('cut', e => e.preventDefault());
+  document.addEventListener('contextmenu', e => e.preventDefault());
+</script>
+
+</body>
+</html>
