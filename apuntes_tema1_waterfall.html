@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Apuntes · Tema 1 — Resolución de problemas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f5f3ee;
+    --ink:#1c1f2e;
+    --ink-soft:#565b6e;
+    --indigo:#4a2e6f;
+    --indigo-deep:#241636;
+    --navy:#1c2540;
+    --orange:#f0652c;
+    --line:#d0c9ba;
+    --pad-bg:#fffdf9;
+    --key-fill:#fdece0;
+    --key-border:#f0b487;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Source Serif 4", Georgia, serif;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;
+    padding:0 0 60px;
+  }
+  ::selection{ background:transparent; }
+  input, textarea { user-select:text; -webkit-user-select:text; }
+
+  .no-print-bar{
+    position:sticky; top:0; z-index:50;
+    background:var(--indigo-deep);
+    color:#f3eefa;
+    display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    padding:12px 22px;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:13px;
+    box-shadow:0 2px 10px rgba(0,0,0,.22);
+  }
+  .no-print-bar span{opacity:.85;}
+  .no-print-bar .btns{display:flex; gap:10px;}
+  .no-print-bar button{
+    border:none;
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    padding:9px 16px;
+    border-radius:3px;
+    cursor:pointer;
+    letter-spacing:.02em;
+  }
+  .btn-primary{ background:var(--orange); color:#fff8f4; }
+  .btn-primary:hover{ background:#d4531e; }
+
+  header.hero{
+    position:relative;
+    background:linear-gradient(135deg,var(--indigo-deep) 0%, var(--indigo) 55%, var(--navy) 100%);
+    color:#f3eefa;
+    padding:36px 8vw 46px;
+    overflow:hidden;
+  }
+  header.hero::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0; height:22px;
+    background:repeating-linear-gradient(90deg, var(--orange) 0 26px, transparent 26px 52px);
+    opacity:.6;
+  }
+  .eyebrow{
+    font-family:"JetBrains Mono", monospace;
+    font-size:12px;
+    letter-spacing:.06em;
+    color:#d9c7f0;
+  }
+  h1{
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:700;
+    font-size:clamp(24px,3.4vw,34px);
+    margin:8px 0 4px;
+    line-height:1.12;
+  }
+  h1 small{
+    display:block;
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:500;
+    font-size:15px;
+    color:#c9b6e6;
+    margin-top:4px;
+  }
+  .hero-sub{
+    max-width:680px;
+    font-size:14px;
+    color:#e5dcf2;
+    line-height:1.5;
+    margin-top:8px;
+  }
+  .hero-meta{
+    margin-top:18px;
+    display:flex; gap:28px; flex-wrap:wrap;
+    font-family:"JetBrains Mono",monospace;
+    font-size:12px;
+    color:#e5dcf2;
+  }
+  .hero-meta div span{display:block; color:#c9a9ec; font-size:10.5px; margin-bottom:3px;}
+  .fill-head{
+    border:none; border-bottom:1px solid #c9a9ec;
+    background:transparent;
+    display:inline-block; min-width:150px;
+    font-family:"Source Serif 4", Georgia, serif;
+    font-size:13px;
+    color:#fff;
+    padding:2px 2px 4px;
+  }
+
+  main{
+    max-width:940px;
+    margin:0 auto;
+    padding:0 8vw;
+  }
+  .intro-strip{
+    margin-top:-24px;
+    background:var(--pad-bg);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:14px 22px;
+    font-size:13px;
+    color:var(--ink-soft);
+    box-shadow:0 8px 24px rgba(36,22,54,.10);
+  }
+
+  section.block{ margin-top:34px; }
+  .block-head{
+    display:flex; align-items:baseline; gap:12px;
+    border-bottom:2px solid var(--indigo);
+    padding-bottom:7px;
+    margin-bottom:14px;
+  }
+  .block-num{
+    font-family:"JetBrains Mono",monospace;
+    font-size:12px;
+    color:#fff;
+    background:var(--orange);
+    padding:2px 8px;
+    border-radius:2px;
+  }
+  .block-title{
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:600;
+    font-size:18px;
+    color:var(--indigo-deep);
+  }
+
+  .lead{ font-size:12.5px; font-style:italic; color:var(--ink-soft); margin:0 0 10px; }
+
+  p.line{ font-size:14.5px; line-height:1.85; margin:0 0 9px; }
+  p.line b{ font-family:"Space Grotesk",sans-serif; font-weight:600; color:var(--indigo-deep); }
+
+  .blank{
+    border:none; border-bottom:1.4px solid var(--indigo);
+    background:transparent;
+    font-family:"Source Serif 4", Georgia, serif;
+    font-size:14.5px;
+    color:var(--indigo-deep);
+    font-weight:600;
+    text-align:center;
+    padding:1px 2px;
+    width:110px;
+  }
+  .blank.sm{ width:74px; }
+  .blank.md{ width:160px; }
+  .blank.lg{ width:260px; }
+  .blank.xl{ width:100%; display:block; margin-top:4px; }
+
+  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:start; }
+  @media (max-width:680px){ .two-col{ grid-template-columns:1fr; } }
+
+  .key-box{
+    background:var(--key-fill);
+    border:1px solid var(--key-border);
+    border-radius:4px;
+    padding:11px 15px;
+    margin:10px 0 4px;
+  }
+  .key-box .kt{
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:600; font-size:12.5px; color:var(--orange);
+    margin:0 0 4px;
+  }
+  .key-box .kl{
+    font-size:12.5px; font-style:italic; color:var(--ink); margin:0 0 2px; line-height:1.5;
+  }
+
+  .subcard{
+    border:1px solid var(--line);
+    border-radius:4px;
+    background:var(--pad-bg);
+    padding:12px 15px;
+  }
+  .subcard h4{
+    margin:0 0 6px;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:13.5px;
+    color:var(--indigo-deep);
+  }
+  .subcard ol, .subcard ul{ margin:0; padding-left:18px; }
+  .subcard li{ font-size:13.5px; margin-bottom:5px; line-height:1.5; }
+
+  table.data{ width:100%; border-collapse:collapse; font-size:12.5px; margin:6px 0 4px;}
+  table.data th, table.data td{ border:1px solid var(--line); padding:7px 8px; text-align:left; vertical-align:top;}
+  table.data th{ background:var(--indigo); color:#fff; font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:11.5px; text-align:center;}
+  table.data td input{
+    border:none; background:transparent; width:100%;
+    font-family:"Source Serif 4",serif; font-size:12.5px; color:var(--indigo-deep); font-weight:600;
+  }
+  table.data td.fixed{ background:#faf8f4; }
+
+  .stage-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:8px; }
+  @media (max-width:900px){ .stage-grid{ grid-template-columns:repeat(2,1fr); } }
+  .stage{
+    border:1px solid var(--line);
+    border-radius:4px;
+    background:var(--pad-bg);
+    padding:10px 10px 12px;
+    position:relative;
+  }
+  .stage .num{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px; color:#fff; background:var(--indigo);
+    display:inline-block; padding:1px 7px; border-radius:10px; margin-bottom:6px;
+  }
+  .stage h5{ margin:0 0 6px; font-family:"Space Grotesk",sans-serif; font-size:13px; color:var(--indigo-deep); }
+  .stage textarea{
+    width:100%; min-height:64px; border:none; border-top:1px dashed var(--line);
+    background:transparent; resize:vertical; font-family:"Source Serif 4",serif; font-size:12px;
+    color:var(--ink); padding-top:6px;
+  }
+
+  .hub-strip{
+    margin-top:14px;
+    background:var(--navy);
+    border-radius:5px;
+    padding:12px 16px 14px;
+  }
+  .hub-strip .ht{
+    font-family:"Space Grotesk",sans-serif; font-size:12px; font-weight:600; color:#f5d9c6;
+    margin:0 0 8px;
+  }
+  .hub-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
+  @media (max-width:900px){ .hub-grid{ grid-template-columns:repeat(2,1fr); } }
+  .hub-grid div{
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:4px;
+    padding:7px 8px;
+  }
+  .hub-grid input{
+    width:100%; background:transparent; border:none; border-bottom:1px solid var(--orange);
+    color:#fff; font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:11.5px;
+    text-align:center; padding-bottom:3px;
+  }
+
+  footer{
+    max-width:940px; margin:44px auto 0; padding:0 8vw;
+    font-family:"JetBrains Mono",monospace; font-size:11px; color:#8a8168;
+    display:flex; justify-content:space-between; border-top:1px solid var(--line); padding-top:14px;
+  }
+
+  @media print{
+    body{ background:#fff; -webkit-user-select:auto; user-select:auto; }
+    .no-print-bar{ display:none; }
+    header.hero{ padding:20px 6vw 26px; }
+    header.hero::after{ height:12px; }
+    section.block{ page-break-inside:avoid; margin-top:22px; }
+    main{ padding:0 6vw; }
+  }
+</style>
+</head>
+<body oncopy="return false" oncut="return false" onselectstart="return false" oncontextmenu="return false">
+
+<div class="no-print-bar">
+  <span>Documento protegido — completa los huecos; el contenido no se puede copiar ni pegar</span>
+  <div class="btns">
+    <button class="btn-primary" onclick="window.print()">Descargar / Imprimir en PDF</button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="eyebrow">IES COMUNEROS DE CASTILLA · 4º ÁMBITO PRÁCTICO</div>
+  <h1>Tema 1 — Resolución de problemas
+    <small>Modelo Waterfall · Modelo Agile · Diseño (Design Thinking)</small>
+  </h1>
+  <p class="hero-sub">Completa los huecos mientras se explica en clase. Este documento te servirá después como apuntes para estudiar.</p>
+  <div class="hero-meta">
+    <div><span>Nombre y apellidos</span><input class="fill-head" type="text"></div>
+    <div><span>Curso / grupo</span><input class="fill-head" type="text"></div>
+    <div><span>Fecha</span><input class="fill-head" type="text"></div>
+  </div>
+</header>
+
+<main>
+<div class="intro-strip">Escribe directamente en los huecos subrayados. Sigue el orden del documento: primero Waterfall, después Agile y, por último, Design Thinking.</div>
+
+<!-- 1 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">1</span><span class="block-title">¿Qué es la metodología Waterfall?</span></div>
+  <p class="line">La metodología Waterfall, en castellano también conocida como <input class="blank md" type="text">, es una de las formas tradicionales de desarrollar proyectos, siguiendo diferentes <input class="blank md" type="text">.</p>
+  <p class="line">Se empieza siempre con la fase de <input class="blank md" type="text"> y <input class="blank md" type="text"> del proyecto, seguido por la <input class="blank md" type="text">, el <input class="blank sm" type="text"> y la puesta en <input class="blank md" type="text">.</p>
+  <p class="line">Con este método de trabajo los procesos son <input class="blank md" type="text">. Está estrechamente relacionada con los proyectos del ámbito <input class="blank md" type="text">.</p>
+  <div class="key-box">
+    <p class="kt">🔑 Clave</p>
+    <p class="kl">Las fases de Waterfall se ejecutan una tras otra, en un orden estricto: no se puede empezar una fase sin haber terminado la anterior (por ejemplo, no se puede diseñar sin haber terminado los requisitos).</p>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">2</span><span class="block-title">Ventajas e inconvenientes del método de cascada</span></div>
+  <div class="two-col">
+    <div class="subcard">
+      <h4>✅ Ventajas</h4>
+      <ul>
+        <li>La planificación es <input class="blank md" type="text">, con las tareas y los alcances <input class="blank md" type="text">.</li>
+        <li>Los roles están claramente <input class="blank md" type="text">.</li>
+        <li>Los equipos pueden trabajar en <input class="blank md" type="text"> bajo la supervisión de un <input class="blank lg" type="text">.</li>
+      </ul>
+    </div>
+    <div class="subcard">
+      <h4>⚠️ Inconvenientes</h4>
+      <ul>
+        <li>Es una estructura de trabajo muy <input class="blank md" type="text"> ante los cambios.</li>
+        <li>Hay poca tolerancia a la <input class="blank md" type="text">.</li>
+        <li>Puede ser perjudicial en proyectos de <input class="blank md" type="text">, donde la tecnología o las necesidades del cliente pueden variar.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">3</span><span class="block-title">¿Qué es la metodología Agile?</span></div>
+  <p class="line">La metodología Agile o Ágil es un enfoque de trabajo basado siempre en la <input class="blank md" type="text"> del cliente. Busca repartir el trabajo de forma <input class="blank md" type="text">, para poder trabajar rápidamente sin la <input class="blank md" type="text"> de las secuencias establecidas en la Waterfall.</p>
+  <p class="line">La metodología Agile trabaja con los llamados <input class="blank md" type="text">, de una duración de <input class="blank sm" type="text"> semanas: se establece una lista de puntos con un plazo de entrega previsto. Al llegar la fecha, los equipos y el cliente evalúan el trabajo para establecer <input class="blank md" type="text"> y objetivos para los próximos.</p>
+  <div class="key-box">
+    <p class="kt">🔑 Clave</p>
+    <p class="kl">Cada "sprint" es un ciclo corto de trabajo (normalmente dos semanas) que termina con una evaluación conjunta entre el equipo y el cliente.</p>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">4</span><span class="block-title">Ventajas e inconvenientes de la metodología ágil</span></div>
+  <div class="two-col">
+    <div class="subcard">
+      <h4>✅ Ventajas</h4>
+      <ul>
+        <li>El ciclo de vida de desarrollo es <input class="blank md" type="text">.</li>
+        <li>Hay un calendario de <input class="blank md" type="text"> definido.</li>
+        <li>Es <input class="blank sm" type="text"> y empodera a los participantes del proyecto.</li>
+        <li>Tiene un enfoque centrado en el <input class="blank md" type="text">.</li>
+      </ul>
+    </div>
+    <div class="subcard">
+      <h4>⚠️ Desventajas</h4>
+      <ul>
+        <li>No todos los <input class="blank md" type="text"> se sienten cómodos con este sistema.</li>
+        <li>Los plazos de entrega a veces no se adecuan a la <input class="blank md" type="text">.</li>
+        <li>Puede provocar un aumento de <input class="blank md" type="text"> del proyecto.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">5</span><span class="block-title">Principales diferencias entre Waterfall y Agile</span></div>
+  <p class="lead">Completa la columna de la derecha con la característica equivalente en Agile.</p>
+  <table class="data">
+    <tr><th>Waterfall (Cascada)</th><th>Agile (Ágil)</th></tr>
+    <tr><td class="fixed">Es una metodología rígida.</td><td><input type="text" placeholder="…"></td></tr>
+    <tr><td class="fixed">Es fácil establecer un coste final del proyecto, sin muchos cambios significativos.</td><td><input type="text" placeholder="…"></td></tr>
+    <tr><td class="fixed">Está pensada en la entrega exitosa del proyecto, sin pensar tanto en el cliente.</td><td><input type="text" placeholder="…"></td></tr>
+    <tr><td class="fixed">Evita los cambios a lo largo del proyecto.</td><td><input type="text" placeholder="…"></td></tr>
+    <tr><td class="fixed">La fase de pruebas es al final, antes del lanzamiento.</td><td><input type="text" placeholder="…"></td></tr>
+    <tr><td class="fixed">Los roles están definidos: hay un gerente que gestiona de inicio a fin.</td><td><input type="text" placeholder="…"></td></tr>
+  </table>
+</section>
+
+<!-- 6 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">6</span><span class="block-title">Actividad Agile: Kanban — Trello</span></div>
+  <p class="line">Trello es una herramienta <input class="blank md" type="text"> que permite a los equipos gestionar cualquier tipo de <input class="blank md" type="text"> y flujo de trabajo, así como supervisar <input class="blank md" type="text">.</p>
+  <p class="line">Permite añadir <input class="blank md" type="text">, checklists o incluso <input class="blank md" type="text">, personalizándolo todo según las necesidades del equipo.</p>
+</section>
+
+<!-- 7 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">7</span><span class="block-title">Qué es Design Thinking</span></div>
+  <p class="line">El design thinking, o pensamiento de <input class="blank md" type="text">, es un proceso de trabajo que ayuda a los equipos a desarrollar su <input class="blank md" type="text">.</p>
+  <p class="line">Se basa en un enfoque colaborativo y creativo que incluye: la <input class="blank md" type="text">, la definición del <input class="blank md" type="text">, la generación de <input class="blank md" type="text">, la <input class="blank md" type="text"> y la experimentación.</p>
+  <p class="line">Se utiliza en el diseño de productos y servicios, la estrategia <input class="blank md" type="text"> y el desarrollo <input class="blank md" type="text">.</p>
+</section>
+
+<!-- 8 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">8</span><span class="block-title">Ventajas y desventajas del Design Thinking</span></div>
+  <div class="two-col">
+    <div class="subcard">
+      <h4>✅ Ventajas</h4>
+      <ol>
+        <li>Fomenta la <input class="blank md" type="text">.</li>
+        <li>Se centra en las necesidades del <input class="blank md" type="text">.</li>
+        <li>Promueve la colaboración <input class="blank md" type="text">.</li>
+        <li>Proporciona un enfoque <input class="blank md" type="text"> para la resolución de problemas.</li>
+      </ol>
+    </div>
+    <div class="subcard">
+      <h4>⚠️ Desventajas</h4>
+      <ol>
+        <li>Necesidad de <input class="blank md" type="text">.</li>
+        <li>Se necesitan <input class="blank md" type="text"> para implementarse adecuadamente.</li>
+        <li>Posibilidad de <input class="blank md" type="text"> en el proceso de empatía.</li>
+        <li>Dificultad para <input class="blank md" type="text"> el éxito de las soluciones generadas.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">9</span><span class="block-title">Las 5 etapas del Design Thinking</span></div>
+  <p class="lead">Anota en cada etapa la idea principal explicada en clase.</p>
+  <div class="stage-grid">
+    <div class="stage">
+      <span class="num">1</span>
+      <h5>Empatía</h5>
+      <textarea placeholder="¿Qué se hace en esta fase?"></textarea>
+    </div>
+    <div class="stage">
+      <span class="num">2</span>
+      <h5>Definición</h5>
+      <textarea placeholder="¿Qué se hace en esta fase?"></textarea>
+    </div>
+    <div class="stage">
+      <span class="num">3</span>
+      <h5>Idea</h5>
+      <textarea placeholder="¿Qué se hace en esta fase?"></textarea>
+    </div>
+    <div class="stage">
+      <span class="num">4</span>
+      <h5>Prototipo</h5>
+      <textarea placeholder="¿Qué se hace en esta fase?"></textarea>
+    </div>
+    <div class="stage">
+      <span class="num">5</span>
+      <h5>Evaluación</h5>
+      <textarea placeholder="¿Qué se hace en esta fase?"></textarea>
+    </div>
+  </div>
+
+  <div class="hub-strip">
+    <p class="ht">RESUMEN RÁPIDO — completa con una palabra clave por etapa</p>
+    <div class="hub-grid">
+      <div>Empatizar<input type="text"></div>
+      <div>Definir<input type="text"></div>
+      <div>Idear<input type="text"></div>
+      <div>Prototipar<input type="text"></div>
+      <div>Probar<input type="text"></div>
+    </div>
+  </div>
+
+  <div class="key-box" style="margin-top:14px;">
+    <p class="kt">🔑 Clave final</p>
+    <p class="kl">El design thinking está hecho para probar y fallar hasta encontrar la solución ideal: si algo falla en la evaluación, se puede volver a cualquier fase anterior.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span>IES Comuneros de Castilla · 4º Ámbito Práctico</span>
+  <span>Apuntes de clase — no reproducir sin autorización</span>
+</footer>
+
+<script>
+  document.addEventListener('keydown', function(e){
+    const k = e.key ? e.key.toLowerCase() : '';
+    const blockedCombo = (e.ctrlKey || e.metaKey) && ['c','x','u','s','a'].includes(k);
+    if (blockedCombo) e.preventDefault();
+  });
+  document.addEventListener('copy', function(e){
+    const t = document.activeElement && document.activeElement.tagName;
+    if (!(t === 'INPUT' || t === 'TEXTAREA')) e.preventDefault();
+  });
+  document.addEventListener('cut', function(e){
+    const t = document.activeElement && document.activeElement.tagName;
+    if (!(t === 'INPUT' || t === 'TEXTAREA')) e.preventDefault();
+  });
+  document.addEventListener('paste', function(e){ e.preventDefault(); });
+  document.addEventListener('drop', function(e){ e.preventDefault(); });
+  document.addEventListener('dragover', function(e){ e.preventDefault(); });
+  document.addEventListener('contextmenu', e => e.preventDefault());
+</script>
+
+</body>
+</html>
