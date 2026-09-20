@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Apuntes editables · Señales, componentes y resistencias</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f2ec;
+    --ink:#17221f;
+    --ink-soft:#4a5750;
+    --teal:#0d6e7c;
+    --teal-deep:#093f47;
+    --copper:#c1622d;
+    --line:#c9c2ae;
+    --hole:#8a9990;
+    --pad-bg:#fffdf8;
+    --sand:#fbf1de;
+    --sand-border:#d8b978;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--paper);
+    color:var(--ink);
+    font-family:"Source Serif 4", Georgia, serif;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;
+    padding:0 0 60px;
+  }
+  ::selection{ background:transparent; }
+  input, textarea { user-select:text; -webkit-user-select:text; }
+
+  .no-print-bar{
+    position:sticky; top:0; z-index:50;
+    background:var(--teal-deep);
+    color:#eef4f2;
+    display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    padding:12px 22px;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:13px;
+    box-shadow:0 2px 10px rgba(0,0,0,.18);
+  }
+  .no-print-bar span{opacity:.85;}
+  .no-print-bar .btns{display:flex; gap:10px;}
+  .no-print-bar button{
+    border:none;
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    padding:9px 16px;
+    border-radius:3px;
+    cursor:pointer;
+    letter-spacing:.02em;
+  }
+  .btn-primary{ background:var(--copper); color:#fff8f2; }
+  .btn-primary:hover{ background:#a94f21; }
+  .btn-ghost{ background:transparent; color:#cfe9e2; border:1px solid #2f6a71 !important; }
+  .btn-ghost:hover{ background:rgba(255,255,255,.08); }
+
+  header.hero{
+    position:relative;
+    background:linear-gradient(135deg,var(--teal-deep) 0%, var(--teal) 62%, #12959f 100%);
+    color:#f2f7f5;
+    padding:34px 8vw 44px;
+    overflow:hidden;
+  }
+  header.hero::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0; height:22px;
+    background:repeating-linear-gradient(90deg, var(--copper) 0 26px, transparent 26px 52px);
+    opacity:.55;
+  }
+  .eyebrow{
+    font-family:"JetBrains Mono", monospace;
+    font-size:12px;
+    letter-spacing:.06em;
+    color:#bfe6df;
+  }
+  h1{
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:700;
+    font-size:clamp(24px,3.4vw,34px);
+    margin:8px 0 6px;
+    line-height:1.1;
+  }
+  .hero-sub{
+    max-width:660px;
+    font-size:14.5px;
+    color:#dcece7;
+    line-height:1.5;
+  }
+  .hero-meta{
+    margin-top:18px;
+    display:flex; gap:28px; flex-wrap:wrap;
+    font-family:"JetBrains Mono",monospace;
+    font-size:12px;
+    color:#cfe9e2;
+  }
+  .hero-meta div span{display:block; color:#8fd0c3; font-size:10.5px; margin-bottom:3px;}
+  .fill-head{
+    border:none; border-bottom:1px solid #cfe9e2;
+    background:transparent;
+    display:inline-block; min-width:150px;
+    font-family:"Source Serif 4", Georgia, serif;
+    font-size:13px;
+    color:#f2f7f5;
+    padding:2px 2px 4px;
+  }
+
+  main{
+    max-width:920px;
+    margin:0 auto;
+    padding:0 8vw;
+  }
+  .intro-strip{
+    margin-top:-24px;
+    background:var(--pad-bg);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:14px 22px;
+    font-size:13px;
+    color:var(--ink-soft);
+    box-shadow:0 8px 24px rgba(9,63,71,.08);
+  }
+
+  section.block{ margin-top:34px; }
+  .block-head{
+    display:flex; align-items:baseline; gap:12px;
+    border-bottom:2px solid var(--teal);
+    padding-bottom:7px;
+    margin-bottom:16px;
+  }
+  .block-num{
+    font-family:"JetBrains Mono",monospace;
+    font-size:12px;
+    color:#fff;
+    background:var(--copper);
+    padding:2px 8px;
+    border-radius:2px;
+  }
+  .block-title{
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:600;
+    font-size:18px;
+    color:var(--teal-deep);
+  }
+
+  .lead{ font-size:12.5px; font-style:italic; color:var(--ink-soft); margin:0 0 10px; }
+
+  p.line{ font-size:15px; line-height:1.85; margin:0 0 9px; }
+  p.line b{ font-family:"Space Grotesk",sans-serif; font-weight:600; color:var(--teal-deep); }
+
+  .blank{
+    border:none; border-bottom:1.4px solid var(--teal);
+    background:transparent;
+    font-family:"Source Serif 4", Georgia, serif;
+    font-size:15px;
+    color:var(--teal-deep);
+    font-weight:600;
+    text-align:center;
+    padding:1px 2px;
+    width:110px;
+  }
+  .blank.sm{ width:70px; }
+  .blank.md{ width:150px; }
+  .blank.lg{ width:220px; }
+
+  .two-col{ display:grid; grid-template-columns:1.15fr 1fr; gap:20px; align-items:start; }
+  @media (max-width:680px){ .two-col{ grid-template-columns:1fr; } }
+
+  .key-box{
+    background:var(--sand);
+    border:1px solid var(--sand-border);
+    border-radius:4px;
+    padding:11px 15px;
+    margin:10px 0 4px;
+  }
+  .key-box .kt{
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:600; font-size:12.5px; color:var(--copper);
+    margin:0 0 4px;
+  }
+  .key-box .kl{
+    font-size:12.5px; font-style:italic; color:var(--ink); margin:0 0 2px; line-height:1.5;
+  }
+
+  .draw-box{
+    border:1.6px dashed #b7c1ba;
+    border-radius:4px;
+    background:#fff;
+    position:relative;
+    height:190px;
+    display:flex; align-items:flex-start; justify-content:center;
+    overflow:hidden;
+  }
+  .draw-box canvas{ width:100%; height:100%; cursor:crosshair; touch-action:none; }
+  .draw-label{
+    position:absolute; top:6px; left:0; right:0;
+    text-align:center;
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px; color:#9aa39c; font-style:italic;
+    pointer-events:none;
+  }
+  .draw-clear{
+    position:absolute; bottom:6px; right:8px;
+    font-family:"Space Grotesk",sans-serif; font-size:10.5px;
+    background:#eef1ea; border:1px solid var(--line); color:var(--ink-soft);
+    padding:3px 8px; border-radius:3px; cursor:pointer;
+  }
+
+  table.data{ width:100%; border-collapse:collapse; font-size:12.5px; margin:6px 0 4px;}
+  table.data th, table.data td{ border:1px solid var(--line); padding:6px 7px; text-align:center; }
+  table.data th{ background:var(--teal); color:#fff; font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:11.5px;}
+  table.data td input{
+    border:none; background:transparent; width:100%; text-align:center;
+    font-family:"Source Serif 4",serif; font-size:13px; color:var(--teal-deep); font-weight:600;
+  }
+
+  .practice{ display:flex; gap:24px; flex-wrap:wrap; margin:8px 0 2px; font-size:14px; }
+
+  footer{
+    max-width:920px; margin:44px auto 0; padding:0 8vw;
+    font-family:"JetBrains Mono",monospace; font-size:11px; color:#8a8168;
+    display:flex; justify-content:space-between; border-top:1px solid var(--line); padding-top:14px;
+  }
+
+  @media print{
+    body{ background:#fff; -webkit-user-select:auto; user-select:auto; }
+    .no-print-bar{ display:none; }
+    header.hero{ padding:20px 6vw 26px; }
+    header.hero::after{ height:12px; }
+    section.block{ page-break-inside:avoid; margin-top:22px; }
+    main{ padding:0 6vw; }
+    .draw-clear{ display:none; }
+  }
+</style>
+</head>
+<body oncopy="return false" oncut="return false" onselectstart="return false" oncontextmenu="return false">
+
+<div class="no-print-bar">
+  <span>Documento protegido — completa los huecos y dibuja; el contenido no se puede copiar ni pegar</span>
+  <div class="btns">
+    <button class="btn-ghost" onclick="clearAllDrawings()">Borrar dibujos</button>
+    <button class="btn-primary" onclick="window.print()">Descargar / Imprimir en PDF</button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="eyebrow">CONTROL Y ROBÓTICA · CONTROL PROGRAMADO CON ARDUINO</div>
+  <h1>Apuntes: señales, componentes y resistencias</h1>
+  <p class="hero-sub">Completa los huecos mientras se explica en clase. Presta atención a los recuadros «Clave» y dibuja donde se indique.</p>
+  <div class="hero-meta">
+    <div><span>Nombre y apellidos</span><input class="fill-head" type="text"></div>
+    <div><span>Curso / grupo</span><input class="fill-head" type="text"></div>
+    <div><span>Fecha</span><input class="fill-head" type="text"></div>
+  </div>
+</header>
+
+<main>
+<div class="intro-strip">Escribe directamente en los huecos subrayados y usa el ratón o el dedo para dibujar en los recuadros punteados. Cuando termines, pulsa <b>«Descargar / Imprimir en PDF»</b>.</div>
+
+<!-- 1 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">1</span><span class="block-title">Variables digitales y analógicas</span></div>
+
+  <div class="two-col">
+    <div>
+      <p class="line"><b>Variable digital:</b> también llamada variable <input class="blank md" type="text"> (discreta). Tiene dos estados, por lo que se dice que es <input class="blank md" type="text">.</p>
+      <p class="line">· Encendido / High = <input class="blank sm" type="text">&nbsp;&nbsp;(rango: <input class="blank md" type="text"> V)</p>
+      <p class="line">· Apagado / Low = <input class="blank sm" type="text">&nbsp;&nbsp;(rango: <input class="blank md" type="text"> V)</p>
+      <p class="line">Ejemplo: el interruptor del <input class="blank md" type="text"> de tu casa.</p>
+    </div>
+    <div class="key-box">
+      <p class="kt">🔑 Clave</p>
+      <p class="kl">Una señal digital solo toma dos valores: HIGH (1) o LOW (0).</p>
+    </div>
+  </div>
+
+  <div class="two-col" style="margin-top:8px;">
+    <div>
+      <p class="line"><b>Variable análoga:</b> puede tomar un número <input class="blank md" type="text"> de valores entre dos <input class="blank md" type="text">.</p>
+      <p class="line">Ejemplos: sonido, <input class="blank sm" type="text">, voz, <input class="blank sm" type="text">.</p>
+      <p class="line">Ejemplo de sistema analógico: un <input class="blank md" type="text"> convierte ondas de sonido en una variación analógica de tensión llamada señal de <input class="blank sm" type="text">.</p>
+    </div>
+    <div class="key-box">
+      <p class="kt">🔑 Clave</p>
+      <p class="kl">Una señal analógica puede tomar infinitos valores entre dos límites.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">2</span><span class="block-title">Sistemas electrónicos</span></div>
+  <div class="two-col">
+    <div>
+      <p class="line"><b>Entradas:</b> toman las señales del mundo físico y las convierten en <input class="blank md" type="text"> o voltaje.</p>
+      <p class="line"><b>Procesadores:</b> <input class="blank md" type="text">, interpretan y transforman las señales.</p>
+      <p class="line"><b>Salidas:</b> convierten la corriente o voltaje en señales físicamente <input class="blank md" type="text">.</p>
+      <p class="line">Ejemplo (televisor): entrada = señal <input class="blank sm" type="text"> recibida por antena; salidas = pantalla LED y <input class="blank md" type="text">.</p>
+    </div>
+    <div class="draw-box">
+      <span class="draw-label">✏️ Dibuja el esquema: ENTRADAS → PROCESADORES → SALIDAS</span>
+      <canvas class="draw-canvas"></canvas>
+      <span class="draw-clear" onclick="clearCanvas(this)">Borrar</span>
+    </div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">3</span><span class="block-title">Componentes: entrada/salida, digital/análoga</span></div>
+  <p class="lead">Clasifica cada componente indicando si es entrada o salida, y si es digital o análoga:</p>
+  <table class="data">
+    <tr><th>Componente</th><th>Entrada / Salida</th><th>Digital / Análoga</th></tr>
+    <tr><td>Pulsador</td><td><input type="text"></td><td><input type="text"></td></tr>
+    <tr><td>LED</td><td><input type="text"></td><td><input type="text"></td></tr>
+    <tr><td>Reed switch</td><td><input type="text"></td><td><input type="text"></td></tr>
+    <tr><td>Fotocelda</td><td><input type="text"></td><td><input type="text"></td></tr>
+    <tr><td>Motor DC</td><td><input type="text"></td><td><input type="text"></td></tr>
+    <tr><td>Potenciómetro</td><td><input type="text"></td><td><input type="text"></td></tr>
+  </table>
+</section>
+
+<!-- 4 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">4</span><span class="block-title">El LED</span></div>
+  <div class="two-col">
+    <div>
+      <p class="line">LED = diodo emisor de <input class="blank sm" type="text">, también llamado diodo <input class="blank md" type="text">.</p>
+      <p class="line">Ventajas frente a la luz incandescente: menor consumo de <input class="blank sm" type="text">, mayor tiempo de <input class="blank sm" type="text">, menor <input class="blank sm" type="text">.</p>
+      <p class="line">El LED tiene <input class="blank md" type="text"> (un orden de conexión). Si se conecta al revés se puede <input class="blank sm" type="text">.</p>
+      <div class="key-box">
+        <p class="kt">🔑 Clave</p>
+        <p class="kl">Patilla larga = ánodo (+) · Patilla corta = cátodo (−)</p>
+      </div>
+    </div>
+    <div class="draw-box">
+      <span class="draw-label">✏️ Dibuja el símbolo del LED (indica ánodo + y cátodo −)</span>
+      <canvas class="draw-canvas"></canvas>
+      <span class="draw-clear" onclick="clearCanvas(this)">Borrar</span>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">5</span><span class="block-title">Resistencia y Ley de Ohm</span></div>
+  <div class="two-col">
+    <div>
+      <p class="line"><b>Resistencia:</b> propiedad física por la que los materiales se oponen al paso de la <input class="blank sm" type="text">. Su unidad es el <input class="blank sm" type="text"> (Ω).</p>
+      <p class="line"><b>Ley de Ohm</b> — completa las tres fórmulas a partir del triángulo V / I / R:</p>
+      <p class="line">V = <input class="blank sm" type="text">&nbsp;&nbsp;&nbsp;I = <input class="blank sm" type="text">&nbsp;&nbsp;&nbsp;R = <input class="blank sm" type="text"></p>
+      <div class="key-box">
+        <p class="kt">🔑 Clave</p>
+        <p class="kl">I es directamente proporcional a V e inversamente proporcional a R.</p>
+      </div>
+    </div>
+    <div class="draw-box">
+      <span class="draw-label">✏️ Dibuja: el símbolo de la resistencia y el triángulo V-I-R</span>
+      <canvas class="draw-canvas"></canvas>
+      <span class="draw-clear" onclick="clearCanvas(this)">Borrar</span>
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">6</span><span class="block-title">Símil hidráulico</span></div>
+  <p class="lead">Relaciona cada magnitud eléctrica con su equivalente hidráulico:</p>
+  <table class="data">
+    <tr><th>Circuito eléctrico</th><th>Equivalente hidráulico</th></tr>
+    <tr><td>Corriente eléctrica (I)</td><td><input type="text"></td></tr>
+    <tr><td>Tensión / diferencia de potencial (V)</td><td><input type="text"></td></tr>
+    <tr><td>Generador</td><td><input type="text"></td></tr>
+    <tr><td>Resistencia / lámpara</td><td><input type="text"></td></tr>
+  </table>
+</section>
+
+<!-- 7 -->
+<section class="block">
+  <div class="block-head"><span class="block-num">7</span><span class="block-title">Código de colores de las resistencias</span></div>
+  <p class="lead">Completa los valores que faltan en la tabla (usa la tabla de colores que muestre el profesor):</p>
+  <table class="data">
+    <tr><th>Color</th><th>1ª cifra</th><th>2ª cifra</th><th>Multiplicador</th><th>Tolerancia</th></tr>
+    <tr><td>Negro</td><td>—</td><td>0</td><td><input type="text"></td><td>—</td></tr>
+    <tr><td>Marrón</td><td>1</td><td>1</td><td><input type="text"></td><td>±1%</td></tr>
+    <tr><td>Rojo</td><td><input type="text"></td><td>2</td><td>100</td><td><input type="text"></td></tr>
+    <tr><td>Amarillo</td><td>4</td><td><input type="text"></td><td>10 000</td><td>±4%</td></tr>
+    <tr><td>Verde</td><td>5</td><td>5</td><td><input type="text"></td><td>±0,5%</td></tr>
+    <tr><td>Azul</td><td><input type="text"></td><td>6</td><td>1 000 000</td><td><input type="text"></td></tr>
+    <tr><td>Dorado</td><td>—</td><td>—</td><td>0,1</td><td><input type="text"></td></tr>
+  </table>
+
+  <p class="line" style="margin-top:10px;"><b>Práctica:</b> calcula el valor de cada resistencia según sus bandas de color.</p>
+  <div class="practice">
+    <div>1) Marrón – Negro – Rojo &nbsp;→&nbsp; valor: <input class="blank sm" type="text"> Ω</div>
+    <div>2) Amarillo – Violeta – Naranja &nbsp;→&nbsp; valor: <input class="blank sm" type="text"> Ω</div>
+  </div>
+
+  <div class="key-box" style="margin-top:14px;">
+    <p class="kt">🔑 Resumen del bloque</p>
+    <p class="kl">Digital = 2 estados (HIGH/LOW) · Analógico = infinitos valores entre dos límites.</p>
+    <p class="kl">Sistema electrónico = Entradas → Procesadores → Salidas (+ retroalimentación).</p>
+    <p class="kl">LED: respeta la polaridad. Resistencia: se mide en Ω y limita la corriente (Ley de Ohm: V = I·R).</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span>Control y Robótica · Control programado con Arduino</span>
+  <span>Apuntes de clase — no reproducir sin autorización</span>
+</footer>
+
+<script>
+  // ---- anti copy/paste ----
+  document.addEventListener('keydown', function(e){
+    const k = e.key ? e.key.toLowerCase() : '';
+    const blockedCombo = (e.ctrlKey || e.metaKey) && ['c','x','u','s','a'].includes(k);
+    if (blockedCombo) e.preventDefault();
+  });
+  document.addEventListener('copy', function(e){
+    if (!(document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA'))) {
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('cut', function(e){
+    if (!(document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA'))) {
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('contextmenu', e => e.preventDefault());
+
+  // ---- drawing canvases ----
+  function setupCanvas(canvas){
+    const ctx = canvas.getContext('2d');
+    function resize(){
+      const rect = canvas.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      const prevImg = canvas.width > 0 ? ctx.getImageData(0,0,canvas.width,canvas.height) : null;
+      canvas.width = rect.width * ratio;
+      canvas.height = rect.height * ratio;
+      ctx.scale(ratio, ratio);
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#17221f';
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    let drawing = false;
+    function pos(e){
+      const rect = canvas.getBoundingClientRect();
+      const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      const cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+      return { x: cx, y: cy };
+    }
+    function start(e){ drawing = true; const p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); e.preventDefault(); }
+    function move(e){ if(!drawing) return; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }
+    function end(){ drawing = false; }
+
+    canvas.addEventListener('mousedown', start);
+    canvas.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', end);
+    canvas.addEventListener('touchstart', start, { passive:false });
+    canvas.addEventListener('touchmove', move, { passive:false });
+    canvas.addEventListener('touchend', end);
+  }
+  document.querySelectorAll('.draw-canvas').forEach(setupCanvas);
+
+  function clearCanvas(btn){
+    const canvas = btn.parentElement.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  function clearAllDrawings(){
+    document.querySelectorAll('.draw-canvas').forEach(c => {
+      const ctx = c.getContext('2d');
+      ctx.clearRect(0, 0, c.width, c.height);
+    });
+  }
+</script>
+
+</body>
+</html>
