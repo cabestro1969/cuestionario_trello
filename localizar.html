@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contacto - IES Comuneros de Castilla</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  html, body { height:100%; margin:0; font-family:Arial, Helvetica, sans-serif; }
+  #wrap { position:relative; width:100%; height:100%; overflow:hidden; background:#e8e4dc; }
+  #map { position:absolute; inset:0; }
+
+  /* Botones circulares */
+  .botones { position:absolute; left:0; right:0; top:42%; transform:translateY(-50%);
+    display:flex; justify-content:center; gap:clamp(14px, 6vw, 64px); z-index:1100; pointer-events:none; }
+  .btn { pointer-events:auto; cursor:pointer; padding:0;
+    width:clamp(48px, 12vw, 92px); height:clamp(48px, 12vw, 92px); border-radius:50%;
+    background:rgba(142,31,159,.92); border:3px solid rgba(255,255,255,.6);
+    box-shadow:0 4px 14px rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center;
+    transition:transform .18s ease, background .18s ease; }
+  .btn svg { width:48%; height:48%; fill:#fff; }
+  .btn:hover, .btn:focus-visible, .btn.activo { transform:scale(1.1); background:#6a1479; outline:none; }
+
+  /* Ventana emergente */
+  #pop { position:absolute; z-index:1200; width:min(250px, calc(100% - 16px)); box-sizing:border-box;
+    background:#fff; border-radius:12px; padding:12px 14px; box-shadow:0 8px 24px rgba(0,0,0,.3);
+    font-size:14px; line-height:1.45; color:#333;
+    opacity:0; visibility:hidden; transition:opacity .15s ease; }
+  #pop.on { opacity:1; visibility:visible; }
+  #pop h3 { margin:0 0 6px; font-size:15px; color:#8e1f9f; }
+  #pop a { display:block; color:#6a1479; font-weight:bold; text-decoration:none; padding:3px 0; word-break:break-word; }
+  #pop a:hover { text-decoration:underline; }
+  #pop small { display:block; color:#777; margin-top:2px; }
+  #pop::after { content:""; position:absolute; left:var(--ax, 50%); margin-left:-8px; bottom:-8px;
+    border:8px solid transparent; border-bottom:0; border-top-color:#fff; }
+  #pop.abajo::after { bottom:auto; top:-8px; border-top:0; border-bottom:8px solid #fff; border-top-color:transparent; }
+
+  /* Marcador del centro */
+  .pin { width:22px; height:22px; border-radius:50%; background:#8e1f9f; border:3px solid #fff;
+    box-shadow:0 0 0 3px rgba(142,31,159,.35), 0 2px 8px rgba(0,0,0,.4); box-sizing:border-box; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="map"></div>
+
+  <div class="botones">
+    <button class="btn" data-k="tel" aria-label="Teléfonos">
+      <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1.02l-2.2 2.2z"/></svg>
+    </button>
+    <button class="btn" data-k="mail" aria-label="Correo electrónico">
+      <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+    </button>
+    <button class="btn" data-k="loc" aria-label="Cómo llegar">
+      <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 119.5 9 2.5 2.5 0 0112 11.5z"/></svg>
+    </button>
+  </div>
+
+  <div id="pop" role="status"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* ================= CONFIGURACION (edita aqui) ================= */
+var LAT = 42.3489, LNG = -3.6905;     // Coordenadas APROXIMADAS: sustituyelas por las exactas del centro
+var GEOCODIFICAR = true;               // true: intenta localizar el centro automaticamente (OpenStreetMap). Con coordenadas exactas, pon false
+var NOMBRE = 'IES Comuneros de Castilla';
+var CIUDAD = 'Burgos';
+var DIRECCION = '';                    // Opcional: p. ej. 'Avenida ..., n.º ...'
+var TELEFONOS = ['947 214 211', '608 917 701'];
+var EMAIL = '09007741@educa.jcyl.es';
+var NOTA_EMAIL = 'Solicitudes de certificados';
+/* ============================================================== */
+
+var destino = encodeURIComponent(NOMBRE + ' ' + CIUDAD);
+var INFO = {
+  tel: { t: 'Teléfonos', h: TELEFONOS.map(function (n) {
+           return '<a href="tel:+34' + n.replace(/\s/g, '') + '">' + n + '</a>'; }).join('') },
+  mail: { t: 'Correo electrónico', h: '<a href="mailto:' + EMAIL + '">' + EMAIL + '</a>' +
+           (NOTA_EMAIL ? '<small>' + NOTA_EMAIL + '</small>' : '') },
+  loc: { t: NOMBRE, h: CIUDAD + (DIRECCION ? '<br>' + DIRECCION : '') +
+           '<a href="https://www.google.com/maps/dir/?api=1&destination=' + destino + '" target="_blank" rel="noopener">Cómo llegar (Google Maps)</a>' +
+           '<a href="https://www.openstreetmap.org/search?query=' + destino + '" target="_blank" rel="noopener">Ver en OpenStreetMap</a>' }
+};
+
+/* ---- Mapa ---- */
+var map = L.map('map', { zoomControl: false, scrollWheelZoom: false, dragging: !L.Browser.mobile, tap: false });
+L.control.zoom({ position: 'topright' }).addTo(map);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
+}).addTo(map);
+var marker = L.marker([LAT, LNG], { icon: L.divIcon({ className: '', html: '<div class="pin"></div>', iconSize: [22, 22], iconAnchor: [11, 11] }) }).addTo(map);
+
+function centrar(lat, lng) {
+  marker.setLatLng([lat, lng]);
+  map.setView([lat, lng], 17, { animate: false });
+  map.panBy([0, -Math.round(map.getSize().y * 0.2)], { animate: false }); /* el centro queda debajo de los botones */
+}
+centrar(LAT, LNG);
+
+if (GEOCODIFICAR) {
+  fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=es&bounded=1&viewbox=-3.80,42.40,-3.60,42.30&q=' +
+        encodeURIComponent(NOMBRE + ' ' + CIUDAD))
+    .then(function (r) { return r.json(); })
+    .then(function (j) { if (j && j[0]) centrar(parseFloat(j[0].lat), parseFloat(j[0].lon)); })
+    .catch(function () {});
+}
+
+/* ---- Ventana emergente ---- */
+var wrap = document.getElementById('wrap'), pop = document.getElementById('pop');
+var btns = Array.prototype.slice.call(document.querySelectorAll('.btn'));
+var timer = null, fijo = null;
+
+function mostrar(btn) {
+  btns.forEach(function (b) { b.classList.toggle('activo', b === btn); });
+  var d = INFO[btn.dataset.k];
+  pop.innerHTML = '<h3>' + d.t + '</h3>' + d.h;
+  var W = wrap.clientWidth, H = wrap.clientHeight;
+  var b = btn.getBoundingClientRect(), w = wrap.getBoundingClientRect();
+  var pw = pop.offsetWidth, ph = pop.offsetHeight;
+  var cx = b.left - w.left + b.width / 2;
+  var left = Math.min(Math.max(cx - pw / 2, 8), W - pw - 8);
+  var arriba = b.top - w.top, abajoLibre = H - (b.bottom - w.top);
+  var abajo = arriba < ph + 16 && abajoLibre > arriba;
+  pop.style.left = left + 'px';
+  pop.style.top = (abajo ? b.bottom - w.top + 12 : b.top - w.top - ph - 12) + 'px';
+  pop.style.setProperty('--ax', (cx - left) + 'px');
+  pop.classList.toggle('abajo', abajo);
+  pop.classList.add('on');
+}
+function ocultar() {
+  fijo = null; pop.classList.remove('on');
+  btns.forEach(function (b) { b.classList.remove('activo'); });
+}
+function cancelar() { clearTimeout(timer); }
+function programar() { if (!fijo) { clearTimeout(timer); timer = setTimeout(ocultar, 250); } }
+
+btns.forEach(function (b) {
+  b.addEventListener('mouseenter', function () { cancelar(); if (!fijo) mostrar(b); });
+  b.addEventListener('mouseleave', programar);
+  b.addEventListener('focus', function () { if (!fijo) mostrar(b); });
+  b.addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (fijo === b) { ocultar(); } else { fijo = b; cancelar(); mostrar(b); }
+  });
+});
+pop.addEventListener('mouseenter', cancelar);
+pop.addEventListener('mouseleave', programar);
+document.addEventListener('click', function (e) { if (!pop.contains(e.target)) ocultar(); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') ocultar(); });
+window.addEventListener('resize', function () { map.invalidateSize(); ocultar(); });
+</script>
+</body>
+</html>
