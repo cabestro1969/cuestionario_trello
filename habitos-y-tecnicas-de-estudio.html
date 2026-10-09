@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hábitos y Técnicas de Estudio - Documento Oficial</title>
+  <meta name="description" content="Guía completa de hábitos, métodos de estudio, planificación del tiempo y preparación de exámenes con enlaces y recursos web recomendados.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4338ca;
+      --primary-dark: #312e81;
+      --primary-light: #eef2ff;
+      --accent: #059669;
+      --accent-light: #ecfdf5;
+      --warning: #b45309;
+      --warning-light: #fffbeb;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      scroll-behavior: smooth;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: #f8fafc;
+      color: var(--slate-800);
+      line-height: 1.6;
+    }
+    body {
+      padding: 0;
+      margin: 0;
+    }
+    header.hero {
+      background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+      color: white;
+      padding: 4rem 1.5rem 3rem;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(99, 102, 241, 0.25);
+      border: 1px solid rgba(165, 180, 252, 0.3);
+      color: #c7d2fe;
+      padding: 0.35rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+    h1.hero-title {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+      max-width: 800px;
+      margin: 0 auto 1rem;
+    }
+    p.hero-subtitle {
+      font-size: 1.05rem;
+      color: #cbd5e1;
+      max-width: 700px;
+      margin: 0 auto 2rem;
+    }
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.4rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background-color: #4f46e5;
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: #4338ca;
+    }
+    .btn-outline {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .btn-outline:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    .container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+    nav.toc {
+      position: sticky;
+      top: 2rem;
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      max-height: calc(100vh - 4rem);
+      overflow-y: auto;
+    }
+    .toc-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--slate-600);
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--slate-100);
+    }
+    .toc ul {
+      list-style: none;
+    }
+    .toc li {
+      margin-bottom: 0.35rem;
+    }
+    .toc a {
+      display: block;
+      color: var(--slate-700);
+      text-decoration: none;
+      font-size: 0.825rem;
+      padding: 0.3rem 0.5rem;
+      border-radius: 0.375rem;
+      transition: background 0.15s, color 0.15s;
+    }
+    .toc a:hover {
+      background: var(--slate-100);
+      color: var(--primary);
+    }
+    .toc .sub {
+      padding-left: 1rem;
+      font-size: 0.775rem;
+    }
+    .toc .sub-sub {
+      padding-left: 1.75rem;
+      font-size: 0.75rem;
+    }
+    main.content {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    article.section-card {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: 1rem;
+      padding: 1.75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      scroll-margin-top: 2rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .section-num {
+      background: var(--primary);
+      color: white;
+      font-family: monospace;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 0.375rem;
+    }
+    .section-category {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--slate-600);
+    }
+    h2.section-title {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+    .section-summary {
+      background: var(--slate-50);
+      border-left: 4px solid var(--primary);
+      padding: 0.75rem 1rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: 0.925rem;
+      font-weight: 500;
+      color: var(--slate-800);
+      margin-bottom: 1.25rem;
+    }
+    .section-body p {
+      font-size: 0.95rem;
+      color: var(--slate-700);
+      margin-bottom: 0.85rem;
+      line-height: 1.65;
+    }
+    .grid-boxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+    .box-tips {
+      background: var(--accent-light);
+      border: 1px solid rgba(5, 150, 105, 0.2);
+      border-radius: 0.75rem;
+      padding: 1rem;
+    }
+    .box-tips h4 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #065f46;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .box-tips ul {
+      list-style: none;
+    }
+    .box-tips li {
+      font-size: 0.825rem;
+      color: #047857;
+      margin-bottom: 0.4rem;
+      position: relative;
+      padding-left: 1rem;
+    }
+    .box-tips li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: bold;
+    }
+    .box-pitfalls {
+      background: var(--warning-light);
+      border: 1px solid rgba(180, 83, 9, 0.2);
+      border-radius: 0.75rem;
+      padding: 1rem;
+    }
+    .box-pitfalls h4 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #92400e;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .box-pitfalls ul {
+      list-style: none;
+    }
+    .box-pitfalls li {
+      font-size: 0.825rem;
+      color: #b45309;
+      margin-bottom: 0.4rem;
+      position: relative;
+      padding-left: 1rem;
+    }
+    .box-pitfalls li::before {
+      content: "✕";
+      position: absolute;
+      left: 0;
+      font-size: 0.7rem;
+      top: 0.1rem;
+      color: #d97706;
+    }
+    .links-container {
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--slate-100);
+    }
+    .links-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--slate-900);
+      margin-bottom: 0.75rem;
+    }
+    .links-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    .link-card {
+      display: block;
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 0.65rem;
+      padding: 0.85rem;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.15s ease;
+    }
+    .link-card:hover {
+      background: var(--primary-light);
+      border-color: #a5b4fc;
+      transform: translateY(-1px);
+    }
+    .link-domain {
+      display: inline-block;
+      font-family: monospace;
+      font-size: 0.7rem;
+      background: rgba(67, 56, 202, 0.1);
+      color: var(--primary);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.25rem;
+      margin-bottom: 0.35rem;
+      font-weight: 600;
+    }
+    .link-name {
+      font-size: 0.825rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 0.25rem;
+      line-height: 1.3;
+    }
+    .link-desc {
+      font-size: 0.75rem;
+      color: var(--slate-600);
+      line-height: 1.4;
+    }
+    footer {
+      background: white;
+      border-top: 1px solid var(--slate-200);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      margin-top: 4rem;
+      font-size: 0.85rem;
+      color: var(--slate-600);
+    }
+    @media (max-width: 860px) {
+      .container { grid-template-columns: 1fr; }
+      nav.toc { display: none; }
+      .grid-boxes, .links-grid { grid-template-columns: 1fr; }
+      h1.hero-title { font-size: 1.85rem; }
+    }
+    @media print {
+      header.hero, nav.toc, .hero-actions, footer { display: none !important; }
+      body { background: white; }
+      .container { display: block; max-width: 100%; margin: 0; padding: 0; }
+      article.section-card { border: 1px solid #ccc; box-shadow: none; page-break-inside: avoid; margin-bottom: 2rem; }
+      a { color: black !important; text-decoration: underline; }
+      a::after { content: " (" attr(href) ")"; font-size: 8pt; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="hero-badge">Guía Didáctica y Metodológica</div>
+    <h1 class="hero-title">HÁBITOS Y TÉCNICAS DE ESTUDIO</h1>
+    <p class="hero-subtitle">
+      Documento completo con el desarrollo de todos los apartados, pautas psicopedagógicas y enlaces web seleccionados para cada temática.
+    </p>
+    <div class="hero-actions">
+      <a href="#sec-1" class="btn btn-primary">Comenzar Lectura</a>
+      <button onclick="window.print()" class="btn btn-outline">🖨️ Imprimir / Guardar en PDF</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <nav class="toc">
+      <div class="toc-title">Índice de Contenidos</div>
+      <ul>
+        <li class=""><a href="#sec-1">1. Para poder estudiar hay que contar con una buena MOTIVACIÓN</a></li>
+<li class=""><a href="#sec-2">2. Es necesario desarrollar HÁBITOS y TÉCNICAS DE ESTUDIO</a></li>
+<li class=""><a href="#sec-3">3. Para el estudio individual debes tener en cuenta varios aspectos</a></li>
+<li class="sub"><a href="#sec-3-1">3.1. Cuidar los FACTORES AMBIENTALES</a></li>
+<li class="sub"><a href="#sec-3-2">3.2. Disponer de las FUENTES DE INFORMACIÓN necesarias</a></li>
+<li class="sub"><a href="#sec-3-3">3.3. Hacer una correcta PLANIFICACIÓN DEL TIEMPO</a></li>
+<li class="sub"><a href="#sec-3-4">3.4. Es importante aplicar UN MÉTODO DE ESTUDIO</a></li>
+<li class="sub-sub"><a href="#sec-3-4-1">3.4.1. Hacer una LECTURA EXPLORATORIA (Pre-lectura)</a></li>
+<li class="sub-sub"><a href="#sec-3-4-2">3.4.2. Continuar con una LECTURA COMPRENSIVA</a></li>
+<li class="sub-sub"><a href="#sec-3-4-3">3.4.3. SUBRAYAR</a></li>
+<li class="sub-sub"><a href="#sec-3-4-4">3.4.4. Hacer un ESQUEMA</a></li>
+<li class="sub-sub"><a href="#sec-3-4-5">3.4.5. Hacer un RESUMEN</a></li>
+<li class="sub-sub"><a href="#sec-3-4-6">3.4.6. Hay que MEMORIZAR lo estudiado</a></li>
+<li class="sub"><a href="#sec-3-5">3.5. Debes aprender a preparar LOS EXÁMENES</a></li>
+<li class="sub"><a href="#sec-3-6">3.6. A veces es necesario aplicar TÉCNICAS DE RELAJACIÓN</a></li>
+<li class=""><a href="#sec-4">4. Para el trabajo en clase</a></li>
+<li class="sub"><a href="#sec-4-1">4.1. Es importante una adecuada ATENCIÓN Y CONCENTRACIÓN</a></li>
+<li class="sub"><a href="#sec-4-2">4.2. Es muy conveniente la TOMA DE APUNTES en clase</a></li>
+<li class="sub"><a href="#sec-4-3">4.3. Consejos para la REALIZACIÓN DE LOS EXÁMENES</a></li>
+<li class=""><a href="#sec-5">5. Otras técnicas</a></li>
+<li class="sub"><a href="#sec-5-1">5.1. La ORGANIZACIÓN DEL CUADERNO de la asignatura</a></li>
+<li class="sub"><a href="#sec-5-2">5.2. Cómo ELABORAR UN TRABAJO ESCRITO</a></li>
+<li class="sub"><a href="#sec-5-3">5.3. La técnica del TRABAJO EN EQUIPO</a></li>
+      </ul>
+    </nav>
+
+    <main class="content">
+      
+      <article id="sec-1" class="section-card is-main">
+        <div class="section-header">
+          <span class="section-num">1.</span>
+          <span class="section-category">Bases Psicológicas</span>
+        </div>
+        <h2 class="section-title">Para poder estudiar hay que contar con una buena MOTIVACIÓN</h2>
+        <div class="section-summary">La motivación es el motor del aprendizaje. Sin un propósito claro y un motor interno, cualquier técnica resulta insuficiente.</div>
+        <div class="section-body">
+          <p>La motivación no es un estado mágico que aparece por azar; se construye día a día mediante metas concretas, expectativas realistas y una actitud proactiva.</p><p>Diferenciamos dos tipos fundamentales: la motivación intrínseca (el interés genuino por aprender, la curiosidad y la satisfacción personal) y la motivación extrínseca (calificaciones, reconocimiento familiar o premios). Los estudiantes más constantes combinan ambas, priorizando siempre el valor personal del conocimiento.</p><p>Adoptar una &quot;mentalidad de crecimiento&quot; (Growth Mindset, acuñada por Carol Dweck) permite entender los errores y las malas calificaciones no como límites biológicos, sino como información valiosa para ajustar la estrategia y mejorar.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Define metas SMART: Específicas, Medibles, Alcanzables, Relevantes y con Tiempo límite.</li><li>Divide los temarios extensos en micro-objetivos diarios para experimentar victorias tempranas y segregar dopamina.</li><li>Crea una lista visible con tus &quot;Para qué&quot;: razones profundas por las que estudias (tu futuro, tu vocación, tu autonomía).</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Esperar a &quot;tener ganas&quot; para sentarte a estudiar; la motivación suele llegar tras los primeros 10 minutos de trabajo concentrado.</li><li>Comparar tu ritmo con el de compañeros; el progreso académico es una carrera contra tu versión de ayer.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (3)</div>
+            <div class="links-grid">
+              
+                <a href="https://www.ted.com/talks/carol_dweck_the_power_of_believing_that_you_can_improve?language=es" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">ted.com</span>
+                  <div class="link-name">TED en Español - Carol Dweck: El poder de creer que puedes mejorar</div>
+                  <div class="link-desc">Conferencia subtitulada de la psicóloga de Stanford sobre la mentalidad de crecimiento y cómo afrontar los retos académicos.</div>
+                </a>
+                <a href="https://psicologiaymente.com/psicologia/tipos-de-motivacion" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">psicologiaymente.com</span>
+                  <div class="link-name">Psicología y Mente - Tipos de motivación y cómo potenciarla</div>
+                  <div class="link-desc">Explicación rigurosa de las teorías de la motivación intrínseca vs. extrínseca aplicadas al rendimiento intelectual.</div>
+                </a>
+                <a href="https://es.khanacademy.org/college-careers-more/learnstorm-growth-mindset-activities-es" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">khanacademy.org</span>
+                  <div class="link-name">Khan Academy - Actividades de Mentalidad de Crecimiento</div>
+                  <div class="link-desc">Unidad pedagógica interactiva sobre neuroplasticidad, perseverancia y cómo el cerebro se fortalece con el esfuerzo.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-2" class="section-card is-main">
+        <div class="section-header">
+          <span class="section-num">2.</span>
+          <span class="section-category">Fundamentos</span>
+        </div>
+        <h2 class="section-title">Es necesario desarrollar HÁBITOS y TÉCNICAS DE ESTUDIO</h2>
+        <div class="section-summary">Un hábito automatiza el esfuerzo de empezar; una técnica optimiza el rendimiento mientras trabajas.</div>
+        <div class="section-body">
+          <p>Existe una diferencia crucial: los hábitos responden al &quot;cuándo, dónde y con qué constancia&quot; estudias, mientras que las técnicas responden al &quot;cómo procesas, fijas y aplicas&quot; los conceptos.</p><p>La ciencia de los hábitos (estudiada por autores como James Clear en Hábitos Atómicos) demuestra que el cerebro funciona mediante un bucle de 3 fases: Señal (mismo horario y lugar), Rutina (sesión estructurada de estudio) y Recompensa (satisfacción de cumplir y descanso reconfortante).</p><p>Desarrollar un hábito sólido ahorra fuerza de voluntad. Cuando estudiar a las 17:00 h se convierte en una costumbre fija como cepillarse los dientes, desaparece la desgastante negociación interna de la pereza.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Asocia el estudio a un disparador fijo: por ejemplo, &quot;después de merendar y lavar la taza, me siento inmediatamente&quot;.</li><li>Aplica la regla de los dos minutos: si te cuesta empezar, comprométete a estudiar solo dos minutos; casi siempre continuarás.</li><li>Lleva un registro visual de hábitos (habit tracker) marcando con una cruz los días que cumpliste tu horario fijado.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Creer que memorizar pasivamente leyendo 10 veces una página es una técnica de estudio; no lo es, es una ilusión de competencia.</li><li>Intentar cambiar todos tus hábitos de golpe; es más eficaz consolidar uno durante 3 semanas antes de sumar el siguiente.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (3)</div>
+            <div class="links-grid">
+              
+                <a href="https://www.educaweb.com/contenidos/educativos/tecnicas-estudio/habitos-estudio-clave-exito-academico/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">educaweb.com</span>
+                  <div class="link-name">Educaweb - Hábitos de estudio: la clave del éxito académico</div>
+                  <div class="link-desc">Guía monográfica especializada con las pautas para consolidar rutinas diarias eficaces de estudio.</div>
+                </a>
+                <a href="https://www.unir.net/educacion/revista/tecnicas-de-estudio/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">unir.net</span>
+                  <div class="link-name">UNIR Revista - Técnicas de estudio: tipos y métodos para aprender mejor</div>
+                  <div class="link-desc">Análisis pedagógico de las metodologías activas con mayor respaldo científico para optimizar el aprendizaje.</div>
+                </a>
+                <a href="https://es.wikipedia.org/wiki/H%C3%A1bito_de_estudio" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">wikipedia.org</span>
+                  <div class="link-name">Wikipedia - Hábito de estudio: concepto y bases psicopedagógicas</div>
+                  <div class="link-desc">Articulación teórica de la formación de hábitos escolares y su impacto en el rendimiento escolar.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-3" class="section-card is-main">
+        <div class="section-header">
+          <span class="section-num">3.</span>
+          <span class="section-category">Estudio Individual</span>
+        </div>
+        <h2 class="section-title">Para el estudio individual debes tener en cuenta varios aspectos</h2>
+        <div class="section-summary">El trabajo autónomo en casa o en la biblioteca requiere orquestar el entorno, las fuentes, el tiempo, el método y el autocuidado.</div>
+        <div class="section-body">
+          <p>El estudio individual es el momento donde el alumno pasa de ser un receptor pasivo en clase a ser el constructor activo de su propio saber.</p><p>Para que estas horas rindan al 100%, deben alinearse armónicamente varios pilares: la ergonomía del espacio físico, la fiabilidad de las fuentes bibliográficas, la estricta gestión del tiempo, el método sistemático de procesamiento de información, la estrategia de preparación de pruebas y el control del estrés.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Considera tu sesión de estudio individual como una reunión formal de trabajo: con hora de inicio, objetivos y hora de fin.</li><li>Revisa antes de comenzar que dispones de todo el material para evitar levantarte continuamente.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Estudiar tumbado en la cama o en el sofá; el cerebro asocia esa postura al descanso y disminuye el nivel de alerta cognitiva.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://blogs.uned.es/coie/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">uned.es</span>
+                  <div class="link-name">UNED COIE - Centro de Orientación e Información al Estudiante</div>
+                  <div class="link-desc">Recursos oficiales del Centro de Orientación de la UNED sobre estrategias y autorregulación del estudio individual.</div>
+                </a>
+                <a href="https://www.educaweb.com/contenidos/educativos/tecnicas-estudio/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">educaweb.com</span>
+                  <div class="link-name">Educaweb - Monográfico General de Técnicas de Estudio</div>
+                  <div class="link-desc">Directorio temático con todas las etapas del trabajo autónomo: planificación, síntesis y asimilación.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-3-1" class="section-card is-sub">
+        <div class="section-header">
+          <span class="section-num">3.1.</span>
+          <span class="section-category">Estudio Individual</span>
+        </div>
+        <h2 class="section-title">Cuidar los FACTORES AMBIENTALES</h2>
+        <div class="section-summary">El espacio físico determina directamente la capacidad de atención y la fatiga visual y postural.</div>
+        <div class="section-body">
+          <p>Iluminación: Debe ser preferentemente natural. Si es artificial, combina luz ambiental indirecta con una lámpara flexo focalizada (4000K-5000K, luz neutra) situada a la izquierda si eres diestro (o a la derecha si eres zurdo) para evitar proyectar sombras con la mano.</p><p>Silencio y Ruido: El ruido por encima de 55-60 dB fragmenta la memoria de trabajo. Evita música con letra comprensible en tu idioma nativo; si hay bullicio, utiliza ruido blanco, ruido marrón o bandas sonoras instrumentales.</p><p>Temperatura y Ventilación: La temperatura óptima oscila entre 19 °C y 22 °C. El calor produce somnolencia y el frío dispersión. Ventila la estancia 10 minutos cada dos horas para renovar el oxígeno.</p><p>Ergonomía: Silla con apoyo lumbar firme, pies apoyados en el suelo o reposapiés, rodillas a 90 grados y pantalla o atril a la altura de los ojos para proteger las cervicales.</p><p>Orden visual: Retira del campo visual todo objeto que no pertenezca a la tarea en curso. Pon el smartphone en otra habitación o en modo &quot;No molestar&quot;.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Usa un atril o soporte para libros y tablet; previene contracturas en el cuello y favorece una lectura fluida.</li><li>Ten siempre una botella de agua a mano; una ligera deshidratación reduce la concentración un 12%.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Tener el teléfono con notificaciones sonoras o luminosas al lado de la libreta; produce fatiga por atención dividida continua.</li><li>Estudiar en habitaciones desordenadas; el desorden periférico compite por los recursos atencionales de la corteza visual.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://www.insst.es/materias/ergonomia/pantallas-de-visualizacion" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">insst.es</span>
+                  <div class="link-name">INSST - Ergonomía y Trabajo en Pantallas de Visualización</div>
+                  <div class="link-desc">Guía oficial del Instituto Nacional de Seguridad y Salud en el Trabajo sobre postura, altura de mesa y fatiga visual.</div>
+                </a>
+                <a href="https://www.educaweb.com/contenidos/educativos/tecnicas-estudio/como-crear-espacio-estudio-adecuado/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">educaweb.com</span>
+                  <div class="link-name">Educaweb - Cómo crear un espacio de estudio adecuado</div>
+                  <div class="link-desc">Recomendaciones prácticas sobre iluminación, reducción del ruido y ergonomía para rendir al máximo en casa.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-3-2" class="section-card is-sub">
+        <div class="section-header">
+          <span class="section-num">3.2.</span>
+          <span class="section-category">Estudio Individual</span>
+        </div>
+        <h2 class="section-title">Disponer de las FUENTES DE INFORMACIÓN necesarias</h2>
+        <div class="section-summary">Un buen estudiante no se conforma con la primera respuesta de internet; contrasta en fuentes fiables y académicas.</div>
+        <div class="section-body">
+          <p>Para comprender en profundidad cualquier materia se debe contar con un abanico riguroso de fuentes: el libro de texto oficial, los apuntes contrastados del aula, diccionarios lingüísticos y temáticos, y bibliografía complementaria.</p><p>En el entorno digital, es fundamental aprender a verificar la autoría, la fecha de publicación y el respaldo institucional de las páginas webs consultadas.</p><p>El uso de repositorios académicos abiertos (como Google Académico, Dialnet o bibliotecas universitarias) permite encontrar explicaciones rigurosas, artículos revisados por pares y datos contrastados frente a blogs sin filtrar.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Usa el Diccionario de la RAE (dle.rae.es) para resolver de inmediato cualquier vocablo que no entiendas; un solo término mal comprendido bloquea párrafos enteros.</li><li>Aprende a buscar con operadores booleanos en Google (ej: &quot;fotosíntesis site:.edu&quot; o &quot;filetype:pdf&quot;)</li><li>Consulta la biblioteca de tu centro escolar o biblioteca pública local; ofrecen préstamos digitales y asesoramiento bibliográfico.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Copiar el primer resultado de un foro genérico o de una respuesta sin verificar generada por inteligencia artificial sin contrastar.</li><li>Usar apuntes prestados de otros compañeros sin cotejarlos con el temario oficial del docente.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (4)</div>
+            <div class="links-grid">
+              
+                <a href="https://dle.rae.es" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">dle.rae.es</span>
+                  <div class="link-name">RAE - Diccionario de la Lengua Española (Edición oficial en línea)</div>
+                  <div class="link-desc">Buscador oficial y directo de definiciones normativas, dudas ortográficas y etimología de la Real Academia.</div>
+                </a>
+                <a href="https://dialnet.unirioja.es" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">dialnet.unirioja.es</span>
+                  <div class="link-name">Dialnet - Portal bibliográfico de literatura científica hispana</div>
+                  <div class="link-desc">Buscador directo de artículos, tesis y revistas académicas revisadas de la Universidad de La Rioja.</div>
+                </a>
+                <a href="https://scholar.google.es" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">scholar.google.es</span>
+                  <div class="link-name">Google Académico (Scholar) - Búsqueda de literatura científica</div>
+                  <div class="link-desc">Buscador directo especializado en citas, monografías y artículos revisados por pares en el ámbito académico.</div>
+                </a>
+                <a href="https://bdh.bne.es" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">bdh.bne.es</span>
+                  <div class="link-name">Biblioteca Digital Hispánica (BNE) - Recursos Digitales</div>
+                  <div class="link-desc">Acceso directo a colecciones digitalizadas, documentos históricos y hemeroteca de la Biblioteca Nacional de España.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-3-3" class="section-card is-sub">
+        <div class="section-header">
+          <span class="section-num">3.3.</span>
+          <span class="section-category">Estudio Individual</span>
+        </div>
+        <h2 class="section-title">Hacer una correcta PLANIFICACIÓN DEL TIEMPO</h2>
+        <div class="section-summary">El tiempo no se tiene, se gestiona. La planificación previene los atracones nocturnos y la curva del olvido.</div>
+        <div class="section-body">
+          <p>El éxito académico guarda más relación con la regularidad que con el número bruto de horas. Estudiar 2 horas diarias de lunes a viernes es exponencialmente superior a estudiar 10 horas seguidas el domingo previo al examen.</p><p>La Curva del Olvido de Hermann Ebbinghaus demuestra que en 24 horas perdemos hasta el 70% de lo aprendido si no realizamos un repaso inmediato de 10 minutos. Planificar repasos a las 24 horas, a los 7 días y al mes consolida el recuerdo en la memoria a largo plazo.</p><p>La Técnica Pomodoro (diseñada por Francesco Cirillo) estructura el foco en bloques de 25 minutos de trabajo absoluto e ininterrumpido seguidos de 5 minutos de pausa activa, con un descanso mayor cada 4 bloques.</p><p>La Matriz de Eisenhower te ayuda a discriminar entre tareas Urgentes e Importantes, priorizando siempre la preparación con margen.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Planifica tu semana en una agenda física o digital los domingos por la tarde, reservando horas específicas para el ocio y el deporte.</li><li>Empieza la sesión por la tarea de dificultad media, continúa con la más exigente (cuando el foco está al máximo) y finaliza con la más ligera.</li><li>Aplica descansos reales: en los 5 minutos de pausa, ponte de pie, estira y bebe agua; no abras redes sociales que saturan la vista.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Caer en la &quot;falacia de la planificación&quot;: subestimar el tiempo que llevará una tarea y dejar trabajos complejos para la última noche.</li><li>Estudiar sin descansos durante 4 horas; a partir de los 50 minutos la asimilación cognitiva cae en picado.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (3)</div>
+            <div class="links-grid">
+              
+                <a href="https://pomofocus.io" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">pomofocus.io</span>
+                  <div class="link-name">Pomofocus - Aplicación web oficial del método Pomodoro</div>
+                  <div class="link-desc">Temporizador web directo con intervalos de trabajo de 25 min y descansos cortos/largos.</div>
+                </a>
+                <a href="https://es.wikipedia.org/wiki/Curva_del_olvido" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">wikipedia.org</span>
+                  <div class="link-name">Wikipedia - Curva del olvido de Ebbinghaus y repetición espaciada</div>
+                  <div class="link-desc">Fundamento experimental sobre la tasa de retención mnemónica y el valor de los repasos periódicos.</div>
+                </a>
+                <a href="https://www.ub.edu/portal/web/sae/orientacio" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">ub.edu</span>
+                  <div class="link-name">Universitat de Barcelona (SAE) - Orientación y Gestión del Tiempo</div>
+                  <div class="link-desc">Pautas de orientación académica para estudiantes sobre estructuración de agendas y lucha contra la procrastinación.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-3-4" class="section-card is-sub">
+        <div class="section-header">
+          <span class="section-num">3.4.</span>
+          <span class="section-category">Método Sistemático</span>
+        </div>
+        <h2 class="section-title">Es importante aplicar UN MÉTODO DE ESTUDIO</h2>
+        <div class="section-summary">Un método es un camino estructurado de procesamiento cognitivo: pasar de la visión global a la síntesis y la fijación.</div>
+        <div class="section-body">
+          <p>Estudiar no es sentarse a contemplar pasivamente un libro. Debe seguir una secuencia metódica rigurosa que garantice la comprensión y la asimilación.</p><p>Uno de los métodos clásicos más respetados internacionalmente es el SQ3R (Survey, Question, Read, Recite, Review), desarrollado por Francis P. Robinson en la Universidad Estatal de Ohio.</p><p>En el ámbito hispanohablante, una de las fórmulas más completas es el método EL-SEREM: Exploración, Lectura reflexiva, Subrayado, Esquematización, Resumen, Exposición oral y Memorización activa.</p><p>Seguir estas etapas de forma ordenada transforma el estudio en un proceso activo y participativo donde la comprensión siempre precede a la memorización.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Nunca intentes memorizar antes de haber esquematizado o resumido con tus propias palabras.</li><li>Comprueba que superas cada una de las 6 fases consecutivas (de la 3.4.1 a la 3.4.6) en cada tema de tu asignatura.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Saltarse las fases iniciales de exploración y lectura comprensiva para subrayar de golpe en la primera página.</li><li>Confundir un método de estudio con un truco rápido para aprobar sin esfuerzo.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://es.wikipedia.org/wiki/SQ3R" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">wikipedia.org</span>
+                  <div class="link-name">Wikipedia - Método SQ3R: Explorar, Preguntar, Leer, Recitar y Repasar</div>
+                  <div class="link-desc">Análisis detallado de una de las metodologías de comprensión lectora y estudio más validadas en pedagogía.</div>
+                </a>
+                <a href="https://www.unir.net/educacion/revista/metodos-de-estudio/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">unir.net</span>
+                  <div class="link-name">UNIR Revista - Métodos de estudio: los más eficaces según la ciencia</div>
+                  <div class="link-desc">Artículo detallado sobre el método Robinson SQ3R, Feynman y metodologías activas de aprendizaje.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-3-4-1" class="section-card is-tertiary">
+        <div class="section-header">
+          <span class="section-num">3.4.1.</span>
+          <span class="section-category">Fase del Método</span>
+        </div>
+        <h2 class="section-title">Hacer una LECTURA EXPLORATORIA (Pre-lectura)</h2>
+        <div class="section-summary">Una toma de contacto rápida para activar conocimientos previos y cartografiar mentalmente la estructura del tema.</div>
+        <div class="section-body">
+          <p>La lectura exploratoria o pre-lectura consiste en hojear velozmente el tema en 5 a 10 minutos sin detenerse en los detalles ni intentar memorizar.</p><p>Debes prestar especial atención a: el título del tema, los epígrafes y subtítulos, los párrafos introductorios, las palabras destacadas en negrita o cursiva, los esquemas, tablas, fotografías y el resumen o preguntas finales del libro de texto.</p><p>Esta fase despierta el interés del cerebro, activa lo que ya conocías sobre la materia y crea una &quot;percha mental&quot; donde encajar la información detallada que leerás después.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Convierte mentalmente cada subtítulo en una pregunta: por ejemplo, ante el subtítulo &quot;Causas de la Revolución Francesa&quot;, pregúntate &quot;¿Cuáles fueron esas causas y por qué surgieron?&quot;.</li><li>Observa el índice del tema como si fuera el mapa de una ciudad antes de salir a explorarla.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Ponerse a subrayar con fluorescente durante la lectura exploratoria; aún no sabes qué es lo fundamental y qué es accesorio.</li><li>Tratar de comprender cada frase técnica en este primer barrido; su único propósito es la orientación panorámica.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://es.wikipedia.org/wiki/Lectura_r%C3%A1pida" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">wikipedia.org</span>
+                  <div class="link-name">Wikipedia - Lectura rápida y técnicas de exploración visual</div>
+                  <div class="link-desc">Principios de escaneo rápido (skimming y scanning) para obtener panorámicas de documentos extensos.</div>
+                </a>
+                <a href="https://fundaciongsr.org" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">fundaciongsr.org</span>
+                  <div class="link-name">Fundación Germán Sánchez Ruipérez - Habilidades de lectura activa</div>
+                  <div class="link-desc">Proyectos y publicaciones pedagógicas sobre el fomento de la comprensión y estrategias lectoras en el aula.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-3-4-2" class="section-card is-tertiary">
+        <div class="section-header">
+          <span class="section-num">3.4.2.</span>
+          <span class="section-category">Fase del Método</span>
+        </div>
+        <h2 class="section-title">Continuar con una LECTURA COMPRENSIVA</h2>
+        <div class="section-summary">Lectura atenta, párrafo a párrafo, desentrañando el significado de cada idea y resolviendo cualquier duda de vocabulario.</div>
+        <div class="section-body">
+          <p>La lectura comprensiva es la fase medular del estudio. Se realiza a un ritmo pausado, analizando la coherencia interna de cada párrafo y la relación lógica entre oraciones (causa-efecto, comparación, cronología).</p><p>Si encuentras un término desconocido o una frase confusa, no continúes leyendo hacia adelante: busca el significado inmediatamente en el diccionario o glosario y relee el párrafo.</p><p>Durante esta lectura puedes realizar pequeñas anotaciones marginales a lápiz con preguntas breves o palabras clave que sinteticen cada párrafo (ej: &quot;definición&quot;, &quot;origen&quot;, &quot;crítica&quot;, &quot;ejemplo&quot;).</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Al terminar cada página o sección, levanta la vista y explícate a ti mismo en una sola frase de qué trataba lo que acabas de leer.</li><li>Identifica los conectores del texto (sin embargo, por lo tanto, en consecuencia); son las señales de tráfico que explican la lógica del autor.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>La lectura mecánica: pasar los ojos por encima de las letras mientras piensas en otra cosa; si te ocurre, detente y recupera la atención.</li><li>Ignorar las gráficas, notas a pie de página o cuadros explicativos que suelen contener la clave didáctica del tema.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://cvc.cervantes.es/ensenanza/biblioteca_ele/diccio_ele/diccionario/comprensionlectora.htm" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">cvc.cervantes.es</span>
+                  <div class="link-name">Centro Virtual Cervantes - Diccionario de términos: Comprensión lectora</div>
+                  <div class="link-desc">Definición rigurosa de los procesos cognitivos implicados en la descodificación e interpretación profunda de textos.</div>
+                </a>
+                <a href="https://www.educapeques.com/recursos-para-el-aula/comprension-lectora/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">educapeques.com</span>
+                  <div class="link-name">Educapeques - Recursos y Pautas de Comprensión Lectora</div>
+                  <div class="link-desc">Estrategias paso a paso para extraer ideas principales, hacer inferencias y sintetizar textos de estudio.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-3-4-3" class="section-card is-tertiary">
+        <div class="section-header">
+          <span class="section-num">3.4.3.</span>
+          <span class="section-category">Fase del Método</span>
+        </div>
+        <h2 class="section-title">SUBRAYAR</h2>
+        <div class="section-summary">Destacar únicamente las palabras clave e ideas principales para que el texto resalte a primera vista.</div>
+        <div class="section-body">
+          <p>El subrayado solo debe realizarse tras haber completado la lectura comprensiva. Subrayar antes es como intentar marcar el sendero en la niebla.</p><p>El objetivo del subrayado es que, leyendo exclusivamente las palabras marcadas, el texto mantenga sentido gramatical y coherencia conceptual. Por regla general, no debe subrayarse más del 25% al 30% del texto.</p><p>Código de colores recomendado: utiliza un sistema constante (ejemplo: Amarillo para ideas principales, Verde para conceptos y definiciones técnicas, Rosa o Naranja para datos, fechas, fórmulas y autores clave).</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Subraya sustantivos y verbos potentes; evita marcar artículos, preposiciones y conectores secundarios.</li><li>Usa una regla si te ayuda a mantener la pulcritud visual; un subrayado torcido y caótico cansa la vista.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>El &quot;subrayado arcoíris&quot; o pintar el párrafo entero con fluorescente; si todo está destacado, nada destaca.</li><li>Subrayar libros prestados de bibliotecas públicas o del centro escolar; en esos casos, usa notas adhesivas transparentes.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://www.educaweb.com/contenidos/educativos/tecnicas-estudio/como-subrayar-apuntes/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">educaweb.com</span>
+                  <div class="link-name">Educaweb - Cómo subrayar apuntes y libros de texto correctamente</div>
+                  <div class="link-desc">Guía específica sobre cómo discriminar ideas primarias de secundarias y elegir una paleta de colores coherente.</div>
+                </a>
+                <a href="https://psicologiaymente.com/miscelanea/como-subrayar" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">psicologiaymente.com</span>
+                  <div class="link-name">Psicología y Mente - Cómo subrayar para estudiar y memorizar mejor</div>
+                  <div class="link-desc">Pautas de procesamiento cognitivo para que el subrayado sirva de base sólida para esquemas y resúmenes.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-3-4-4" class="section-card is-tertiary">
+        <div class="section-header">
+          <span class="section-num">3.4.4.</span>
+          <span class="section-category">Fase del Método</span>
+        </div>
+        <h2 class="section-title">Hacer un ESQUEMA</h2>
+        <div class="section-summary">La estructura ósea del tema: una representación gráfica que muestra de un vistazo la jerarquía y relaciones de los conceptos.</div>
+        <div class="section-body">
+          <p>El esquema es la síntesis gráfica del texto subrayado. Permite visualizar con una sola mirada la arquitectura lógica del tema.</p><p>Tipos de esquemas más efectivos: Esquemas de llaves { } (ideales para clasificaciones con pocas subdivisiones), Diagramas arbóreos o de flujo (para procesos secuenciales o cronológicos), y Mapas Conceptuales (propuestos por Joseph Novak, donde los conceptos se unen mediante líneas con palabras de enlace).</p><p>Un buen esquema respeta la regla de la jerarquía visual: el título principal en mayor tamaño a la izquierda o arriba, y los subapartados sangrados hacia la derecha con tipografía descendente.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Emplea una hoja blanca en orientación horizontal (apaisada); el campo visual humano es panorámico y asimila mejor la horizontalidad.</li><li>Deja amplios espacios en blanco entre ramas para que el cerebro no perciba agobio visual y puedas añadir notas posteriores.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Escribir oraciones completas y párrafos dentro del esquema; el esquema debe contener conceptos clave, flechas y símbolos, no párrafos.</li><li>Copiar el esquema de un compañero; el beneficio cognitivo reside en el acto personal de estructurarlo tú mismo.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://www.lucidchart.com/pages/es/que-es-un-mapa-conceptual" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">lucidchart.com</span>
+                  <div class="link-name">Lucidchart - Qué es un mapa conceptual y cómo estructurarlo</div>
+                  <div class="link-desc">Guía gráfica con ejemplos prácticos de mapas conceptuales de Novak, jerarquías y diagramas lógicos.</div>
+                </a>
+                <a href="https://cmap.ihmc.us/cmaptools/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">cmap.ihmc.us</span>
+                  <div class="link-name">CmapTools (IHMC) - Software Oficial para Construcción de Mapas</div>
+                  <div class="link-desc">Página oficial de la herramienta pedagógica del Instituto de Cognición Humana y Máquina para esquemas y mapas.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-3-4-5" class="section-card is-tertiary">
+        <div class="section-header">
+          <span class="section-num">3.4.5.</span>
+          <span class="section-category">Fase del Método</span>
+        </div>
+        <h2 class="section-title">Hacer un RESUMEN</h2>
+        <div class="section-summary">Redactar con tus propias palabras el contenido esencial, logrando una síntesis clara, objetiva y conectada.</div>
+        <div class="section-body">
+          <p>El resumen es la redacción continua que desarrolla las ideas plasmadas en el esquema, utilizando vocabulario propio pero manteniendo con fidelidad científica el rigor del texto original.</p><p>Su extensión recomendada no debe superar la cuarta o tercera parte (25% a 30%) del texto de origen.</p><p>Redactar un resumen te obliga a realizar una paráfrasis mental: si eres capaz de explicar el concepto con tus propias oraciones conectadas mediante nexos lógicos, significa que lo has asimilado profundamente.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Emplea conectores textuales variados: causales (puesto que, debido a), consecutivos (en consecuencia, por ende) y adversativos (no obstante, por el contrario).</li><li>Redacta en tercera persona y con estilo expositivo neutro; no incluyas opiniones personales como &quot;a mí me parece bien&quot;.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Hacer un &quot;resumen Frankenstein&quot;: cortar y pegar frases literales del libro sin hilvanarlas con tu propia redacción.</li><li>Hacer un resumen más largo o farragoso que el propio texto del manual.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://www.wikilengua.org/index.php/Conector" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">wikilengua.org</span>
+                  <div class="link-name">Wikilengua - Tabla y Clasificación de Conectores Textuales</div>
+                  <div class="link-desc">Catálogo de conectores lógicos y discursivos avalados por la FundéuRAE para hilar párrafos con coherencia.</div>
+                </a>
+                <a href="https://www.educaweb.com/contenidos/educativos/tecnicas-estudio/como-hacer-resumen/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">educaweb.com</span>
+                  <div class="link-name">Educaweb - Guía paso a paso para hacer un buen resumen</div>
+                  <div class="link-desc">Instrucciones pedagógicas para sintetizar textos expositivos reduciendo al 25% sin perder las ideas clave.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-3-4-6" class="section-card is-tertiary">
+        <div class="section-header">
+          <span class="section-num">3.4.6.</span>
+          <span class="section-category">Fase del Método</span>
+        </div>
+        <h2 class="section-title">Hay que MEMORIZAR lo estudiado</h2>
+        <div class="section-summary">La consolidación en la memoria a largo plazo mediante recuperación activa, mnemotecnia y repetición espaciada.</div>
+        <div class="section-body">
+          <p>La memoria no es un disco duro pasivo; es una red dinámica que se fortalece cuando le exigimos recordar. Solo se debe memorizar aquello que previamente se ha comprendido y esquematizado.</p><p>Active Recall (Recuperación Activa): Es la técnica con mayor evidencia científica en neuroeducación. Consiste en cerrar el libro y forzarte a recordar y explicar los conceptos en voz alta o escribir una hoja en blanco con todo lo que recuerdes (Brain Dump).</p><p>Reglas Mnemotécnicas: Útiles para listas, fórmulas o datos arbitrarios. Incluyen: Acrónimos (crear una palabra con las iniciales), Método Loci o Palacio de la Memoria (asociar datos a habitaciones de una casa conocida), y la Técnica de Historias (inventar un relato inverosímil con los elementos a recordar).</p><p>Repetición Espaciada (Spaced Repetition): Repasar en intervalos crecientes (1 día, 3 días, 7 días, 21 días) empleando tarjetas de memoria (flashcards o Anki).</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Aplica la técnica Feynman: explícale el tema a un niño de 10 años en términos sencillos; cuando te trabes, ahí está tu laguna de conocimiento.</li><li>Usa tarjetas de memoria (flashcards): escribe la pregunta o concepto en el anverso y la respuesta concisa en el reverso.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>La &quot;ilusión de competencia&quot;: releer los apuntes subrayados y creer que los dominas porque te suenan conocidos.</li><li>Intentar memorizar de memoria mecánica (&quot;como un loro&quot;) sin entender el significado de las palabras.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (3)</div>
+            <div class="links-grid">
+              
+                <a href="https://apps.ankiweb.net" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">apps.ankiweb.net</span>
+                  <div class="link-name">AnkiWeb - Plataforma Oficial de Repetición Espaciada</div>
+                  <div class="link-desc">Software libre multiplataforma para crear tarjetas de memoria y automatizar repasos con algoritmos de retención.</div>
+                </a>
+                <a href="https://psicologiaymente.com/psicologia/reglas-mnemotecnicas" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">psicologiaymente.com</span>
+                  <div class="link-name">Psicología y Mente - Las mejores reglas mnemotécnicas explicadas</div>
+                  <div class="link-desc">Explicación del método de los loci (palacio de la memoria), acrónimos y asociaciones visuales.</div>
+                </a>
+                <a href="https://www.supermemo.com/en/blog/twenty-rules-of-formulating-knowledge" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">supermemo.com</span>
+                  <div class="link-name">SuperMemo - Las 20 Reglas de Oro para Formular Conocimiento</div>
+                  <div class="link-desc">Ensayo clásico del Dr. Piotr Wozniak sobre cómo estructurar conceptos para memorizarlos sin esfuerzo y a largo plazo.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-3-5" class="section-card is-sub">
+        <div class="section-header">
+          <span class="section-num">3.5.</span>
+          <span class="section-category">Estrategia de Exámenes</span>
+        </div>
+        <h2 class="section-title">Debes aprender a preparar LOS EXÁMENES</h2>
+        <div class="section-summary">La preparación de un examen es una carrera de fondo que concluye con simulacros, organización logística y descanso.</div>
+        <div class="section-body">
+          <p>La preparación de una prueba no comienza 48 horas antes, sino semanas atrás con el seguimiento diario de la materia. Los últimos 7 a 10 días se reservan exclusivamente para la consolidación, el repaso cruzado y los simulacros.</p><p>Simulacros reales: Busca exámenes de años anteriores o redacta 5 preguntas potenciales tú mismo. Resuélvelas sin mirar los apuntes y con un cronómetro activado para entrenar la gestión del tiempo y la tolerancia a la presión.</p><p>La víspera del examen: No es momento de aprender temas nuevos. Haz un repaso suave por la mañana con tus esquemas, prepara todo el material (bolígrafos que funcionen, calculadora con pilas, DNI, regla), cena ligero y duerme un mínimo estricto de 8 horas. Durante el sueño REM el cerebro consolida los recuerdos del día.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Haz una lista de posibles preguntas trampa o típicas del profesor basándote en lo que más repitió en clase.</li><li>El día del examen, llega con 15 minutos de antelación y aléjate de los corrillos de compañeros nerviosos que repasan desesperadamente en la puerta.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Pasar la noche anterior en vela a base de café o bebidas energéticas; reduce los reflejos cognitivos y provoca bloqueos mentales en blanco.</li><li>Llegar al examen con material incompleto o averiado (bolígrafo sin tinta, calculadora sin batería permitida).</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://summer.harvard.edu/blog/14-tips-for-test-taking-success/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">harvard.edu</span>
+                  <div class="link-name">Harvard University - 14 Consejos para el Éxito en los Exámenes</div>
+                  <div class="link-desc">Guía oficial de Harvard Summer School con estrategias prácticas para preparar y afrontar exámenes finales.</div>
+                </a>
+                <a href="https://www.educaweb.com/contenidos/educativos/tecnicas-estudio/como-preparar-examenes/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">educaweb.com</span>
+                  <div class="link-name">Educaweb - Pautas y Estrategias para Preparar Exámenes</div>
+                  <div class="link-desc">Recomendaciones para organizar el calendario de estudio previo, evitar bloqueos y rendir al máximo.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-3-6" class="section-card is-sub">
+        <div class="section-header">
+          <span class="section-num">3.6.</span>
+          <span class="section-category">Salud y Rendimiento</span>
+        </div>
+        <h2 class="section-title">A veces es necesario aplicar TÉCNICAS DE RELAJACIÓN</h2>
+        <div class="section-summary">La activación excesiva del sistema simpático bloquea el hipocampo; la respiración y el control mental restablecen el foco.</div>
+        <div class="section-body">
+          <p>Un nivel moderado de tensión es adaptativo y te mantiene alerta (Ley de Yerkes-Dodson), pero cuando la ansiedad se desborda, el cerebro percibe peligro y bloquea el acceso a la memoria de trabajo.</p><p>Respiración diafragmática consciente: Es el freno de mano biológico del cuerpo. Al inhalar expandiendo el abdomen y prolongar la exhalación, se activa el nervio vago y disminuye la frecuencia cardíaca.</p><p>Técnica 4-7-8 (Dr. Andrew Weil): Inhala por la nariz en 4 segundos, mantén el aire en los pulmones durante 7 segundos y exhala lentamente por la boca durante 8 segundos. Realizar 4 ciclos reduce el pico de cortisol.</p><p>Relajación muscular progresiva de Jacobson: Tensar durante 5 segundos y relajar durante 15 segundos grupos musculares específicos (hombros, cuello, mandíbula, puños) para liberar la tensión somatizada.</p><p>Parada del pensamiento: Cuando surjan pensamientos catastrofistas (&quot;me voy a quedar en blanco&quot;, &quot;voy a suspender&quot;), di mentalmente &quot;¡ALTO!&quot;, respira hondo y sustitúyelo por una afirmación objetiva (&quot;Me he preparado, sé hacer esquemas y responderé con calma&quot;).</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Practica las técnicas de respiración durante tus semanas habituales de estudio, no esperes a estar sentado frente a la hoja del examen.</li><li>Realiza una caminata ligera de 20 minutos al aire libre o estiramientos suaves tras sesiones intensas de estudio.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Confundir relajarse con procastinar viendo pantallas o redes sociales con luz azul hiperestimulante.</li><li>Negar los síntomas de ansiedad o intentar acallarlos con cafeína excesiva.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://kidshealth.org/es/teens/test-anxiety.html" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">kidshealth.org</span>
+                  <div class="link-name">Nemours KidsHealth - Ansiedad ante los exámenes: causas y control</div>
+                  <div class="link-desc">Guía clínica juvenil con pautas prácticas para desactivar los síntomas físicos de la ansiedad ante evaluaciones.</div>
+                </a>
+                <a href="https://www.mayoclinic.org/es/diseases-conditions/generalized-anxiety-disorder/expert-answers/test-anxiety/faq-20058195" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">mayoclinic.org</span>
+                  <div class="link-name">Mayo Clinic - Ansiedad en los exámenes: causas y manejo</div>
+                  <div class="link-desc">Orientación médica de la Clínica Mayo sobre respiración, preparación mental y prevención de bloqueos.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-4" class="section-card is-main">
+        <div class="section-header">
+          <span class="section-num">4.</span>
+          <span class="section-category">Trabajo en el Aula</span>
+        </div>
+        <h2 class="section-title">Para el trabajo en clase</h2>
+        <div class="section-summary">El 60% del aprendizaje ocurre en el aula si sabes aprovechar la presencia del profesor y el ritmo de la explicación.</div>
+        <div class="section-body">
+          <p>El aula no es una sala de espera donde pasar el tiempo hasta que suene el timbre; es un laboratorio activo.</p><p>Un alumno que aprovecha al máximo la clase reduce drásticamente el número de horas que necesitará estudiar en casa.</p><p>El trabajo eficaz en el aula se asienta sobre tres vértices: una concentración sostenida, un método ágil y estructurado de toma de apuntes, y la posterior aplicación de estrategias inteligentes durante las pruebas evaluativas.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Siéntate en las primeras filas: reduce las distracciones visuales periféricas y aumenta la interacción con el profesor.</li><li>Lleva los materiales preparados sobre el pupitre antes de que empiece la clase.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Asistir a clase en actitud de espectador pasivo sin bolígrafo en mano.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://www.educaweb.com/contenidos/educativos/tecnicas-estudio/como-tomar-apuntes/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">educaweb.com</span>
+                  <div class="link-name">Educaweb - Cómo aprovechar las explicaciones en clase y tomar notas</div>
+                  <div class="link-desc">Claves para convertir las horas lectivas en tiempo de aprendizaje activo y síntesis personal.</div>
+                </a>
+                <a href="https://psicologiaymente.com/social/escucha-activa" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">psicologiaymente.com</span>
+                  <div class="link-name">Psicología y Mente - Escucha activa: qué es y cómo aplicarla en clase</div>
+                  <div class="link-desc">Pautas para sintonizar con el orador, captar ideas principales y mantener la concentración sostenida.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-4-1" class="section-card is-sub">
+        <div class="section-header">
+          <span class="section-num">4.1.</span>
+          <span class="section-category">Trabajo en el Aula</span>
+        </div>
+        <h2 class="section-title">Es importante una adecuada ATENCIÓN Y CONCENTRACIÓN</h2>
+        <div class="section-summary">La escucha activa es un acto deliberado que requiere contacto visual, postura alerta y participación con sentido.</div>
+        <div class="section-body">
+          <p>La atención en el aula no es pasiva, sino un diálogo mental continuo con quien expone. Escucha no solo las palabras, sino el énfasis, el tono y los gestos del profesor cuando dice &quot;esto es fundamental&quot; o &quot;fijaos bien en este detalle&quot;.</p><p>Mantén una postura erguida con los antebrazos sobre la mesa y la mirada en la pizarra o el docente; la postura corporal retroalimenta directamente el nivel de alerta del sistema reticular ascendente.</p><p>Aprende a formular dudas en el momento oportuno: no te quedes nunca con una duda por vergüenza; si tú no la entiendes, la mitad de la clase probablemente tampoco.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Guarda el teléfono móvil apagado en la mochila; tenerlo en el bolsillo o sobre la mesa reduce la capacidad cognitiva disponible.</li><li>Si te distraes fácilmente, busca compañeros que compartan tu compromiso de atender y evita sentarte cerca de focos de dispersión.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Fingir que atiendes mientras miras por la ventana o dibujas en el margen; es una trampa que te robará tiempo libre en casa.</li><li>Avergonzarte de levantar la mano para pedir que repitan una explicación técnica.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://psicologiaymente.com/psicologia/como-mejorar-concentracion" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">psicologiaymente.com</span>
+                  <div class="link-name">Psicología y Mente - 10 Claves para Mejorar la Concentración</div>
+                  <div class="link-desc">Técnicas cognitivas para modular el foco de atención, erradicar la multitarea y evitar distracciones.</div>
+                </a>
+                <a href="https://www.educaweb.com/contenidos/educativos/tecnicas-estudio/como-concentrarse-estudiar/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">educaweb.com</span>
+                  <div class="link-name">Educaweb - Pautas para evitar la dispersión y concentrarse al estudiar</div>
+                  <div class="link-desc">Consejos para entrenar el músculo de la atención frente a la fatiga y estímulos distractores.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-4-2" class="section-card is-sub">
+        <div class="section-header">
+          <span class="section-num">4.2.</span>
+          <span class="section-category">Trabajo en el Aula</span>
+        </div>
+        <h2 class="section-title">Es muy conveniente la TOMA DE APUNTES en clase</h2>
+        <div class="section-summary">Tomar notas no es transcribir como un taquígrafo; es filtrar, sintetizar y registrar la esencia de la explicación.</div>
+        <div class="section-body">
+          <p>Tomar apuntes a mano activa circuitos sensoriomotores que favorecen la retención mucho más que teclear en una pantalla.</p><p>El Método Cornell (creado por Walter Pauk): divide la hoja en 3 secciones: 1) Columna derecha ancha para las notas y explicaciones durante la clase; 2) Columna izquierda estrecha (Ideas clave / Preguntas clave añadidas al repasar); y 3) Franja inferior para el resumen en 3 o 4 líneas.</p><p>Desarrolla tu propio sistema de símbolos y abreviaturas universales: &quot;+&quot; (más/además), &quot;=&quot; (igual/significa), &quot;≠&quot; (distinto), &quot;↑&quot; (aumento/mejora), &quot;↓&quot; (descenso), &quot;p. ej.&quot; (por ejemplo), &quot;imp.&quot; (importante), &quot;vs.&quot; (frente a).</p><p>Deja amplios márgenes y espacios en blanco entre ideas para poder añadir aclaraciones del libro más tarde.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Encabeza siempre cada hoja con fecha, asignatura, número de tema y página (ej: 08/10 - Historia - Tema 3 - Pág. 1).</li><li>Revisa tus apuntes el mismo día por la tarde durante 5 minutos para aclarar letras dudosas y completar ideas inconclusas mientras las tienes frescas.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Intentar copiar palabra por palabra lo que dice el profesor; te quedarás atrás y dejarás de escuchar la explicación.</li><li>Escribir en hojas sueltas sin numerar ni fechar que luego terminan extraviadas en el fondo de la mochila.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://lsc.cornell.edu/how-to-study/cornell-note-taking-system/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">cornell.edu</span>
+                  <div class="link-name">Cornell University (LSC) - The Cornell Note-Taking System oficial</div>
+                  <div class="link-desc">Página original de la Universidad de Cornell con explicaciones detalladas y plantillas del método Cornell.</div>
+                </a>
+                <a href="https://www.educaweb.com/contenidos/educativos/tecnicas-estudio/como-tomar-apuntes/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">educaweb.com</span>
+                  <div class="link-name">Educaweb - Consejos y abreviaturas para la toma de apuntes</div>
+                  <div class="link-desc">Guía práctica para estructurar libretas, emplear símbolos y codificar notas durante las lecciones.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-4-3" class="section-card is-sub">
+        <div class="section-header">
+          <span class="section-num">4.3.</span>
+          <span class="section-category">Estrategia de Exámenes</span>
+        </div>
+        <h2 class="section-title">Consejos para la REALIZACIÓN DE LOS EXÁMENES</h2>
+        <div class="section-summary">La ejecución del examen es una prueba técnica: lectura previa de enunciados, reparto milimétrico del tiempo y revisión.</div>
+        <div class="section-body">
+          <p>El momento de la verdad requiere calma y método táctico:</p><p>1. Lectura panorámica inicial: Dedica los primeros 3 a 5 minutos a leer TODAS las preguntas completas antes de escribir una sola línea. A menudo la pregunta 4 da pistas sobre la 2.</p><p>2. Distribución del tiempo: Si el examen dura 60 minutos y tiene 4 preguntas de igual valor, asigna 12 minutos a cada una, reservando 5 al inicio para planificar y 7 al final para revisar.</p><p>3. Empieza por tu punto fuerte: Responde en primer lugar la pregunta que mejor te sabes. Esto aporta una inyección inmediata de autoconfianza, suma puntos seguros y reduce la ansiedad.</p><p>4. Subraya las palabras operativas del enunciado: &quot;compara&quot;, &quot;define&quot;, &quot;enumera&quot;, &quot;justifica&quot;, &quot;calcula&quot;. Responder lo que no te han pedido es una causa habitual de notas bajas.</p><p>5. Presentación y claridad: Letra legible, márgenes limpios, oraciones bien estructuradas y párrafos diferenciados. Un examen visualmente atractivo predispone positivamente al corrector.</p><p>6. Relectura final obligatoria: Antes de entregar, revisa ortografía, concordancia, signos matemáticos y unidades de medida.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Si te bloqueas con una pregunta difícil, no te quedes atascado: escribe un asterisco en el margen y pasa a la siguiente; el cerebro continuará procesándola en segundo plano.</li><li>Lleva tu propio reloj de pulsera analógico sobre la mesa para no depender de mirar el móvil (que suele estar prohibido).</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Empezar a escribir compulsivamente en el segundo uno sin haber entendido el alcance de la pregunta.</li><li>Entregar el examen el primero para salir deprisa sin haber revisado con lupa cada respuesta.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://www.educaweb.com/contenidos/educativos/tecnicas-estudio/consejos-afrontar-examenes/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">educaweb.com</span>
+                  <div class="link-name">Educaweb - Claves para afrontar el examen: tiempo, lectura y revisión</div>
+                  <div class="link-desc">Tácticas de gestión del tiempo, interpretación de preguntas clave y control de nervios en el aula.</div>
+                </a>
+                <a href="https://psicologiaymente.com/desarrollo/trucos-para-aprobar-examenes" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">psicologiaymente.com</span>
+                  <div class="link-name">Psicología y Mente - Claves tácticas durante la realización del examen</div>
+                  <div class="link-desc">Estrategias de resolución para exámenes tipo test y preguntas de desarrollo largo.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-5" class="section-card is-main">
+        <div class="section-header">
+          <span class="section-num">5.</span>
+          <span class="section-category">Competencias Complementarias</span>
+        </div>
+        <h2 class="section-title">Otras técnicas</h2>
+        <div class="section-summary">Herramientas esenciales que complementan el estudio diario: orden material, expresión escrita formal y cooperación.</div>
+        <div class="section-body">
+          <p>El rendimiento académico no depende únicamente de memorizar conceptos para una prueba escrita. Las competencias transversales definen al estudiante autónomo y maduro.</p><p>El orden del soporte físico (el cuaderno de clase), la capacidad de redactar monografías e informes de investigación con rigor formal, y la habilidad de cooperar en equipo son competencias que te acompañarán durante toda tu trayectoria profesional.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Valora cada trabajo escrito y cada trabajo en equipo como una oportunidad de desarrollar habilidades del mundo laboral real.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Considerar que el cuaderno y los trabajos escritos tienen un valor secundario frente a los exámenes.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://educagob.educacion.gob.es/curriculo/competencias-clave.html" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">educagob.educacion.gob.es</span>
+                  <div class="link-name">Ministerio de Educación (Educagob) - Marco de Competencias Clave</div>
+                  <div class="link-desc">Marco pedagógico oficial de competencias ciudadanas, lingüísticas y de trabajo colaborativo en España.</div>
+                </a>
+                <a href="https://www.educaweb.com/contenidos/educativos/tecnicas-estudio/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">educaweb.com</span>
+                  <div class="link-name">Educaweb - Recursos y habilidades académicas transversales</div>
+                  <div class="link-desc">Artículos sobre organización del tiempo, redacción y metodologías complementarias de estudio.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-5-1" class="section-card is-sub">
+        <div class="section-header">
+          <span class="section-num">5.1.</span>
+          <span class="section-category">Competencias Complementarias</span>
+        </div>
+        <h2 class="section-title">La ORGANIZACIÓN DEL CUADERNO de la asignatura</h2>
+        <div class="section-summary">Tu cuaderno es tu herramienta principal: debe reflejar orden mental a través del orden visual y la estructura.</div>
+        <div class="section-body">
+          <p>El cuaderno de una materia es el reflejo directo del orden de pensamiento del alumno. Un cuaderno desordenado, con hojas sueltas y sin fechas es casi imposible de usar para repasar.</p><p>Elementos indispensables de un cuaderno excelente:</p><p>1. Portada clara: Con nombre, apellidos, curso, grupo, asignatura y año lectivo.</p><p>2. Índice inicial paginado: Donde registrar cada unidad didáctica y su página de inicio.</p><p>3. Paginación: Todas las hojas deben estar numeradas en la esquina superior o inferior externa.</p><p>4. Márgenes generosos: Respetar 2-3 cm de margen izquierdo y 1-2 cm de margen derecho para anotaciones o correcciones del profesor.</p><p>5. Jerarquía cromática constante: Títulos en azul/negro oscuro, subtítulos con un toque de color, enunciados y fechas diferenciadas.</p><p>6. Corrección visible: Las actividades corregidas en clase deben marcarse con una marca de verificación verde o rehacerse en rojo para identificar en qué se falló.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Si utilizas archivador de anillas con hojas extraíbles, compra separadores plásticos de colores para cada unidad y no acumules hojas arrugadas.</li><li>Nunca arranques hojas de un cuaderno encuadernado en espiral o grapado; desestructura el cosido y transmite dejadez.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Mezclar apuntes de diferentes asignaturas en el mismo cuaderno sin separador.</li><li>Usar tipografías diminutas o tachones descuidados; si te equivocas, traza una sola línea limpia sobre la palabra errónea.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://www.uncomo.com/educacion/articulo/como-organizar-un-cuaderno-para-estudiar-23910.html" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">uncomo.com</span>
+                  <div class="link-name">unCOMO - Cómo organizar un cuaderno para estudiar (Márgenes, orden y color)</div>
+                  <div class="link-desc">Guía práctica sobre separación de materias, márgenes limpios, codificación de colores y fechas.</div>
+                </a>
+                <a href="https://www.educapeques.com/recursos-para-el-aula/pautas-para-organizar-el-cuaderno.html" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">educapeques.com</span>
+                  <div class="link-name">Educapeques - Pautas de limpieza, márgenes y presentación de cuadernos</div>
+                  <div class="link-desc">Consejos escolares para mantener libretas claras, ordenadas y atractivas para el repaso.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-5-2" class="section-card is-sub">
+        <div class="section-header">
+          <span class="section-num">5.2.</span>
+          <span class="section-category">Competencias Complementarias</span>
+        </div>
+        <h2 class="section-title">Cómo ELABORAR UN TRABAJO ESCRITO</h2>
+        <div class="section-summary">La estructura de investigación académica: portada, índice, introducción, desarrollo, conclusiones y bibliografía en formato APA.</div>
+        <div class="section-body">
+          <p>Elaborar una monografía o trabajo monográfico exige rigor formal y honestidad intelectual. Debe estructurarse siempre bajo el estándar académico internacional:</p><p>1. Portada formal: Título conciso y sugerente, subtítulo explicativo, nombre del autor/a, asignatura, nombre del profesor/tutor y fecha de entrega.</p><p>2. Índice automático o paginado: Con todos los epígrafes numerados y su número de página correspondiente.</p><p>3. Introducción: Justificación del tema, objetivos que persigue el trabajo, metodología empleada y breve descripción de las partes.</p><p>4. Desarrollo o Cuerpo: Los diferentes capítulos ordenados de forma lógica. Cada apartado debe aportar argumentos, datos y citas bibliográficas.</p><p>5. Conclusiones: Síntesis de los hallazgos principales, respuesta a los objetivos planteados y posibles líneas abiertas para futuras investigaciones.</p><p>6. Bibliografía y Fuentes: Listado alfabético completo de todas las obras consultadas siguiendo un formato normalizado (como las Normas APA 7ª edición).</p><p>Honestidad académica: El plagio (copiar y pegar sin citar) anula cualquier trabajo. Cuando tomes una idea ajena, parafraséala citando al autor o ponla entre comillas si es cita literal.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Aplica el formato tipográfico estándar: Tipografía legible (Times New Roman 12 pt, Arial 11 pt o Calibri 11 pt), interlineado 1.5, texto justificado y márgenes de 2.54 cm.</li><li>Revisa la ortografía con corrector automático y realiza una lectura en voz alta para detectar oraciones excesivamente largas o confusas.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Copiar párrafos enteros de Wikipedia o internet sin atribuir la fuente original.</li><li>Escribir conclusiones que son una simple copia de la introducción en lugar de una reflexión razonada sobre lo descubierto.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (2)</div>
+            <div class="links-grid">
+              
+                <a href="https://normas-apa.org/introduccion/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">normas-apa.org</span>
+                  <div class="link-name">Guía Oficial Normas APA 7ª Edición - Estructura, Formato y Portada</div>
+                  <div class="link-desc">Referencia oficial en español sobre estructura de monografías, márgenes, tipo de letra y citas en el texto.</div>
+                </a>
+                <a href="https://biblioteca.ucm.es/guias-citar" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">ucm.es</span>
+                  <div class="link-name">UCM Biblioteca - Guía Práctica para Citar y Elaborar Bibliografías</div>
+                  <div class="link-desc">Manual de la Universidad Complutense sobre honestidad académica, citas textuales y prevención del plagio.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+
+      <article id="sec-5-3" class="section-card is-sub">
+        <div class="section-header">
+          <span class="section-num">5.3.</span>
+          <span class="section-category">Competencias Complementarias</span>
+        </div>
+        <h2 class="section-title">La técnica del TRABAJO EN EQUIPO</h2>
+        <div class="section-summary">Cooperar no es repartirse el trabajo y juntar trozos inconexos; es construir un resultado sinérgico mediante roles y comunicación.</div>
+        <div class="section-body">
+          <p>Trabajar en equipo es una de las habilidades más demandadas en el mundo universitario y profesional. Hay una gran diferencia entre &quot;trabajo en grupo&quot; (donde cada uno hace su parte sin hablar y queda un mosaico inconexo) y &quot;trabajo cooperativo&quot; (donde todos comprenden y aportan al conjunto).</p><p>Roles funcionales sugeridos:</p><p>• Coordinador/a: Modera las reuniones, vela por los plazos de entrega y distribuye tareas equitativamente.</p><p>• Secretario/a o Redactor/a: Toma actas de los acuerdos y vela por la coherencia lingüística y el estilo único del documento final.</p><p>• Revisor/a o Control de Calidad: Verifica que se cumplan las rúbricas de evaluación del docente y la rigurosidad de las citas.</p><p>• Portavoz: En caso de exposición oral o comunicación de dudas con el profesorado.</p><p>Herramientas colaborativas: Utilizad plataformas en la nube (Google Docs/Drive, Notion, Trello, Miro) que permitan edición simultánea y control de versiones con historial de cambios.</p><p>Comunicación Asertiva: Abordad los desacuerdos desde el respeto a las ideas, no el ataque personal. Si un compañero tiene dificultades, el equipo le apoya para solventarlas.</p>
+        </div>
+        <div class="grid-boxes">
+            <div class="box-tips">
+            <h4>Claves Prácticas</h4>
+            <ul>
+              <li>Celebrad una reunión inicial para fijar un calendario de entregas intermedias (milestones) antes de la fecha límite final.</li><li>Al terminar el trabajo, todos los integrantes del equipo deben leer y entender el documento entero, ya que cualquiera puede ser preguntado por el docente.</li>
+            </ul>
+          </div>
+            <div class="box-pitfalls">
+            <h4>Errores a Evitar</h4>
+            <ul>
+              <li>Dejar que una sola persona cargue con el 90% del trabajo mientras los demás figuran solo en la portada (efecto polizón).</li><li>Juntar partes con formatos, fuentes tipográficas y estilos literarios distintos la noche antes de la entrega sin homogeneizar.</li>
+            </ul>
+          </div>
+          </div>
+        <div class="links-container">
+            <div class="links-title">🌐 Recursos y Enlaces Web Recomendados (3)</div>
+            <div class="links-grid">
+              
+                <a href="https://www.belbin.es/los-9-roles-belbin/ " target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">belbin.es</span>
+                  <div class="link-name">Belbin España - Definición y Características de los 9 Roles de Equipo</div>
+                  <div class="link-desc">Explicación oficial de la metodología Belbin sobre fortalezas complementarias para el trabajo grupal exitoso.</div>
+                </a>
+                <a href="https://www.edutopia.org/topic/cooperative-learning/" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">edutopia.org</span>
+                  <div class="link-name">Edutopia - Estrategias y Recursos de Aprendizaje Cooperativo</div>
+                  <div class="link-desc">Artículos y pautas prácticas de la fundación educativa de George Lucas sobre dinámicas de equipo en el aula.</div>
+                </a>
+                <a href="https://asana.com/es/resources/belbin-team-roles" target="_blank" rel="noopener noreferrer" class="link-card">
+                  <span class="link-domain">asana.com</span>
+                  <div class="link-name">Asana Guías - Roles de Equipo de Belbin: Cómo organizarse en grupo</div>
+                  <div class="link-desc">Manual paso a paso sobre cómo repartir funciones de planificación, análisis y ejecución en proyectos en equipo.</div>
+                </a>
+            </div>
+          </div>
+      </article>
+    </main>
+  </div>
+
+  <footer>
+    <p><strong>Guía Metodológica de Hábitos y Técnicas de Estudio</strong></p>
+    <p>Documento formativo e interactivo diseñado para estudiantes y docentes.</p>
+  </footer>
+
+</body>
+</html>
