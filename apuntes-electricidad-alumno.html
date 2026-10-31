@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instalaciones eléctricas · Cuaderno de apuntes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Concepto: cuaderno técnico sobre papel cuadriculado. Violeta de las diapositivas como tinta,
+   marcador amarillo para los huecos y una pastilla de color por apartado, como en el índice original. */
+:root{
+  --paper:#f5f6fb; --card:#ffffff; --ink:#1c2233; --muted:#5b6479; --line:#d7dbe8; --grid:#e9ecf5;
+  --accent:#5a3d9a; --accent-soft:#ece6fa; --on-accent:#ffffff;
+  --gapbg:#fff3bd; --gapline:#c49a00; --ok:#1f7a4d; --ok-soft:#d8f1e3; --bad:#b3302f; --bad-soft:#fbdcdc;
+  --b1:#e6d9ff; --b2:#ffdcc0; --b3:#c9e6ee; --b4:#fbd9f5; --b5:#d6efd3; --b6:#f6f0cf; --b7:#ffd0d0;
+  --f-display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --f-mono:ui-monospace,"JetBrains Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#141620; --card:#1d2030; --ink:#e8eaf3; --muted:#9aa2b8; --line:#32374c; --grid:#1b1e2b;
+  --accent:#b9a0f4; --accent-soft:#2b2447; --on-accent:#17102b;
+  --gapbg:#3b3415; --gapline:#e0b93a; --ok:#6fd49c; --ok-soft:#173a29; --bad:#ff8f8c; --bad-soft:#431b1b;
+  --b1:#3a2d63; --b2:#5a3a20; --b3:#1f4553; --b4:#58305a; --b5:#2c4a2a; --b6:#4f4a1f; --b7:#5a2626; color-scheme:dark}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
+body{margin:0;background:var(--paper);color:var(--ink);font:1.0625rem/1.65 var(--f-body);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px}
+.wrap{max-width:56rem;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:0 4rem}
+
+/* barra de herramientas */
+.toolbar{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line)}
+.toolbar .in{max-width:56rem;margin:0 auto;padding:.55rem 16px;display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.toolbar .sp{flex:1 1 1rem}
+.tag{font-weight:700;color:var(--bad)}
+.stat{font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.btn{display:inline-flex;align-items:center;gap:.4rem;font:700 .9rem/1 var(--f-body);padding:.6rem .85rem;border-radius:8px;
+  border:1.5px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;text-decoration:none}
+.btn:hover{background:var(--accent-soft)}
+.btn.primary{background:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn[aria-pressed="true"]{background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.btn:focus-visible,.gap:focus-visible,textarea:focus-visible,.vin:focus-visible,.meta input:focus-visible,.toc a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* cabecera */
+.hero{padding-block:2.5rem 1.5rem}
+.hero .kick{font:700 .8rem/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.hero h1{font:800 clamp(2.2rem,7vw,3.6rem)/1.02 var(--f-display);margin:.5rem 0 1.25rem;color:var(--accent);text-wrap:balance}
+.meta{display:grid;grid-template-columns:2fr 1fr 1fr;gap:1rem}
+.meta label{display:flex;flex-direction:column;gap:.15rem;font-size:.8rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;min-width:0}
+.meta input{font:1.05rem var(--f-body);color:var(--ink);background:transparent;border:0;border-bottom:2px solid var(--ink);padding:.3rem .1rem;border-radius:0;min-width:0;width:100%}
+.howto{margin:1.5rem 0 0;padding:.9rem 1.1rem;background:var(--card);border:1px solid var(--line);border-radius:10px;font-size:.98rem}
+.howto b{color:var(--accent)}
+.gap-demo{display:inline-block;width:5ch;height:1.1em;vertical-align:-.2em;background:var(--gapbg);border-bottom:2px solid var(--gapline);border-radius:3px 3px 0 0}
+
+/* índice */
+.toc{list-style:none;margin:1.5rem 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem 1rem}
+.toc a{display:flex;align-items:center;gap:.7rem;padding:.55rem .9rem;border-radius:999px;background:var(--tono);color:var(--ink);text-decoration:none;font-weight:700;font-size:.95rem;min-width:0}
+.toc a span{flex:none;display:grid;place-items:center;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--card);font-size:.8rem}
+.toc a:hover{filter:brightness(.96)}
+
+/* secciones */
+.sec{margin-top:2.5rem;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4rem 1.5rem 1.6rem}
+.sh{display:flex;align-items:center;gap:.9rem;margin-bottom:.6rem}
+.num{flex:none;display:grid;place-items:center;width:2.6rem;height:2.6rem;border-radius:50%;background:var(--tono);font:800 1.2rem var(--f-display);color:var(--ink)}
+h2{font:800 clamp(1.4rem,4.2vw,1.95rem)/1.15 var(--f-display);margin:0;text-wrap:balance}
+h3{font:700 1.15rem/1.3 var(--f-display);margin:1.6rem 0 .4rem;color:var(--accent);text-wrap:balance;break-after:avoid}
+p{margin:.5rem 0;max-width:68ch}
+ul{margin:.5rem 0;padding-left:1.3rem}
+li{margin:.35rem 0}
+.tw{overflow-x:auto;margin:.8rem 0}
+table{border-collapse:collapse;width:100%;font-size:1rem}
+th,td{border:1px solid var(--line);padding:.5rem .7rem;text-align:left;vertical-align:middle}
+th{background:var(--accent-soft);font-weight:700;color:var(--ink)}
+td:first-child{font-weight:700}
+
+/* huecos */
+.gap{font:inherit;color:var(--ink);background:var(--gapbg);border:0;border-bottom:2px solid var(--gapline);border-radius:3px 3px 0 0;
+  padding:0 .2em;margin:0 .1em;text-align:center;max-width:100%;min-width:3.5ch;vertical-align:baseline}
+.gap.ok{background:var(--ok-soft);border-bottom-color:var(--ok)}
+.gap.bad{background:var(--bad-soft);border-bottom-color:var(--bad)}
+.gap[readonly]{color:var(--accent);font-weight:700}
+
+/* texto libre */
+.libre{display:block;margin:1.2rem 0 .4rem}
+.libre span{display:block;font-weight:700;margin-bottom:.35rem}
+textarea{width:100%;font:1.05rem/1.9rem var(--f-body);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:.35rem .8rem;resize:vertical;
+  background:repeating-linear-gradient(transparent 0 calc(1.9rem - 1px),var(--line) calc(1.9rem - 1px) 1.9rem);background-color:var(--card);background-attachment:local;overflow:hidden}
+
+/* imágenes y esquemas */
+.imgslot{margin:1.2rem 0 .4rem}
+.imgslot figcaption{font-weight:700;margin-bottom:.35rem}
+.imgbox{position:relative;min-height:var(--alto);border:2px dashed var(--line);border-radius:10px;display:grid;place-items:center;padding:.6rem}
+.imgbox img{max-width:100%;max-height:34rem;display:block;border-radius:6px}
+.imgph{display:flex;flex-direction:column;align-items:center;gap:.6rem;color:var(--muted)}
+.quitar{position:absolute;top:.5rem;right:.5rem;background:var(--card)}
+.imgbox.has{border-style:solid;min-height:0}
+
+/* vídeos */
+.video{margin:1.2rem 0;border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem;background:var(--paper)}
+.vhead{display:flex;gap:.75rem;align-items:flex-start}
+.tri{flex:none;width:2.4rem;height:1.7rem;border-radius:7px;background:#d92d20;position:relative;margin-top:.15rem}
+.tri::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-35%,-50%);border-left:.6rem solid #fff;border-top:.38rem solid transparent;border-bottom:.38rem solid transparent}
+.vt{display:block;line-height:1.3}
+.vch{display:block;font-size:.88rem;color:var(--muted)}
+.vframe{margin-top:.8rem;aspect-ratio:16/9;max-width:100%;border-radius:8px;overflow:hidden;background:#000}
+.vframe iframe{width:100%;height:100%;border:0;display:block}
+.vctl{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem;align-items:center}
+.vin{flex:1 1 14rem;min-width:0;font:.95rem var(--f-body);color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:8px;padding:.55rem .7rem}
+.vprint{font:.85rem var(--f-mono);word-break:break-all;margin:.6rem 0 0;color:var(--muted)}
+.vnote{font-size:.85rem;color:var(--muted);margin:.5rem 0 0}
+
+.foot{margin-top:2.5rem;font-size:.9rem;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:1.2rem;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:.6rem 1rem;border-radius:8px;font-size:.92rem;z-index:30;max-width:calc(100vw - 32px)}
+[hidden]{display:none!important}
+
+@media (max-width:640px){
+  .meta{grid-template-columns:1fr}
+  .toc{grid-template-columns:1fr}
+  .sec{padding:1.1rem 1rem 1.3rem}
+  .btn{padding:.6rem .7rem}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* ---------- impresión: papel blanco, tinta oscura, huecos subrayados ---------- */
+@page{size:A4;margin:14mm 14mm 16mm}
+@media print{
+  :root,:root[data-theme="dark"]{--paper:#fff;--card:#fff;--ink:#111;--muted:#444;--line:#999;--grid:#fff;--accent:#3b2a6b;--accent-soft:#eee;
+    --gapbg:transparent;--gapline:#111;--b1:#e6d9ff;--b2:#ffdcc0;--b3:#c9e6ee;--b4:#fbd9f5;--b5:#d6efd3;--b6:#f6f0cf;--b7:#ffd0d0;color-scheme:light}
+  body{background:#fff;font-size:10.5pt;line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .toolbar,.howto,.toc,.vctl,.vframe,.imgph .btn,.quitar,.toast,.foot{display:none!important}
+  .wrap{max-width:none;padding:0}
+  .hero{padding-block:0 .6rem}
+  .sec{border:0;border-radius:0;padding:0;margin-top:1.2rem}
+  .sec>.sh{break-after:avoid}
+  .gap,.gap.ok,.gap.bad{background:transparent;border-bottom:1px solid #111;border-radius:0}
+  .gap[readonly]{color:#3b2a6b}
+  table,.video,.imgslot,.libre,li,p{break-inside:avoid}
+  th{background:#eee!important}
+  textarea{border:1px solid #999;background:repeating-linear-gradient(transparent 0 calc(1.9rem - 1px),#bbb calc(1.9rem - 1px) 1.9rem);overflow:visible}
+  .imgbox{border:1.5px dashed #888;min-height:var(--alto)}
+  .imgph span{display:none}
+  .video{background:#fff;border-color:#999}
+  .vprint{color:#111}
+}
+</style>
+</head>
+<body>
+<div class="toolbar" role="toolbar" aria-label="Herramientas del cuaderno">
+  <div class="in">
+    <button class="btn primary" id="btn-check" type="button">Comprobar</button>
+    
+    <button class="btn" id="btn-print" type="button">Imprimir / guardar PDF</button>
+    <span class="sp"></span>
+    <span class="stat" id="stat" aria-live="polite"></span>
+    <button class="btn" id="btn-exp" type="button">Guardar copia</button>
+    <label class="btn">Cargar copia<input type="file" id="file-imp" accept="application/json,.json" hidden></label>
+    <button class="btn" id="btn-reset" type="button">Borrar todo</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="kick">Cuaderno de apuntes</div>
+    <h1>Instalaciones eléctricas</h1>
+    <div class="meta">
+      <label>Nombre<input id="nombre" type="text" autocomplete="name"></label>
+      <label>Curso<input id="curso" type="text"></label>
+      <label>Fecha<input id="fecha" type="text" placeholder="dd/mm/aaaa"></label>
+    </div>
+    <p class="howto"><b>Cómo funciona.</b> Completa los huecos <span class="gap-demo" aria-hidden="true"></span> con las palabras que faltan, pulsa <b>Comprobar</b> para ver qué has acertado y añade tus propios dibujos o imágenes. Todo se guarda solo en este navegador. Para terminar, <b>Imprimir / guardar PDF</b> y elige «Guardar como PDF».</p>
+    <ol class="toc" aria-label="Índice"><li style="--tono:var(--b1)"><a href="#s1"><span>1</span>Ideas previas</a></li><li style="--tono:var(--b2)"><a href="#s2"><span>2</span>Producción y transporte</a></li><li style="--tono:var(--b3)"><a href="#s3"><span>3</span>Acometida e instalación de enlace</a></li><li style="--tono:var(--b4)"><a href="#s4"><span>4</span>Esquema de la instalación de enlace</a></li><li style="--tono:var(--b5)"><a href="#s5"><span>5</span>Elementos de la instalación de enlace</a></li><li style="--tono:var(--b6)"><a href="#s6"><span>6</span>Cuadro general de mando y protección (CGMP)</a></li><li style="--tono:var(--b7)"><a href="#s7"><span>7</span>Interruptor de control de potencia</a></li><li style="--tono:var(--b1)"><a href="#s8"><span>8</span>IG / PIA / ID</a></li><li style="--tono:var(--b2)"><a href="#s9"><span>9</span>Electrificación básica</a></li><li style="--tono:var(--b3)"><a href="#s10"><span>10</span>Cableado</a></li></ol>
+  </header>
+
+  <main>
+<section class="sec" id="s1" style="--tono:var(--b1)"><header class="sh"><span class="num">1</span><h2>Ideas previas</h2></header><h3>Magnitudes eléctricas</h3>
+<div class="tw"><table><thead><tr><th scope='col'>Magnitud</th><th scope='col'>Símbolo</th><th scope='col'>Unidad</th><th scope='col'>Instrumento de medida</th></tr></thead><tbody><tr><td>Intensidad</td><td>I</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5390007688228766,4390198861036590,5368154436228575" data-s="1" style="width:10ch"></td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="212006762250164" data-s="2" style="width:13ch"></td></tr><tr><td>Tensión</td><td>V</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2004134390103998,1218437382029739,7871089079440285" data-s="3" style="width:9ch"></td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3140864888714651" data-s="4" style="width:12ch"></td></tr><tr><td>Resistencia</td><td>R</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="8508508001824306,5916110502936517,5319119399374885" data-s="5" style="width:8ch"></td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="6542435101109615,8559773768525473" data-s="6" style="width:11ch"></td></tr></tbody></table></div>
+<p>Con un <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="59008989106103,4055462511620255,5151404965850063" data-s="7" style="width:12ch"> podemos medir las tres magnitudes con un solo aparato.</p>
+<h3>Ley de Ohm</h3>
+<ul><li>V = <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="7929297801672961" data-s="8" style="width:4ch"> × <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="6397656199650645" data-s="9" style="width:4ch"></li><li>I = <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5759617570818611" data-s="10" style="width:4ch"> / <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4094015256195214" data-s="11" style="width:4ch"></li><li>R = <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="243530538881798" data-s="12" style="width:4ch"> / <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4853083549018746" data-s="13" style="width:4ch"></li></ul>
+<figure class="imgslot"><figcaption>Dibuja aquí el triángulo de la ley de Ohm</figcaption><div class="imgbox" style="--alto:38mm"><img alt="" hidden><div class="imgph"><span>Dibuja aquí o añade una imagen</span><label class="btn">Añadir imagen<input type="file" accept="image/*" hidden></label></div><button type="button" class="btn quitar" hidden>Quitar imagen</button></div></figure>
+<h3>Potencia eléctrica</h3>
+<ul><li>P = W / t   y   1 W = <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="1372147964917325" data-s="14" style="width:4ch"> J/s</li><li>P = <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4094015256195214" data-s="15" style="width:4ch"> · <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4094015256195214" data-s="16" style="width:4ch"></li><li>1 CV (caballo de vapor) = <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="6680997121149087" data-s="17" style="width:5ch"> W</li><li>1 HP (caballo de fuerza inglés) = <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3324698594722624" data-s="18" style="width:5ch"> W</li></ul>
+<h3>El circuito eléctrico</h3>
+<div class="tw"><table><thead><tr><th scope='col'>Elemento</th><th scope='col'>Función</th><th scope='col'>Ejemplo</th></tr></thead><tbody><tr><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3943436315729255" data-s="19" style="width:11ch"></td><td>Produce la energía eléctrica</td><td>Pila</td></tr><tr><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3201780214600768" data-s="20" style="width:11ch"></td><td>Transporta la corriente</td><td>Cable</td></tr><tr><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3943089577147281" data-s="21" style="width:10ch"></td><td>Transforma la energía eléctrica en otra</td><td>Bombilla</td></tr><tr><td>Elemento de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="8393100272811904,846485236193238,6218926125346762" data-s="22" style="width:10ch"></td><td>Abre o cierra el circuito</td><td>Interruptor</td></tr></tbody></table></div>
+<h3>Circuitos elementales</h3>
+<ul><li>En un circuito en <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2775047636610875" data-s="23" style="width:7ch"> los receptores se conectan uno a continuación de otro.</li><li>En un circuito en <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2765124318048982" data-s="24" style="width:10ch"> todos los receptores reciben la misma tensión.</li><li>Un circuito <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="8161825446012676" data-s="25" style="width:7ch"> combina receptores en serie y en paralelo.</li></ul>
+<figure class="imgslot"><figcaption>Dibuja un circuito en serie y otro en paralelo con dos bombillas</figcaption><div class="imgbox" style="--alto:46mm"><img alt="" hidden><div class="imgph"><span>Dibuja aquí o añade una imagen</span><label class="btn">Añadir imagen<input type="file" accept="image/*" hidden></label></div><button type="button" class="btn quitar" hidden>Quitar imagen</button></div></figure></section>
+<section class="sec" id="s2" style="--tono:var(--b2)"><header class="sh"><span class="num">2</span><h2>Producción y transporte</h2></header><div class="video" data-v="0"></div>
+<h3>Producción de energía</h3>
+<ul><li>Energías no renovables: <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="1184846065750193" data-s="26" style="width:9ch">, <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="1516202918219001" data-s="27" style="width:8ch"> y <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="1061939278854663" data-s="28" style="width:13ch">.</li><li>Energías renovables: <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="8895531607569023" data-s="29" style="width:7ch">, <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="8342438978782328" data-s="30" style="width:8ch">, <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4074029005345046" data-s="31" style="width:9ch"> y las del mar (corrientes, mareas).</li></ul>
+<p>El <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4314414510365888,2827218564180119" data-s="32" style="width:12ch"> transforma energía mecánica en energía eléctrica.</p>
+<div class="video" data-v="1"></div>
+<label class="libre"><span>Escribe con tus palabras cómo se obtiene electricidad en una central térmica</span><textarea rows="4" spellcheck="true"></textarea></label>
+<h3>Transporte de energía</h3>
+<p>El <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="1076099345807795,1718233476285673" data-s="33" style="width:14ch"> es la producción de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3833817312262970" data-s="34" style="width:7ch"> cuando una corriente eléctrica pasa a través de un material <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="8222992210745054" data-s="35" style="width:11ch">.</p>
+<p>Por eso la electricidad se transporta en <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="1306377686173508" data-s="36" style="width:6ch"> tensión: así la intensidad es menor y se pierde menos energía en forma de calor.</p>
+<div class="video" data-v="2"></div>
+<p>El <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4088953374294178" data-s="37" style="width:15ch"> sube o baja la tensión. Tiene un devanado <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="8001498318313472" data-s="38" style="width:10ch"> y otro <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="7159389259563841" data-s="39" style="width:12ch">.</p>
+<div class="video" data-v="3"></div></section>
+<section class="sec" id="s3" style="--tono:var(--b3)"><header class="sh"><span class="num">3</span><h2>Acometida e instalación de enlace</h2></header><h3>Acometida</h3>
+<p>La acometida es la parte de la instalación de la red de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5178803728763055" data-s="40" style="width:14ch"> que alimenta la caja o cajas generales de protección (<input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2263497018527826" data-s="41" style="width:5ch">).</p>
+<h3>Instalación de enlace</h3>
+<p>Las instalaciones de enlace unen la <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2759109785881628,2360835338106740" data-s="42" style="width:28ch"> con las instalaciones <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="6882071374012878,5483254314549807" data-s="43" style="width:12ch">. Comienzan en el final de la <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5297264651411179" data-s="44" style="width:11ch"> y terminan en los dispositivos generales de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5409560807778379" data-s="45" style="width:7ch"> y <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="266732643553695" data-s="46" style="width:12ch">.</p>
+<h3>La instalación de enlace incluye</h3>
+<div class="tw"><table><thead><tr><th scope='col'>Siglas</th><th scope='col'>Elemento</th></tr></thead><tbody><tr><td>CGP</td><td>Caja General de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="8966735118575372" data-s="47" style="width:12ch"></td></tr><tr><td>LGA</td><td>Línea General de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="1143030438462860" data-s="48" style="width:14ch"></td></tr><tr><td>CC</td><td>Elementos para la ubicación de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3114246850880080" data-s="49" style="width:12ch"></td></tr><tr><td>DI</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="1631648323337539" data-s="50" style="width:12ch"> Individual</td></tr><tr><td>ICP</td><td>Caja para Interruptor de Control de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4641815957932944" data-s="51" style="width:10ch"></td></tr><tr><td>DGMP</td><td>Dispositivos Generales de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3905166880817124" data-s="52" style="width:7ch"> y <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2445512761539265" data-s="53" style="width:12ch"></td></tr></tbody></table></div>
+<figure class="imgslot"><figcaption>Dibuja o pega aquí el esquema de la acometida, la CGP, la línea repartidora y la toma de tierra</figcaption><div class="imgbox" style="--alto:60mm"><img alt="" hidden><div class="imgph"><span>Dibuja aquí o añade una imagen</span><label class="btn">Añadir imagen<input type="file" accept="image/*" hidden></label></div><button type="button" class="btn quitar" hidden>Quitar imagen</button></div></figure></section>
+<section class="sec" id="s4" style="--tono:var(--b4)"><header class="sh"><span class="num">4</span><h2>Esquema de la instalación de enlace</h2></header><p>El conjunto formado por la derivación individual y la instalación interior es la instalación <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5467306900726307,6351501523578571" data-s="54" style="width:13ch">. El resto pertenece a la empresa <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5476542346830897" data-s="55" style="width:16ch"> de la energía.</p>
+<h3>Leyenda del esquema</h3>
+<div class="tw"><table><thead><tr><th scope='col'>N.º</th><th scope='col'>Elemento</th></tr></thead><tbody><tr><td>1</td><td>Red de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2896702856512043" data-s="56" style="width:14ch"></td></tr><tr><td>2</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="8353893367587113" data-s="57" style="width:11ch"></td></tr><tr><td>3</td><td>Caja general de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="6509660582269969" data-s="58" style="width:12ch"></td></tr><tr><td>4</td><td>Línea general de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="805577495679753" data-s="59" style="width:14ch"></td></tr><tr><td>5</td><td>Interruptor general de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3066477923255777" data-s="60" style="width:10ch"></td></tr><tr><td>6</td><td>Caja de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="8667178190170350" data-s="61" style="width:12ch"></td></tr><tr><td>7</td><td>Emplazamiento de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5675271398746609" data-s="62" style="width:12ch"></td></tr><tr><td>8</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="8915237847499297" data-s="63" style="width:12ch"> individual</td></tr><tr><td>9</td><td>Fusible de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5156544786896995" data-s="64" style="width:11ch"></td></tr><tr><td>10</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4560200381863177" data-s="65" style="width:10ch"></td></tr><tr><td>11</td><td>Caja para interruptor de control de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="1111274499513185" data-s="66" style="width:10ch"></td></tr><tr><td>12</td><td>Dispositivos generales de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="170602234803383" data-s="67" style="width:7ch"> y <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3926542220768985" data-s="68" style="width:12ch"></td></tr><tr><td>13</td><td>Instalación <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="7072415118940772" data-s="69" style="width:10ch"></td></tr></tbody></table></div>
+<figure class="imgslot"><figcaption>Copia aquí el esquema de la instalación de enlace y colorea de rojo la parte de la empresa suministradora y de azul la del usuario</figcaption><div class="imgbox" style="--alto:70mm"><img alt="" hidden><div class="imgph"><span>Dibuja aquí o añade una imagen</span><label class="btn">Añadir imagen<input type="file" accept="image/*" hidden></label></div><button type="button" class="btn quitar" hidden>Quitar imagen</button></div></figure></section>
+<section class="sec" id="s5" style="--tono:var(--b5)"><header class="sh"><span class="num">5</span><h2>Elementos de la instalación de enlace</h2></header><h3>Caja General de Protección</h3>
+<p>Las cajas generales de protección son cajas que alojan los elementos de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3786458750939639" data-s="70" style="width:12ch"> de las líneas generales de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2383767472546848" data-s="71" style="width:14ch">.</p>
+<h3>Línea General de Alimentación</h3>
+<p>Es la que enlaza la caja general de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="6327090735721307" data-s="72" style="width:12ch"> con la centralización de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="6156276127915914" data-s="73" style="width:12ch">. En ella se incluirá el conductor de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="1928775432416924" data-s="74" style="width:12ch">.</p>
+<h3>Derivación individual</h3>
+<p>Es la parte de la instalación que, partiendo de la línea general de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="762348307905134" data-s="75" style="width:14ch">, suministra energía eléctrica a una instalación de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5182897611325700" data-s="76" style="width:9ch">. En ella se incluirá el conductor de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="325202196121910" data-s="77" style="width:12ch">.</p>
+<figure class="imgslot"><figcaption>Dibuja la centralización de contadores con la CGP, la LGA y las derivaciones individuales</figcaption><div class="imgbox" style="--alto:55mm"><img alt="" hidden><div class="imgph"><span>Dibuja aquí o añade una imagen</span><label class="btn">Añadir imagen<input type="file" accept="image/*" hidden></label></div><button type="button" class="btn quitar" hidden>Quitar imagen</button></div></figure></section>
+<section class="sec" id="s6" style="--tono:var(--b6)"><header class="sh"><span class="num">6</span><h2>Cuadro general de mando y protección (CGMP)</h2></header><p>Orden de los dispositivos desde la entrada de la vivienda:</p>
+<div class="tw"><table><thead><tr><th scope='col'>Orden</th><th scope='col'>Siglas</th><th scope='col'>Nombre</th></tr></thead><tbody><tr><td>1.º</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4257050246114880" data-s="78" style="width:5ch"></td><td>Interruptor de control de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2333115866302954" data-s="79" style="width:10ch"></td></tr><tr><td>2.º</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3318199108391454,1929158339652189" data-s="80" style="width:5ch"></td><td>Interruptor <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4876498251487681" data-s="81" style="width:9ch"> automático</td></tr><tr><td>3.º</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="8584143974554586" data-s="82" style="width:4ch"></td><td>Interruptor <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3256317449853481" data-s="83" style="width:13ch"></td></tr><tr><td>4.º</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3099527787764" data-s="84" style="width:5ch"></td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3371742653367483" data-s="85" style="width:10ch"> interruptores automáticos</td></tr></tbody></table></div>
+<figure class="imgslot"><figcaption>Dibuja el cuadro de una vivienda con ICP, IG, ID y varios PIA</figcaption><div class="imgbox" style="--alto:60mm"><img alt="" hidden><div class="imgph"><span>Dibuja aquí o añade una imagen</span><label class="btn">Añadir imagen<input type="file" accept="image/*" hidden></label></div><button type="button" class="btn quitar" hidden>Quitar imagen</button></div></figure></section>
+<section class="sec" id="s7" style="--tono:var(--b7)"><header class="sh"><span class="num">7</span><h2>Interruptor de control de potencia</h2></header><p>El interruptor de control de potencia (ICP) lo instala la empresa <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="6255277900534872" data-s="86" style="width:16ch"> de la energía para limitar el consumo de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5188482168848186" data-s="87" style="width:11ch"> del abonado.</p>
+<p>Debe ubicarse en una caja, inmediatamente <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3788831435696210" data-s="88" style="width:7ch"> de los demás dispositivos, en compartimento <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3084170882271412" data-s="89" style="width:15ch"> y <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="6846698480997554" data-s="90" style="width:13ch">. Puede colocarse en el mismo cuadro que el resto de los dispositivos generales de mando y protección.</p>
+<label class="libre"><span>Anota la intensidad que lleva marcada el ICP de tu casa o del taller</span><textarea rows="2" spellcheck="true"></textarea></label></section>
+<section class="sec" id="s8" style="--tono:var(--b1)"><header class="sh"><span class="num">8</span><h2>IG / PIA / ID</h2></header><h3>Interruptor General Automático (IG)</h3>
+<p>Su intensidad la impone la capacidad máxima de la instalación. Como mínimo será un interruptor de corte <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3865865966008378" data-s="91" style="width:11ch"> con accionamiento <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4534526491523675" data-s="92" style="width:8ch">, de intensidad nominal mínima de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="7724095755287541" data-s="93" style="width:4ch"> A y con dispositivo de protección contra <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="486172155718951" data-s="94" style="width:13ch"> y <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5896591599865277" data-s="95" style="width:16ch">.</p>
+<h3>Pequeños interruptores automáticos (PIA)</h3>
+<p>Es un interruptor automático de protección <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2334303586604882" data-s="96" style="width:12ch"> para cada <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="421342220059966" data-s="97" style="width:10ch">, de corte omnipolar con accionamiento manual y dispositivo de protección contra sobrecargas y cortocircuitos. La intensidad asignada a cada uno depende de su <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="8275088600737689,4820109991028452" data-s="98" style="width:12ch">.</p>
+<ul><li>El <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="9001130647061158" data-s="99" style="width:9ch"> (dispositivo térmico) protege contra <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3952330213280725" data-s="100" style="width:13ch">.</li><li>La bobina de disparo <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4150710096761577,8084653815849655" data-s="101" style="width:11ch"> protege contra <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5039309725776990" data-s="102" style="width:16ch">.</li><li>La cámara <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3682295404663422,2065066298194391" data-s="103" style="width:15ch"> extingue el arco eléctrico.</li></ul>
+<figure class="imgslot"><figcaption>Dibuja un magnetotérmico por dentro y rotula sus partes</figcaption><div class="imgbox" style="--alto:55mm"><img alt="" hidden><div class="imgph"><span>Dibuja aquí o añade una imagen</span><label class="btn">Añadir imagen<input type="file" accept="image/*" hidden></label></div><button type="button" class="btn quitar" hidden>Quitar imagen</button></div></figure>
+<div class="video" data-v="4"></div>
+<h3>Interruptor diferencial (ID)</h3>
+<p>Es un interruptor de protección de las <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="7439261775036672,1039031216456023" data-s="104" style="width:10ch"> frente a posibles contactos <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5922747284033308" data-s="105" style="width:14ch"> con aparatos eléctricos metálicos cargados con tensión debido a una <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2140898963849000" data-s="106" style="width:6ch"> de corriente en la instalación.</p>
+<p>Su sensibilidad en viviendas es de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="1310522382103118" data-s="107" style="width:4ch"> mA.</p></section>
+<section class="sec" id="s9" style="--tono:var(--b2)"><header class="sh"><span class="num">9</span><h2>Electrificación básica</h2></header><div class="tw"><table><thead><tr><th scope='col'>Circuito</th><th scope='col'>Uso</th><th scope='col'>PIA (A)</th><th scope='col'>Sección (mm²)</th></tr></thead><tbody><tr><td>C1</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5129547357991339" data-s="108" style="width:13ch"></td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4274161047537428" data-s="109" style="width:4ch"></td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="7180074229976585" data-s="110" style="width:5ch"></td></tr><tr><td>C2</td><td>Tomas de corriente de uso general (máx. <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4792026468369986" data-s="111" style="width:4ch">) y <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="612500363355244" data-s="112" style="width:13ch"></td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="7000124526079651" data-s="113" style="width:4ch"></td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="4063089499928803" data-s="114" style="width:5ch"></td></tr><tr><td>C3</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="7745149496147921" data-s="115" style="width:8ch"> y horno</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="7293737812054259" data-s="116" style="width:4ch"></td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="7041584223239866" data-s="117" style="width:4ch"></td></tr><tr><td>C4</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2197826111338908" data-s="118" style="width:10ch">, lavavajillas y termo eléctrico</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="442764887444210" data-s="119" style="width:4ch"></td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="6804364663905686" data-s="120" style="width:4ch"></td></tr><tr><td>C5</td><td>Tomas de corriente del cuarto de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="1667014311592916" data-s="121" style="width:6ch"> (máx. <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="6804364663905686" data-s="122" style="width:4ch">)</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="7656601396715791" data-s="123" style="width:4ch"></td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2924688399266085" data-s="124" style="width:5ch"></td></tr></tbody></table></div>
+<p>Dispositivos de cabecera: ICP de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2931163095230516" data-s="125" style="width:4ch"> A, interruptor automático general de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="3508847098897181" data-s="126" style="width:4ch"> A e interruptor diferencial de <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="6627309692079364" data-s="127" style="width:4ch"> A y <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2379955932016236" data-s="128" style="width:4ch"> mA.</p>
+<figure class="imgslot"><figcaption>Dibuja el esquema del cuadro de electrificación básica con sus cinco circuitos</figcaption><div class="imgbox" style="--alto:60mm"><img alt="" hidden><div class="imgph"><span>Dibuja aquí o añade una imagen</span><label class="btn">Añadir imagen<input type="file" accept="image/*" hidden></label></div><button type="button" class="btn quitar" hidden>Quitar imagen</button></div></figure></section>
+<section class="sec" id="s10" style="--tono:var(--b3)"><header class="sh"><span class="num">10</span><h2>Cableado</h2></header><h3>Toma de tierra</h3>
+<p>La toma de tierra es una instalación conductora (cable de color <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5020690249158529,8180961206237920,6830877677989371" data-s="129" style="width:18ch">) paralela a la instalación eléctrica del edificio, terminada en un <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="1918232645024329,2000116146540350,2153187447899985" data-s="130" style="width:11ch"> enterrado en el suelo.</p>
+<p>A este conductor se conectan todos los aparatos eléctricos de las viviendas y del propio edificio. Su misión es derivar a tierra cualquier <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="2799616777052435" data-s="131" style="width:6ch"> de corriente, impidiendo así graves accidentes eléctricos (electrocución) por contacto de los usuarios.</p>
+<h3>Colores de los conductores</h3>
+<div class="tw"><table><thead><tr><th scope='col'>Conductor</th><th scope='col'>Color</th></tr></thead><tbody><tr><td>Fase</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="7098260143240138,7583042023862717,3145678252164034" data-s="132" style="width:8ch"></td></tr><tr><td>Neutro</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="530731774582271" data-s="133" style="width:6ch"></td></tr><tr><td>Tierra</td><td><input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="6779137824521163,7201688014925511,2908592485537689" data-s="134" style="width:18ch"></td></tr></tbody></table></div>
+<figure class="imgslot"><figcaption>Dibuja una caja de derivación con fase, neutro y tierra, el interruptor y la lámpara</figcaption><div class="imgbox" style="--alto:60mm"><img alt="" hidden><div class="imgph"><span>Dibuja aquí o añade una imagen</span><label class="btn">Añadir imagen<input type="file" accept="image/*" hidden></label></div><button type="button" class="btn quitar" hidden>Quitar imagen</button></div></figure>
+<h3>Esquemas multifilar y unifilar</h3>
+<p>Punto de luz simple y 2 tomas de corriente a <input class="gap" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Hueco para completar" data-h="5154053811201428" data-s="135" style="width:5ch"> V.</p>
+<figure class="imgslot"><figcaption>Esquema multifilar</figcaption><div class="imgbox" style="--alto:60mm"><img alt="" hidden><div class="imgph"><span>Dibuja aquí o añade una imagen</span><label class="btn">Añadir imagen<input type="file" accept="image/*" hidden></label></div><button type="button" class="btn quitar" hidden>Quitar imagen</button></div></figure>
+<figure class="imgslot"><figcaption>Esquema unifilar</figcaption><div class="imgbox" style="--alto:60mm"><img alt="" hidden><div class="imgph"><span>Dibuja aquí o añade una imagen</span><label class="btn">Añadir imagen<input type="file" accept="image/*" hidden></label></div><button type="button" class="btn quitar" hidden>Quitar imagen</button></div></figure>
+<div class="video" data-v="5"></div>
+<label class="libre"><span>Dudas, ideas y conclusiones de la práctica</span><textarea rows="5" spellcheck="true"></textarea></label></section>
+  </main>
+  <p class="foot">Tus apuntes se guardan en este navegador. Si cambias de equipo, usa «Guardar copia» y «Cargar copia».</p>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var VIDEOS = [{"titulo": "La producción y transporte de energía eléctrica", "canal": "", "url": "", "q": "La PRODUCCIÓN y TRANSPORTE de ENERGÍA ELÉCTRICA"}, {"titulo": "¿Cómo funciona un alternador?", "canal": "", "url": "", "q": "¿Cómo funciona un alternador? animación"}, {"titulo": "Cómo funciona una subestación eléctrica", "canal": "Endesa Educa", "url": "", "q": "Cómo funciona una subestación eléctrica Endesa Educa"}, {"titulo": "¿Cómo funciona un transformador? ¿Por qué usamos alto voltaje?", "canal": "", "url": "", "q": "¿Cómo funciona un TRANSFORMADOR? ¿Porqué usamos alto voltaje?"}, {"titulo": "Diferencial vs magnetotérmico: principales diferencias", "canal": "Aprueba con la gorra", "url": "", "q": "Diferencial Vs Magnetotérmico principales diferencias Aprueba con la gorra"}, {"titulo": "Curso electricidad básica. Práctica 1: 2 tomas de corriente o enchufes de vivienda", "canal": "Electricidad FP · Germán Cayetano Martínez", "url": "", "q": "Curso electricidad básica Práctica 1 2 tomas de corriente enchufes de vivienda Electricidad FP"}];
+var LS = "apuntes-electricidad-v1";
+var N = 135;
+function $(s,r){return (r||document).querySelector(s);}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+
+var state = {f:{}, img:{}, vid:{}};
+var showing = false;
+var gaps = $$("input.gap");
+var fields = $$("input.gap, textarea, .meta input");
+fields.forEach(function(el,i){ el.dataset.k = "k"+i; });
+
+function norm(s){
+  return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")
+    .replace(/,/g,".").replace(/[;:¡!¿?()]/g,"").replace(/\.+$/,"").replace(/\s+/g," ").trim();
+}
+function h53(str,seed){
+  var h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;
+  for(var i=0,ch;i<str.length;i++){ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+  h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return 4294967296*(2097151&h2)+(h1>>>0);
+}
+function isOk(g,v){
+  if(g.dataset.a!==undefined) return g.dataset.a.split("|").map(norm).indexOf(v)>-1;
+  return g.dataset.h.split(",").indexOf(String(h53(v,+g.dataset.s)))>-1;
+}
+function toast(msg){
+  var t=$("#toast"); t.textContent=msg; t.hidden=false;
+  clearTimeout(toast._t); toast._t=setTimeout(function(){t.hidden=true;},3500);
+}
+var saveT;
+function save(){
+  if(showing) return;
+  clearTimeout(saveT);
+  saveT=setTimeout(function(){
+    try{ localStorage.setItem(LS, JSON.stringify(state)); }
+    catch(e){ toast("No se pudo guardar en este navegador. Usa «Guardar copia» para no perder el trabajo."); }
+  },400);
+}
+function load(){
+  try{ var s=localStorage.getItem(LS); if(s){ var o=JSON.parse(s); state={f:o.f||{},img:o.img||{},vid:o.vid||{}}; } }catch(e){}
+}
+function grow(t){ t.style.height="auto"; t.style.height=(t.scrollHeight+2)+"px"; }
+function stat(){
+  var n=gaps.filter(function(g){return g.value.trim()!=="";}).length;
+  $("#stat").textContent="Huecos: "+n+" de "+N;
+}
+function apply(){
+  fields.forEach(function(el){
+    var v=state.f[el.dataset.k]; el.value = (v==null?"":v);
+    if(el.tagName==="TEXTAREA") grow(el);
+    el.classList.remove("ok","bad");
+  });
+  $$(".imgslot").forEach(function(fig,i){ showImg(fig,state.img[i]); });
+  $$(".video").forEach(function(el){ var i=+el.dataset.v; setVideo(el, state.vid[i]!=null?state.vid[i]:(VIDEOS[i].url||""), true); });
+  stat();
+}
+
+/* ---- campos ---- */
+fields.forEach(function(el){
+  el.addEventListener("input",function(){
+    if(showing) return;
+    state.f[el.dataset.k]=el.value;
+    el.classList.remove("ok","bad");
+    if(el.tagName==="TEXTAREA") grow(el);
+    stat(); save();
+  });
+});
+gaps.forEach(function(g){
+  g.addEventListener("keydown",function(e){
+    if(e.key==="Enter"){ e.preventDefault(); var i=gaps.indexOf(g); if(gaps[i+1]) gaps[i+1].focus(); }
+  });
+});
+
+/* ---- comprobar ---- */
+$("#btn-check").addEventListener("click",function(){
+  if(showing){ toast("Oculta las soluciones para comprobar tus respuestas."); return; }
+  var ok=0,bad=0,empty=0;
+  gaps.forEach(function(g){
+    g.classList.remove("ok","bad");
+    var v=norm(g.value); if(!v){empty++;return;}
+    if(isOk(g,v)){g.classList.add("ok");ok++;}else{g.classList.add("bad");bad++;}
+  });
+  toast(ok+" correctos · "+bad+" por revisar · "+empty+" sin rellenar");
+});
+
+/* ---- soluciones (modo profesor) ---- */
+var btnSol=$("#btn-sol");
+if(btnSol) btnSol.addEventListener("click",function(){
+  showing=!showing;
+  this.setAttribute("aria-pressed",String(showing));
+  this.textContent = showing ? "Ocultar soluciones" : "Ver soluciones";
+  gaps.forEach(function(g){
+    g.classList.remove("ok","bad");
+    if(showing){ g.dataset.mine=g.value; g.value=g.dataset.a.split("|")[0]; g.readOnly=true; }
+    else { g.value=g.dataset.mine||""; g.readOnly=false; }
+  });
+  stat();
+});
+
+/* ---- imprimir ---- */
+$("#btn-print").addEventListener("click",function(){ $$("textarea").forEach(grow); window.print(); });
+
+/* ---- copia de seguridad ---- */
+$("#btn-exp").addEventListener("click",function(){
+  var nm=(state.f[$("#nombre").dataset.k]||"alumno").replace(/[^\wÁÉÍÓÚáéíóúñÑ]+/g,"_");
+  var blob=new Blob([JSON.stringify(state)],{type:"application/json"});
+  var a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download="apuntes-electricidad-"+nm+".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
+});
+$("#file-imp").addEventListener("change",function(){
+  var f=this.files[0]; if(!f) return; var inp=this;
+  var r=new FileReader();
+  r.onload=function(){
+    try{ var o=JSON.parse(r.result); state={f:o.f||{},img:o.img||{},vid:o.vid||{}}; apply(); save(); toast("Copia cargada."); }
+    catch(e){ toast("Ese archivo no es una copia válida."); }
+    inp.value="";
+  };
+  r.readAsText(f);
+});
+var resetT;
+$("#btn-reset").addEventListener("click",function(){
+  var b=this;
+  if(b.dataset.armed!=="1"){
+    b.dataset.armed="1"; b.textContent="¿Seguro? Pulsa otra vez";
+    resetT=setTimeout(function(){b.dataset.armed="0";b.textContent="Borrar todo";},4000); return;
+  }
+  clearTimeout(resetT); b.dataset.armed="0"; b.textContent="Borrar todo";
+  state={f:{},img:{},vid:{}}; apply();
+  try{localStorage.removeItem(LS);}catch(e){}
+  toast("Apuntes borrados.");
+});
+
+/* ---- imágenes propias ---- */
+function showImg(fig,url){
+  var box=$(".imgbox",fig), img=$("img",box), ph=$(".imgph",box), q=$(".quitar",box);
+  if(url){ img.src=url; img.hidden=false; ph.hidden=true; q.hidden=false; box.classList.add("has"); }
+  else { img.removeAttribute("src"); img.hidden=true; ph.hidden=false; q.hidden=true; box.classList.remove("has"); }
+}
+$$(".imgslot").forEach(function(fig,i){
+  $("input[type=file]",fig).addEventListener("change",function(){
+    var f=this.files[0]; if(!f) return; var inp=this;
+    var r=new FileReader();
+    r.onload=function(){
+      var im=new Image();
+      im.onload=function(){
+        var s=Math.min(1,1100/im.width), c=document.createElement("canvas");
+        c.width=Math.round(im.width*s); c.height=Math.round(im.height*s);
+        var cx=c.getContext("2d"); cx.fillStyle="#fff"; cx.fillRect(0,0,c.width,c.height); cx.drawImage(im,0,0,c.width,c.height);
+        state.img[i]=c.toDataURL("image/jpeg",0.82); showImg(fig,state.img[i]); save(); inp.value="";
+      };
+      im.onerror=function(){ toast("No se pudo leer esa imagen."); };
+      im.src=r.result;
+    };
+    r.readAsDataURL(f);
+  });
+  $(".quitar",fig).addEventListener("click",function(){ delete state.img[i]; showImg(fig,null); save(); });
+});
+
+/* ---- vídeos ---- */
+function ytId(u){
+  var m=String(u).match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/);
+  return m?m[1]:null;
+}
+function buildVideo(el){
+  var i=+el.dataset.v, v=VIDEOS[i];
+  el.innerHTML='<div class="vhead"><span class="tri" aria-hidden="true"></span><div><strong class="vt"></strong><span class="vch"></span></div></div>'+
+    '<div class="vframe" hidden></div>'+
+    '<div class="vctl"><a class="btn buscar" target="_blank" rel="noopener">Buscar en YouTube</a>'+
+    '<input class="vin" type="url" placeholder="Pega aquí el enlace del vídeo" aria-label="Enlace del vídeo">'+
+    '<a class="btn abrir" target="_blank" rel="noopener" hidden>Abrir en YouTube</a></div>'+
+    '<p class="vnote" hidden>Si el reproductor no carga, usa «Abrir en YouTube».</p>'+
+    '<p class="vprint" hidden></p>';
+  $(".vt",el).textContent=v.titulo;
+  $(".vch",el).textContent=v.canal; $(".vch",el).hidden=!v.canal;
+  $(".buscar",el).href="https://www.youtube.com/results?search_query="+encodeURIComponent(v.q);
+  $(".vin",el).addEventListener("input",function(){
+    state.vid[i]=this.value; setVideo(el,this.value,false); save();
+  });
+}
+function setVideo(el,url,fill){
+  var i=+el.dataset.v, id=ytId(url), fr=$(".vframe",el), ab=$(".abrir",el), vp=$(".vprint",el), nt=$(".vnote",el);
+  if(fill) $(".vin",el).value=url||"";
+  if(id){
+    var src="https://www.youtube-nocookie.com/embed/"+id;
+    if(!fr.firstChild || fr.firstChild.getAttribute("src")!==src){
+      fr.innerHTML="";
+      var f=document.createElement("iframe");
+      f.src=src; f.title=VIDEOS[i].titulo; f.loading="lazy"; f.allowFullscreen=true;
+      f.setAttribute("referrerpolicy","strict-origin-when-cross-origin");
+      f.setAttribute("allow","accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen");
+      fr.appendChild(f);
+    }
+    fr.hidden=false; nt.hidden=false;
+    ab.href="https://www.youtube.com/watch?v="+id; ab.hidden=false;
+    vp.textContent="Vídeo: "+ab.href; vp.hidden=false;
+  } else {
+    fr.innerHTML=""; fr.hidden=true; nt.hidden=true; ab.hidden=true; vp.hidden=true; vp.textContent="";
+  }
+}
+$$(".video").forEach(buildVideo);
+
+load(); apply();
+window.addEventListener("beforeprint",function(){ $$("textarea").forEach(grow); });
+})();
+</script>
+</body>
+</html>
