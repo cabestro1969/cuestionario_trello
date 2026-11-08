@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body>
+<title>Simulacro Control y Robótica</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Layout: hoja de examen en una columna, ejercicios separados por filetes; el panel de código oscuro es lo único con peso visual fuerte. */
+:root{
+  --bg:#EEF2EE; --surface:#FFFFFF; --surface-2:#E2EAE4; --ink:#13201A; --ink-2:#47574F; --line:#C3D0C6;
+  --accent:#0B6B4D; --accent-ink:#FFFFFF; --copper:#A85A12;
+  --ok:#17743A; --ok-bg:#DDF1E3; --bad:#B3261E; --bad-bg:#F8E1DE; --part:#8A5A00; --part-bg:#FBEBCF;
+  --code-bg:#14211B; --code-ink:#DCEBE1; --code-dim:#6F8A7B; --code-hl:#2D4D3C; --code-kw:#7FD6A8; --code-fn:#9CC8F0; --code-cn:#E8B36A; --code-cm:#7C9A8A;
+  --font-display:'Archivo','Arial Narrow',Arial,sans-serif;
+  --font-body:'Source Sans 3','Segoe UI',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1512; --surface:#16211B; --surface-2:#1E2D25; --ink:#E4EEE7; --ink-2:#9DB0A5; --line:#2D3E35;
+  --accent:#4FD1A0; --accent-ink:#06261A; --copper:#E8A15B;
+  --ok:#5FD68A; --ok-bg:#163020; --bad:#FF8F85; --bad-bg:#3A1D1B; --part:#F0C060; --part-bg:#382D14;
+  --code-bg:#0A100D; --code-ink:#D5E5DA; --code-hl:#24402F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1512; --surface:#16211B; --surface-2:#1E2D25; --ink:#E4EEE7; --ink-2:#9DB0A5; --line:#2D3E35;
+  --accent:#4FD1A0; --accent-ink:#06261A; --copper:#E8A15B;
+  --ok:#5FD68A; --ok-bg:#163020; --bad:#FF8F85; --bad-bg:#3A1D1B; --part:#F0C060; --part-bg:#382D14;
+  --code-bg:#0A100D; --code-ink:#D5E5DA; --code-hl:#24402F; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:17px/1.55 var(--font-body);margin:0;padding-block:0 72px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.wrap{max-width:860px;margin:0 auto}
+code,.mono{font-family:var(--font-mono);font-size:.88em}
+p{margin:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* navegación fija */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line);
+  display:flex;gap:12px;align-items:center;justify-content:space-between;padding:10px 0}
+.navl{display:flex;gap:6px;align-items:center;overflow-x:auto;min-width:0}
+.navl span{font:600 12px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-right:4px}
+.navl a{font:600 14px var(--font-mono);color:var(--ink);text-decoration:none;border:1.5px solid var(--line);border-radius:6px;min-width:34px;height:34px;display:grid;place-items:center;background:var(--surface);cursor:pointer}
+.navl a:hover{border-color:var(--accent)}
+.navl a.done{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.tot{font:600 13px var(--font-mono);white-space:nowrap;color:var(--ink-2)}
+.tot b{font:800 20px var(--font-display);color:var(--ink)}
+
+/* cabecera */
+.head{padding:36px 0 28px}
+.eyebrow{font:600 12px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--copper)}
+h1{font:800 clamp(34px,7vw,56px)/1.02 var(--font-display);letter-spacing:-.01em;margin:10px 0 14px;text-wrap:balance}
+.lead{max-width:62ch;color:var(--ink-2)}
+.who{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-top:22px}
+.who label{display:grid;gap:4px;font:600 12px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+@media(max-width:560px){.who{grid-template-columns:1fr 1fr}.who label:first-child{grid-column:1/-1}}
+.how{display:flex;gap:10px 22px;flex-wrap:wrap;margin-top:18px;font-size:15px;color:var(--ink-2)}
+.how b{color:var(--ink)}
+
+/* ejercicios */
+.ex{border-top:2px solid var(--ink);padding-top:22px;margin-top:34px}
+.exh{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}
+.exn{font:600 12px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--copper);flex-basis:100%}
+h2{font:800 clamp(22px,4vw,28px)/1.15 var(--font-display);margin:0;text-wrap:balance}
+.pin{font:600 12px var(--font-mono);letter-spacing:.06em;text-transform:uppercase;border:1.5px solid var(--accent);color:var(--accent);border-radius:999px;padding:2px 10px}
+.exs{margin-left:auto}
+.ap{display:grid;gap:12px;padding:20px 0}
+.ap+.ap{border-top:1px dashed var(--line)}
+.intro{padding-top:14px;color:var(--ink-2)}
+.q{max-width:70ch}
+.q .pt{font:600 .85em var(--font-mono);color:var(--copper);white-space:nowrap}
+.ap code,.intro code,.sol code,.fb code{background:var(--surface-2);padding:1px 5px;border-radius:4px}
+textarea,input,select{font:inherit;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical;line-height:1.45}
+textarea.codein{font:14px/1.5 var(--font-mono);background:var(--code-bg);color:var(--code-ink);border-color:var(--code-bg);tab-size:2;white-space:pre;overflow:auto}
+input[type=number]{width:96px}
+.is-ok{border-color:var(--ok)!important;background:var(--ok-bg)!important}
+.is-bad{border-color:var(--bad)!important;background:var(--bad-bg)!important}
+textarea.codein.is-ok{box-shadow:0 0 0 2px var(--ok)}
+textarea.codein.is-bad{box-shadow:0 0 0 2px var(--bad)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:480px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font:600 12px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2)}
+tr:last-child td{border-bottom:0}
+td select{min-width:130px}
+.calc{display:grid;gap:10px}
+.calc label{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.calc .u{font:600 14px var(--font-mono);color:var(--ink-2)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.pair{grid-template-columns:1fr}}
+
+/* botones y feedback */
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{font:600 15px var(--font-body);background:var(--accent);color:var(--accent-ink);border:1.5px solid var(--accent);border-radius:6px;padding:8px 16px;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.warn{background:transparent;color:var(--bad);border-color:var(--bad)}
+.chip{font:600 13px var(--font-mono);border-radius:999px;padding:3px 12px}
+.chip:empty{display:none}
+.chip.ok{background:var(--ok-bg);color:var(--ok)}
+.chip.part{background:var(--part-bg);color:var(--part)}
+.chip.bad{background:var(--bad-bg);color:var(--bad)}
+.fb:empty{display:none}
+.fb{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.fb ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.fb li{display:grid;grid-template-columns:20px 1fr;gap:6px;font-size:16px}
+.fb li.ok .ic{color:var(--ok)}
+.fb li.bad .ic{color:var(--bad)}
+.fb .note{margin-bottom:8px;color:var(--ink-2);font-size:15px}
+.sol{background:var(--surface-2);border-radius:8px;padding:14px 16px;display:grid;gap:8px;font-size:16px}
+.sol h4{margin:0;font:600 12px var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--copper)}
+.sol ul,.sol ol{margin:0;padding-left:20px;display:grid;gap:4px}
+
+/* código estilo IDE */
+.code{background:var(--code-bg);color:var(--code-ink);font:13.5px/1.65 var(--font-mono);border-radius:8px;padding:12px 0;overflow-x:auto;margin:0}
+.ln{display:grid;grid-template-columns:3ch 1fr;gap:14px;padding:0 14px;white-space:pre;min-width:max-content;width:100%;background:none;border:0;color:inherit;font:inherit;text-align:left;border-radius:0}
+.ln .n{color:var(--code-dim);text-align:right;user-select:none}
+button.ln{cursor:pointer}
+button.ln:hover{background:var(--code-hl)}
+.ln.mark{background:var(--code-hl);box-shadow:inset 3px 0 0 var(--code-cn)}
+.k{color:var(--code-kw)}.f{color:var(--code-fn)}.cn{color:var(--code-cn)}.nm{color:var(--code-cn)}.cm{color:var(--code-cm);font-style:italic}
+.tip{font-size:14px;color:var(--ink-2)}
+
+/* resumen */
+.sum{margin-top:40px;border-top:2px solid var(--ink);padding-top:22px;display:grid;gap:16px}
+.big{font:800 clamp(40px,9vw,64px)/1 var(--font-display)}
+.big small{font:600 18px var(--font-mono);color:var(--ink-2)}
+@media (prefers-reduced-motion:no-preference){.btn{transition:filter .15s}}
+</style>
+
+<div class="wrap">
+  <nav class="nav" aria-label="Ejercicios">
+    <div class="navl"><span>Ej.</span>
+      <a data-go="ej1" role="button" tabindex="0">1</a><a data-go="ej2" role="button" tabindex="0">2</a><a data-go="ej3" role="button" tabindex="0">3</a><a data-go="ej4" role="button" tabindex="0">4</a><a data-go="ej5" role="button" tabindex="0">5</a><a data-go="ej6" role="button" tabindex="0">6</a><a data-go="resumen" role="button" tabindex="0">Σ</a>
+    </div>
+    <div class="tot">Nota orientativa <b id="tot">0</b> / 10</div>
+  </nav>
+
+  <header class="head">
+    <div class="eyebrow">Control y Robótica · 3.º ESO · Control programado con Arduino</div>
+    <h1>Simulacro de examen</h1>
+    <p class="lead">Mismo formato que el examen real: seis ejercicios que suman 10 puntos. Escribe tus respuestas, pulsa <b>Comprobar</b> en cada apartado y abre la solución cuando lo hayas intentado. Tus respuestas se guardan en este navegador.</p>
+    <div class="who">
+      <label>Nombre y apellidos<input id="nombre" data-s type="text" autocomplete="off"></label>
+      <label>Grupo<input id="grupo" data-s type="text" autocomplete="off"></label>
+      <label>Fecha<input id="fecha" data-s type="text" autocomplete="off" placeholder="dd/mm/aaaa"></label>
+    </div>
+    <div class="how"><span><b>Texto libre:</b> se corrige buscando las ideas clave.</span><span><b>Código:</b> se revisa pieza a pieza, no se ejecuta.</span></div>
+  </header>
+
+  <!-- EJERCICIO 1 -->
+  <section class="ex" id="ej1">
+    <div class="exh"><span class="exn">Ejercicio 1</span><h2>Teoría de sistemas electrónicos</h2><span class="pin">1,5 puntos</span><span class="chip exs" data-exs="1"></span></div>
+    <div class="ap" data-id="1a">
+      <p class="q">Explica con tus palabras qué diferencia hay entre una variable <b>digital</b> y una <b>analógica</b>. Pon un ejemplo de cada una e indica qué valores devuelve <code>digitalRead()</code> y qué rango de valores devuelve <code>analogRead()</code>. <span class="pt">(1,5)</span></p>
+      <textarea id="a1a" data-s rows="5" placeholder="Escribe aquí tu respuesta…"></textarea>
+      <div class="sol" hidden><h4>Solución modelo</h4><p>Una variable <b>digital</b> solo toma <b>dos estados</b>: HIGH (5 V) o LOW (0 V), por eso <code>digitalRead()</code> devuelve 0 o 1. Ejemplo: un pulsador.</p><p>Una variable <b>analógica</b> puede tomar <b>infinitos valores</b> dentro de un rango continuo. Ejemplo: un potenciómetro o un termistor. En Arduino UNO, <code>analogRead()</code> convierte 0–5 V en un número de <b>0 a 1023</b> (10 bits).</p></div>
+    </div>
+  </section>
+
+  <!-- EJERCICIO 2 -->
+  <section class="ex" id="ej2">
+    <div class="exh"><span class="exn">Ejercicio 2</span><h2>Ley de Ohm, resistencias y LED</h2><span class="pin">1 punto</span><span class="chip exs" data-exs="2"></span></div>
+    <div class="ap" data-id="2b">
+      <p class="q">¿Para qué se coloca una resistencia en serie con un LED y qué puede pasar si se omite? <span class="pt">(0,6)</span></p>
+      <textarea id="a2b" data-s rows="3" placeholder="Escribe aquí tu respuesta…"></textarea>
+      <p class="q">Si en lugar de 150 Ω se usara una resistencia de 1 kΩ, el LED brillaría… <span class="pt">(0,4)</span></p>
+      <select id="s2b" data-s style="max-width:260px"><option value="">—</option><option>Más</option><option>Igual</option><option>Menos</option></select>
+      <div class="sol" hidden><h4>Solución modelo</h4><p>La resistencia <b>limita la corriente</b> que atraviesa el LED. Sin ella, la corriente es demasiado alta y el LED (y a veces el pin de Arduino) se <b>quema o se destruye</b>.</p><p>Con 1 kΩ: <code>I = 3 V / 1000 Ω = 3 mA</code>, mucho menos que los 20 mA de antes, así que el LED brilla <b>menos</b>.</p></div>
+    </div>
+  </section>
+
+  <!-- EJERCICIO 3 -->
+  <section class="ex" id="ej3">
+    <div class="exh"><span class="exn">Ejercicio 3</span><h2>Estructura de un programa Arduino</h2><span class="pin">2 puntos</span><span class="chip exs" data-exs="3"></span></div>
+    <div class="ap" data-id="3a">
+      <p class="q"><b>a)</b> Todo programa de Arduino tiene las funciones <code>setup()</code> y <code>loop()</code>. Indica a cuál corresponde cada afirmación. <span class="pt">(1)</span></p>
+      <div class="tw"><table id="tbl3a"></table></div>
+      <div class="sol" hidden><h4>Solución</h4><ul><li>Se ejecuta una sola vez al encender o reiniciar: <code>setup()</code></li><li>Se repite mientras la placa tiene corriente: <code>loop()</code></li><li>Configurar los pines con <code>pinMode()</code>: <code>setup()</code></li><li>Leer el pulsador y decidir qué hacer: <code>loop()</code></li></ul></div>
+    </div>
+    <div class="ap" data-id="3b">
+      <p class="q"><b>b)</b> Explica qué hace cada una de estas instrucciones. <span class="pt">(1)</span></p>
+      <div class="tw"><table id="tbl3b"></table></div>
+      <div class="sol" hidden><h4>Solución modelo</h4><ul>
+        <li><code>analogRead(A0);</code> lee el valor analógico del pin A0 y devuelve un número entre 0 y 1023.</li>
+        <li><code>analogWrite(9, 128);</code> escribe una señal PWM en el pin 9. Con 128 (de un máximo de 255) equivale a la mitad de potencia.</li>
+        <li><code>Serial.println(valor);</code> muestra el valor en el monitor serie y salta a la línea siguiente.</li>
+        <li><code>int contador = 0;</code> declara una variable entera llamada contador con valor inicial 0.</li></ul></div>
+    </div>
+  </section>
+
+  <!-- EJERCICIO 4 -->
+  <section class="ex" id="ej4">
+    <div class="exh"><span class="exn">Ejercicio 4</span><h2>¿Qué hace este programa?</h2><span class="pin">1,5 puntos</span><span class="chip exs" data-exs="4"></span></div>
+    <p class="intro">Un sensor magnético de puerta (reed switch) da <code>HIGH</code> cuando la puerta está abierta. Observa el programa y responde.</p>
+    <pre class="code" id="code4">const int sensor = 4;
+const int ledRojo = 12;
+const int zumbador = 8;
+
+void setup()
+{
+  pinMode(sensor, INPUT);
+  pinMode(ledRojo, OUTPUT);
+  pinMode(zumbador, OUTPUT);
+}
+
+void loop()
+{
+  if (digitalRead(sensor) == HIGH)
+  {
+    for (int i = 1; i &lt;= 5; i++)
+    {
+      digitalWrite(ledRojo, HIGH);
+      digitalWrite(zumbador, HIGH);
+      delay(200);
+      digitalWrite(ledRojo, LOW);
+      digitalWrite(zumbador, LOW);
+      delay(200);
+    }
+  }
+  else
+  {
+    digitalWrite(ledRojo, LOW);
+    digitalWrite(zumbador, LOW);
+  }
+}</pre>
+    <div class="ap" data-id="4a">
+      <p class="q"><b>a)</b> Describe con tus palabras el funcionamiento completo del programa. <span class="pt">(0,75)</span></p>
+      <textarea id="a4a" data-s rows="5" placeholder="Escribe aquí tu respuesta…"></textarea>
+      <div class="sol" hidden><h4>Solución modelo</h4><p>Si el sensor detecta la puerta abierta (<code>HIGH</code>), el LED rojo y el zumbador se encienden y se apagan a la vez <b>5 veces</b> (bucle <code>for</code>), con 200 ms encendidos y 200 ms apagados. Si la puerta está cerrada (<code>else</code>), el LED y el zumbador permanecen apagados.</p></div>
+    </div>
+    <div class="ap" data-id="4b">
+      <p class="q"><b>b)</b> ¿Cuántas veces se enciende el LED en cada pasada del bucle <code>for</code>? <span class="pt">(0,25)</span></p>
+      <input id="n4b" data-s type="text" inputmode="numeric" style="width:110px">
+      <div class="sol" hidden><h4>Solución</h4><p>5 veces: <code>i</code> va de 1 a 5.</p></div>
+    </div>
+    <div class="ap" data-id="4c">
+      <p class="q"><b>c)</b> ¿Cuánto tiempo dura el bucle <code>for</code> completo, en milisegundos? <span class="pt">(0,25)</span></p>
+      <label style="display:flex;gap:10px;align-items:center"><input id="n4c" data-s type="text" inputmode="numeric" style="width:130px"><span class="mono">ms</span></label>
+      <div class="sol" hidden><h4>Solución</h4><p>Cada vuelta: 200 + 200 = 400 ms. Cinco vueltas: <code>5 · 400 = 2000 ms</code> (2 s).</p></div>
+    </div>
+    <div class="ap" data-id="4d">
+      <p class="q"><b>d)</b> ¿Qué ocurre mientras la puerta está cerrada? <span class="pt">(0,25)</span></p>
+      <select id="s4d" data-s><option value="">—</option><option>El LED parpadea una vez y se apaga</option><option>El LED y el zumbador permanecen apagados</option><option>El zumbador suena sin parar</option><option>El programa se detiene</option></select>
+      <div class="sol" hidden><h4>Solución</h4><p>Se ejecuta el <code>else</code>: LED y zumbador apagados. Como <code>loop()</code> se repite, se vuelve a leer el sensor continuamente.</p></div>
+    </div>
+  </section>
+
+  <!-- EJERCICIO 5 -->
+  <section class="ex" id="ej5">
+    <div class="exh"><span class="exn">Ejercicio 5</span><h2>Busca los errores</h2><span class="pin">2 puntos</span><span class="chip exs" data-exs="5"></span></div>
+    <p class="intro">El siguiente programa debería encender un LED cuando se pulsa <b>cualquiera</b> de los dos pulsadores, pero <b>no compila</b> porque tiene <b>3 errores</b>. Puedes tocar una línea para marcarla mientras buscas.</p>
+    <pre class="code" id="code5" data-pick>int pul1 = 2;
+int pul2 = 3;
+int led = 9;
+
+void setup()
+{
+  pinMode(pul1, INPUT);
+  pinMode(pul2, INPUT);
+  pinMode(led, OUTPUT);
+}
+
+void loop()
+{
+  if (digitalRead(pul1) == HIGH || digitalRead(pul2) == HIGH
+  {
+    digitalWrite(led, High);
+  }
+  else
+  {
+    digitalWrite(led, LOW)
+  }
+}</pre>
+    <div class="ap" data-id="5a">
+      <p class="q"><b>a)</b> Localiza los 3 errores indicando el número de línea y qué falla en cada uno. <span class="pt">(0,9)</span></p>
+      <div class="tw"><table id="tbl5a"></table></div>
+      <div class="sol" hidden><h4>Solución</h4><ul><li><b>Línea 14:</b> falta cerrar el paréntesis del <code>if</code>.</li><li><b>Línea 16:</b> <code>High</code> está mal escrito; la constante es <code>HIGH</code> en mayúsculas.</li><li><b>Línea 20:</b> falta el punto y coma al final de la instrucción.</li></ul></div>
+    </div>
+    <div class="ap" data-id="5b">
+      <p class="q"><b>b)</b> Escribe cómo quedaría cada una de esas líneas corregida. <span class="pt">(0,6)</span></p>
+      <div class="tw"><table id="tbl5b"></table></div>
+      <div class="sol" hidden><h4>Solución</h4><pre class="code" style="padding:10px 14px">if (digitalRead(pul1) == HIGH || digitalRead(pul2) == HIGH)
+digitalWrite(led, HIGH);
+digitalWrite(led, LOW);</pre></div>
+    </div>
+    <div class="ap" data-id="5c">
+      <p class="q"><b>c)</b> Con el programa ya corregido, responde. <span class="pt">(0,5)</span></p>
+      <div class="pair">
+        <label>Si solo se pulsa uno de los pulsadores, el LED…<select id="s5c1" data-s><option value="">—</option><option>Se enciende</option><option>Permanece apagado</option><option>Parpadea</option></select></label>
+        <label>Si se cambia <code>||</code> por <code>&amp;&amp;</code>, el LED solo se enciende cuando…<select id="s5c2" data-s><option value="">—</option><option>Se pulsa al menos uno</option><option>Se pulsan los dos a la vez</option><option>No se pulsa ninguno</option></select></label>
+      </div>
+      <div class="sol" hidden><h4>Solución</h4><p><code>||</code> significa «o»: basta un pulsador para encender el LED. <code>&amp;&amp;</code> significa «y»: hacen falta los dos pulsados a la vez.</p></div>
+    </div>
+  </section>
+
+  <!-- EJERCICIO 7 -->
+  <section class="ex" id="ej6">
+    <div class="exh"><span class="exn">Ejercicio 6</span><h2>Programa una puerta de garaje</h2><span class="pin">2 puntos</span><span class="chip exs" data-exs="6"></span></div>
+    <p class="intro">Se dispone de un LED <b>verde en el pin 6</b>, un LED <b>rojo en el pin 7</b>, un <b>zumbador en el pin 8</b> y un <b>pulsador en el pin 2</b>. Mientras el pulsador <b>no</b> esté pulsado, la puerta está cerrada y permanece encendido el LED <b>verde</b>. Cuando se pulsa, se apaga el verde y se encienden a la vez el <b>rojo y el zumbador durante 4 segundos</b> (la puerta se mueve). Después se apagan ambos y el sistema vuelve a evaluar el pulsador.</p>
+    <div class="ap" data-id="6a">
+      <p class="q"><b>a)</b> Escribe el programa completo (declaración de variables, <code>setup</code> y <code>loop</code>). <span class="pt">(1,6)</span></p>
+      <textarea id="c7" data-s class="codein" rows="18" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" placeholder="// Escribe aquí tu programa"></textarea>
+      <p class="tip">El corrector busca cada pieza del programa (pines, <code>pinMode</code>, lectura, tiempos, orden). No lo ejecuta, así que compara siempre con la solución.</p>
+      <div class="sol" hidden><h4>Solución modelo</h4><pre class="code" id="sol7" style="padding:12px 0">const int pulsador = 2;
+const int verde = 6;
+const int rojo = 7;
+const int zumbador = 8;
+
+void setup()
+{
+  pinMode(pulsador, INPUT);
+  pinMode(verde, OUTPUT);
+  pinMode(rojo, OUTPUT);
+  pinMode(zumbador, OUTPUT);
+}
+
+void loop()
+{
+  if (digitalRead(pulsador) == LOW)
+  {
+    digitalWrite(verde, HIGH);
+  }
+  else
+  {
+    digitalWrite(verde, LOW);
+    digitalWrite(rojo, HIGH);
+    digitalWrite(zumbador, HIGH);
+    delay(4000);
+    digitalWrite(rojo, LOW);
+    digitalWrite(zumbador, LOW);
+  }
+}</pre><p>Hay otras formas válidas, por ejemplo con <code>if (digitalRead(pulsador) == HIGH)</code> y el verde encendido en el <code>else</code>.</p></div>
+    </div>
+    <div class="ap" data-id="6b">
+      <p class="q"><b>b)</b> ¿Qué línea cambiarías para que la puerta tarde el <b>doble</b> de tiempo en moverse? Escríbela completa. <span class="pt">(0,4)</span></p>
+      <input id="t7b" data-s type="text" autocomplete="off" spellcheck="false" class="mono" style="max-width:360px">
+      <div class="sol" hidden><h4>Solución</h4><p>Cambiar <code>delay(4000);</code> por <code>delay(8000);</code>.</p></div>
+    </div>
+  </section>
+
+  <!-- RESUMEN -->
+  <section class="sum" id="resumen">
+    <div class="exh"><span class="exn">Resultado</span><h2>Tu nota orientativa</h2></div>
+    <div class="big"><span id="big">0</span> <small>/ 10</small></div>
+    <div class="tw"><table id="tblsum"></table></div>
+    <p class="tip">Los apartados de texto libre se puntúan según las ideas clave que aparecen en tu respuesta, y el código según las piezas que encuentra. Es una guía para estudiar. La nota del examen real la pone tu profesor.</p>
+    <div class="bar"><button type="button" class="btn" id="all">Corregir todo el simulacro</button><button type="button" class="btn warn" id="reset">Empezar de nuevo</button></div>
+  </section>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var norm=function(s){return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')};
+var fmt=function(n,d){d=d==null?3:d;var p=Math.pow(10,d);return String(Math.round(n*p)/p).replace('.',',')};
+var num=function(v){var x=parseFloat(String(v).replace(',','.'));return isNaN(x)?null:x};
+var near=function(v,t){return v!==null&&Math.abs(v-t)<=Math.abs(t)*0.02};
+var esc=function(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
+
+var MAX={'1a':1.5,'2b':1,'3a':1,'3b':1,'4a':.75,'4b':.25,'4c':.25,'4d':.25,'5a':.9,'5b':.6,'5c':.5,'6a':1.6,'6b':.4};
+var EXMAX={1:1.5,2:1,3:2,4:1.5,5:2,6:2};
+var SC={}, CH={};
+
+/* ---------- almacenamiento (solo comodidad del alumno) ---------- */
+var KEY='simulacro-control-robotica-3eso-v2', store={v:{},w:[]};
+try{var raw=localStorage.getItem(KEY); if(raw){store=JSON.parse(raw)||store; store.v=store.v||{}; store.w=store.w||[]}}catch(e){}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(store))}catch(e){}}
+
+/* ---------- utilidades de interfaz ---------- */
+function sel(id,opts){return '<select id="'+id+'" data-s><option value="">—</option>'+opts.map(function(o){return '<option>'+esc(o)+'</option>'}).join('')+'</select>'}
+function mark(el,ok){el.classList.remove('is-ok','is-bad');if(ok===true)el.classList.add('is-ok');if(ok===false)el.classList.add('is-bad')}
+function report(id,score,items,note){
+  SC[id]=score;
+  var ap=$('.ap[data-id="'+id+'"]'), fb=$('.fb',ap);
+  fb.innerHTML=(note?'<p class="note">'+note+'</p>':'')+'<ul>'+items.map(function(i){return '<li class="'+(i.ok?'ok':'bad')+'"><span class="ic" aria-hidden="true">'+(i.ok?'✓':'✗')+'</span><span>'+i.text+'</span></li>'}).join('')+'</ul>';
+  var c=$('[data-score="'+id+'"]'); c.textContent=fmt(score)+' / '+fmt(MAX[id]);
+  c.className='chip '+(score>=MAX[id]-1e-9?'ok':score>1e-9?'part':'bad');
+  totals();
+}
+function totals(){
+  var ex={},cnt={},t=0,k;
+  for(k in SC){var e=k.charAt(0);ex[e]=(ex[e]||0)+SC[k];cnt[e]=(cnt[e]||0)+1;t+=SC[k]}
+  $('#tot').textContent=fmt(t,2); $('#big').textContent=fmt(t,2);
+  $$('[data-exs]').forEach(function(c){var e=c.dataset.exs;if(cnt[e]){c.textContent=fmt(ex[e])+' / '+fmt(EXMAX[e]);c.className='chip exs '+(ex[e]>=EXMAX[e]-1e-9?'ok':ex[e]>1e-9?'part':'bad')}else{c.textContent='';c.className='chip exs'}});
+  $$('.navl a[data-go^="ej"]').forEach(function(a){var e=a.dataset.go.slice(2);a.classList.toggle('done',!!cnt[e]&&ex[e]>=EXMAX[e]-1e-9)});
+  var rows='<tr><th>Ejercicio</th><th>Obtenido</th><th>Máximo</th></tr>';
+  for(var i=1;i<=6;i++)rows+='<tr><td>Ejercicio '+i+'</td><td class="mono">'+(cnt[i]?fmt(ex[i]):'—')+'</td><td class="mono">'+fmt(EXMAX[i])+'</td></tr>';
+  $('#tblsum').innerHTML=rows;
+}
+function kw(id,fieldId,groups,note){
+  var raw=$('#'+fieldId).value, t=norm(raw);
+  if(!t.trim()){report(id,0,[{ok:false,text:'Escribe tu respuesta antes de comprobar.'}]);return}
+  var hits=0,items=groups.map(function(g){var ok=g[1].test(t);if(ok)hits++;return {ok:ok,text:(ok?'Incluyes: ':'Te falta: ')+g[0]}});
+  report(id,MAX[id]*hits/groups.length,items,note||'Revisa la solución modelo para ver la respuesta completa.');
+}
+
+/* ---------- tablas generadas ---------- */
+CH['1a']=function(){kw('1a','a1a',[
+  ['la señal digital solo tiene dos estados (HIGH/LOW, 0/1).',/dos (estados|valores|niveles|posiciones)|2 (estados|valores|niveles)|solo (dos|2)|high.{0,40}low|low.{0,40}high|\b0\b ?(y|o|\/|-) ?\b1\b|encendido.{0,20}apagado|binari/],
+  ['la señal analógica varía de forma continua (infinitos valores).',/continu|infinit|cualquier valor|todos los valores|muchos valores|gradual|progresiv|intermedi/],
+  ['un ejemplo digital (pulsador, interruptor, reed…).',/pulsador|interruptor|reed|\bled\b|final de carrera|tilt|inclinacion|sensor de (puerta|presencia|movimiento)|rele|zumbador/],
+  ['un ejemplo analógico (potenciómetro, LDR, termistor…).',/potenciometro|\bldr\b|fotocelda|fotorresist|termistor|\bntc\b|temperatura|\bluz\b|humedad|tmp36|sonido|microfono/],
+  ['analogRead() devuelve valores de 0 a 1023.',/1023|1024/]])};
+
+CH['2b']=function(){
+  var raw=$('#a2b').value,t=norm(raw),s=$('#s2b'),okS=s.value==='Menos';mark(s,s.value?okS:null);
+  var g=[['la resistencia limita la corriente que pasa por el LED.',/(limit|reduc|control|regul)[a-z]* .{0,30}(corriente|intensidad)|(corriente|intensidad).{0,40}(limit|reduc|control|baj|excesiv)|proteg/],['sin ella el LED se quema o se destruye.',/quem|funde|destru|dana|estrop|rompe|revient/]];
+  var hits=0,items=[];
+  if(!t.trim())items.push({ok:false,text:'Escribe la respuesta de la primera pregunta.'});
+  else g.forEach(function(x){var ok=x[1].test(t);if(ok)hits++;items.push({ok:ok,text:(ok?'Incluyes: ':'Te falta: ')+x[0]})});
+  items.push({ok:okS,text:okS?'Con 1 kΩ la corriente baja a 3 mA y el LED brilla menos.':'Con 1 kΩ: I = 3 V / 1000 Ω = 3 mA, menos que antes.'});
+  report('2b',.6*hits/2+(okS?.4:0),items);
+};
+
+var T3=[['Se ejecuta una sola vez, al encender o reiniciar la placa','setup()'],['Se repite una y otra vez mientras la placa tiene corriente','loop()'],['Es el lugar adecuado para configurar los pines con pinMode()','setup()'],['Es donde se lee el pulsador y se decide qué hacer en cada momento','loop()']];
+$('#tbl3a').innerHTML='<tr><th>Afirmación</th><th>Función</th></tr>'+T3.map(function(r,i){return '<tr><td>'+esc(r[0])+'</td><td>'+sel('t3a'+i,['setup()','loop()'])+'</td></tr>'}).join('');
+CH['3a']=function(){var s=0,items=[];T3.forEach(function(r,i){var el=$('#t3a'+i),ok=el.value===r[1];mark(el,ok);if(ok)s+=.25;if(!ok)items.push({ok:false,text:esc(r[0])+' → <code>'+r[1]+'</code>'})});
+  if(!items.length)items.push({ok:true,text:'Las cuatro afirmaciones están bien asignadas.'});report('3a',s,items)};
+
+var T3B=[
+ ['analogRead(A0);',[['indica que lee/mide',/lee|leer|lectura|mide|obtiene|captura/],['del pin analógico A0',/analogic|\ba0\b|1023|potenci|sensor/]]],
+ ['analogWrite(9, 128);',[['escribe/genera una señal PWM',/pwm|analogic|escribe|saca|envia|genera|manda|aplica|da (un )?valor/],['128 es la mitad (rango 0–255)',/128|mitad|50 ?%|medio|intermedi|255/]]],
+ ['Serial.println(valor);',[['lo envía al monitor serie',/monitor|serie|serial|pantalla|consola|ordenador|\bpc\b/],['muestra/imprime y salta de línea',/muestra|imprime|escribe|envia|visualiza|salta|linea|print/]]],
+ ['int contador = 0;',[['declara/crea una variable',/declara|crea|define|inicializa|guarda|almacena/],['de tipo entero',/variable|entero|\bint\b|numero/]]]];
+$('#tbl3b').innerHTML='<tr><th style="width:38%">Instrucción</th><th>Qué hace</th></tr>'+T3B.map(function(r,i){return '<tr><td><code>'+esc(r[0])+'</code></td><td><input id="t3b'+i+'" data-s type="text" autocomplete="off"></td></tr>'}).join('');
+CH['3b']=function(){var s=0,items=[];T3B.forEach(function(r,i){var el=$('#t3b'+i),t=norm(el.value),h=0;
+  if(!t.trim()){mark(el,false);items.push({ok:false,text:'<code>'+esc(r[0])+'</code>: sin respuesta.'});return}
+  r[1].forEach(function(g){if(g[1].test(t))h++});mark(el,h===r[1].length?true:h?null:false);s+=.25*h/r[1].length;
+  items.push({ok:h===r[1].length,text:'<code>'+esc(r[0])+'</code>: '+(h===r[1].length?'bien explicada.':'te falta que '+r[1].filter(function(g){return !g[1].test(t)}).map(function(g){return g[0]}).join(' y ')+'.')})});
+  report('3b',s,items)};
+
+/* ---------- ejercicio 4 ---------- */
+CH['4a']=function(){kw('4a','a4a',[
+  ['si el sensor detecta la puerta abierta (HIGH) se activa la alarma.',/(sensor|reed|puerta|iman).{0,70}(high|abiert|detecta|activ)|(si|cuando) .{0,40}(sensor|puerta|abre|detecta)|\bhigh\b/],
+  ['el LED y el zumbador funcionan a la vez.',/(led|luz).{0,50}(zumbador|buzzer|sonido|pita|suena)|(zumbador|buzzer|sonido).{0,50}(led|luz)|alarma/],
+  ['parpadean/suenan 5 veces (bucle for).',/\b5\b|cinco/],
+  ['si la puerta está cerrada, todo permanece apagado (else).',/(si no|sino|en caso contrario|else|cerrada|no (se )?detecta|no esta abiert).{0,70}(apag|low|desactiv)|apagad/]])};
+CH['4b']=function(){var el=$('#n4b'),ok=num(el.value)===5;mark(el,ok);report('4b',ok?.25:0,[{ok:ok,text:ok?'Correcto: <code>i</code> toma los valores 1, 2, 3, 4 y 5.':'Cuenta las vueltas de <code>for (int i = 1; i &lt;= 5; i++)</code>.'}])};
+CH['4c']=function(){var el=$('#n4c'),ok=num(el.value)===2000;mark(el,ok);report('4c',ok?.25:0,[{ok:ok,text:ok?'Correcto: 5 · (200 + 200) = 2000 ms.':'Suma los dos <code>delay</code> de una vuelta y multiplica por las vueltas.'}])};
+CH['4d']=function(){var el=$('#s4d'),ok=el.value==='El LED y el zumbador permanecen apagados';mark(el,el.value?ok:null);report('4d',ok?.25:0,[{ok:ok,text:ok?'Correcto: se ejecuta el <code>else</code>.':'Mira qué instrucciones hay dentro del <code>else</code>.'}])};
+
+/* ---------- ejercicio 5 ---------- */
+var E5={14:{t:'paren',fix:'if(digitalRead(pul1)==HIGH||digitalRead(pul2)==HIGH)'},16:{t:'const',fix:'digitalWrite(led,HIGH);'},20:{t:'semi',fix:'digitalWrite(led,LOW);'}};
+var FIX5={14:'if (digitalRead(pul1) == HIGH || digitalRead(pul2) == HIGH)',16:'digitalWrite(led, HIGH);',20:'digitalWrite(led, LOW);'};
+var TYPES={semi:'Falta un punto y coma ( ; )',paren:'Falta cerrar un paréntesis',const:'Constante mal escrita (mayúsculas/minúsculas)',op:'Operador de comparación incorrecto',brace:'Falta una llave { }',func:'Nombre de función mal escrito'};
+var typeOpts=Object.keys(TYPES).map(function(k){return TYPES[k]});
+$('#tbl5a').innerHTML='<tr><th style="width:130px">Línea nº</th><th>¿Qué falla?</th></tr>'+[0,1,2].map(function(i){return '<tr><td><input id="e5l'+i+'" data-s type="number" min="1" max="22" inputmode="numeric"></td><td>'+sel('e5t'+i,typeOpts)+'</td></tr>'}).join('');
+$('#tbl5b').innerHTML='<tr><th style="width:130px">Línea</th><th>Línea corregida</th></tr>'+[0,1,2].map(function(i){return '<tr><td class="mono" id="e5lab'+i+'">Línea ?</td><td><input id="e5c'+i+'" data-s type="text" class="mono" autocomplete="off" spellcheck="false"></td></tr>'}).join('');
+function labels5(){[0,1,2].forEach(function(i){var v=$('#e5l'+i).value;$('#e5lab'+i).textContent='Línea '+(v||'?')})}
+CH['5a']=function(){
+  var s=0,items=[],got={};
+  [0,1,2].forEach(function(i){var l=$('#e5l'+i),t=$('#e5t'+i),n=parseInt(l.value,10),e=E5[n];
+    if(!l.value){mark(l,false);items.push({ok:false,text:'Fila '+(i+1)+': escribe un número de línea.'});return}
+    if(!e||got[n]){mark(l,false);mark(t,null);items.push({ok:false,text:'La línea '+n+' no tiene un error nuevo. Revisa las demás.'});return}
+    got[n]=1;mark(l,true);s+=.15;var okT=t.value===TYPES[e.t];mark(t,t.value?okT:null);if(okT)s+=.15;
+    items.push({ok:okT,text:'Línea '+n+': '+(okT?'error bien identificado.':'está mal, pero revisa qué falla exactamente.')})});
+  report('5a',s,items,Object.keys(got).length+' de 3 errores localizados.');
+};
+CH['5b']=function(){
+  var s=0,items=[];
+  [0,1,2].forEach(function(i){var n=parseInt($('#e5l'+i).value,10),el=$('#e5c'+i),e=E5[n];
+    if(!e){mark(el,false);items.push({ok:false,text:'Fila '+(i+1)+': primero localiza la línea en el apartado a).'});return}
+    var ok=el.value.replace(/\s+/g,'')===e.fix;mark(el,ok);if(ok)s+=.6/3;
+    items.push({ok:ok,text:'Línea '+n+(ok?': correcta.':': compara con <code>'+esc(FIX5[n])+'</code>.')})});
+  report('5b',s,items)};
+CH['5c']=function(){var a=$('#s5c1'),b=$('#s5c2'),o1=a.value==='Se enciende',o2=b.value==='Se pulsan los dos a la vez';mark(a,a.value?o1:null);mark(b,b.value?o2:null);
+  report('5c',(o1?.25:0)+(o2?.25:0),[{ok:o1,text:o1?'Con || basta un pulsador.':'Con || el LED se enciende si cualquiera de las dos condiciones es cierta.'},{ok:o2,text:o2?'Con && hacen falta los dos.':'Con && deben cumplirse las dos condiciones a la vez.'}])};
+
+/* ---------- resaltado de código ---------- */
+function hl(line){
+  var re=/(\/\/.*$)|\b(void|int|const|if|else|for|while|return|byte|unsigned)\b|\b(HIGH|LOW|INPUT|OUTPUT|INPUT_PULLUP)\b|\b(pinMode|digitalWrite|digitalRead|delay|analogRead|analogWrite|setup|loop)\b|(\b\d+\b)/g,out='',last=0,m;
+  while((m=re.exec(line))){out+=esc(line.slice(last,m.index));var c=m[1]?'cm':m[2]?'k':m[3]?'cn':m[4]?'f':'nm';out+='<span class="'+c+'">'+esc(m[0])+'</span>';last=m.index+m[0].length}
+  return out+esc(line.slice(last));
+}
+function renderCode(pre){
+  var pick=pre.hasAttribute('data-pick'),lines=pre.textContent.replace(/^\n|\n$/g,'').split('\n');
+  pre.innerHTML=lines.map(function(l,i){var tag=pick?'button type="button"':'div',end=pick?'button':'div';return '<'+tag+' class="ln"'+(pick?' aria-pressed="false"':'')+'><span class="n">'+(i+1)+'</span><span>'+(hl(l)||' ')+'</span></'+end+'>'}).join('');
+  if(pick)pre.addEventListener('click',function(e){var b=e.target.closest('.ln');if(!b)return;var on=b.classList.toggle('mark');b.setAttribute('aria-pressed',on)});
+}
+['#code4','#code5','#sol7'].forEach(function(s){renderCode($(s))});
+$$('.sol pre.code').forEach(function(p){if(!p.querySelector('.ln'))renderCode(p)});
+
+/* ---------- ejercicio 7: corrector de código ---------- */
+function parse(src){
+  var code=src.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/.*$/gm,''),consts={},m,re=/(?:const\s+)?(?:int|byte|unsigned\s+int)\s+(\w+)\s*=\s*(\d+)\s*;/g;
+  while((m=re.exec(code)))consts[m[1]]=+m[2];
+  var d=/#define\s+(\w+)\s+(\d+)/g;while((m=d.exec(code)))consts[m[1]]=+m[2];
+  var val=function(a){a=(a||'').trim();if(/^\d+$/.test(a))return +a;if(consts.hasOwnProperty(a))return consts[a];if(/^(HIGH|LOW|INPUT|OUTPUT|INPUT_PULLUP)$/.test(a))return a;return null};
+  var ev=function(txt){var out=[],r=/\b(pinMode|digitalWrite|digitalRead|delay)\s*\(\s*([^(),]*?)\s*(?:,\s*([^()]*?))?\s*\)/g,k;while((k=r.exec(txt)))out.push({f:k[1],a:val(k[2]),b:val(k[3])});return out};
+  var li=code.search(/void\s+loop\s*\(\s*\)/),si=code.search(/void\s+setup\s*\(\s*\)/);
+  return {code:code,all:ev(code),loop:li>=0?ev(code.slice(li)):[],loopText:li>=0?code.slice(li):'',hasSetup:si>=0,hasLoop:li>=0};
+}
+CH['6a']=function(){
+  var src=$('#c7').value,box=$('#c7');
+  if(!src.trim()){mark(box,false);report('6a',0,[{ok:false,text:'Escribe tu programa antes de comprobar.'}]);return}
+  var P=parse(src),A=P.all,Lp=P.loop;
+  var is=function(e,f,a,b){return e.f===f&&e.a===a&&(b===undefined||e.b===b)};
+  var any=function(arr,f,a,b){return arr.some(function(e){return is(e,f,a,b)})};
+  var idx=function(f,a,b){for(var i=0;i<Lp.length;i++)if(is(Lp[i],f,a,b))return i;return -1};
+  var after=function(f,a,b,from){for(var i=from+1;i<Lp.length;i++)if(is(Lp[i],f,a,b))return true;return false};
+  var inPin=function(p){return A.some(function(e){return e.a===p})};
+  var ih7=idx('digitalWrite',7,'HIGH'),ih8=idx('digitalWrite',8,'HIGH'),id4=idx('delay',4000);
+  var bothHigh=ih7>=0&&ih8>=0?Math.max(ih7,ih8):-1;
+  var chk=[
+   ['Usa los pines correctos (2, 6, 7 y 8).',inPin(2)&&inPin(6)&&inPin(7)&&inPin(8)],
+   ['Incluye <code>void setup()</code> y <code>void loop()</code>.',P.hasSetup&&P.hasLoop],
+   ['Configura el pulsador (pin 2) como <code>INPUT</code>.',any(A,'pinMode',2,'INPUT')||any(A,'pinMode',2,'INPUT_PULLUP')],
+   ['Configura los pines 6, 7 y 8 como <code>OUTPUT</code>.',any(A,'pinMode',6,'OUTPUT')&&any(A,'pinMode',7,'OUTPUT')&&any(A,'pinMode',8,'OUTPUT')],
+   ['Lee el pulsador con <code>digitalRead</code> dentro de un <code>if</code>.',any(Lp,'digitalRead',2)&&/\bif\s*\(/.test(P.loopText)],
+   ['Enciende el LED verde (<code>digitalWrite(verde, HIGH)</code>) mientras no se pulsa.',idx('digitalWrite',6,'HIGH')>=0],
+   ['Apaga el LED verde al pulsar (<code>digitalWrite(verde, LOW)</code>).',idx('digitalWrite',6,'LOW')>=0],
+   ['Enciende el LED rojo y el zumbador (pines 7 y 8 a <code>HIGH</code>).',ih7>=0&&ih8>=0],
+   ['Espera 4 segundos (<code>delay(4000)</code>) después de encenderlos.',id4>=0&&bothHigh>=0&&id4>bothHigh],
+   ['Apaga el rojo y el zumbador después de la espera.',id4>=0&&after('digitalWrite',7,'LOW',id4)&&after('digitalWrite',8,'LOW',id4)]];
+  var s=0,items=chk.map(function(c){if(c[1])s+=.16;return {ok:!!c[1],text:c[0]}});
+  var warns=[],o=(P.code.match(/\{/g)||[]).length,c=(P.code.match(/\}/g)||[]).length,po=(P.code.match(/\(/g)||[]).length,pc=(P.code.match(/\)/g)||[]).length;
+  if(o!==c)warns.push('Las llaves <code>{ }</code> no están equilibradas ('+o+' abiertas, '+c+' cerradas).');
+  if(po!==pc)warns.push('Los paréntesis no están equilibrados ('+po+' abiertos, '+pc+' cerrados).');
+  if(/^\s*(pinMode|digitalWrite|delay)\s*\(.*\)\s*$/m.test(P.code))warns.push('Alguna instrucción no termina en punto y coma.');
+  warns.forEach(function(w){items.push({ok:false,text:'Aviso de sintaxis: '+w})});
+  mark(box,s>=1.6-1e-9&&!warns.length?true:s<.3?false:null);
+  report('6a',s,items,'Cada pieza vale 0,16. Si cambias los nombres de las variables no pasa nada.');
+};
+CH['6b']=function(){var el=$('#t7b'),t=el.value.replace(/\s+/g,''),ok=/delay\(8000\)/.test(t)||t==='8000';mark(el,ok);report('6b',ok?.4:0,[{ok:ok,text:ok?'Correcto: <code>delay(8000);</code> duplica los 4 s.':'4 segundos son 4000 ms. El doble son…'}])};
+$('#c7').addEventListener('keydown',function(e){if(e.key==='Tab'){e.preventDefault();var t=e.target,s=t.selectionStart;t.value=t.value.slice(0,s)+'  '+t.value.slice(t.selectionEnd);t.selectionStart=t.selectionEnd=s+2;t.dispatchEvent(new Event('input',{bubbles:true}))}});
+
+/* ---------- montaje general ---------- */
+$$('.ap').forEach(function(ap){
+  var id=ap.dataset.id,bar=document.createElement('div');bar.className='bar';
+  bar.innerHTML='<button type="button" class="btn" data-check="'+id+'">Comprobar</button><button type="button" class="btn ghost" data-sol="'+id+'" aria-expanded="false">Ver solución</button><span class="chip" data-score="'+id+'"></span>';
+  var fb=document.createElement('div');fb.className='fb';fb.setAttribute('aria-live','polite');
+  var sol=$('.sol',ap);ap.insertBefore(bar,sol);ap.insertBefore(fb,sol);
+});
+document.addEventListener('click',function(e){
+  var c=e.target.closest('[data-check]');if(c){CH[c.dataset.check]();return}
+  var s=e.target.closest('[data-sol]');if(s){var ap=s.closest('.ap'),box=$('.sol',ap);box.hidden=!box.hidden;s.setAttribute('aria-expanded',String(!box.hidden));s.textContent=box.hidden?'Ver solución':'Ocultar solución';return}
+  var g=e.target.closest('[data-go]');if(g){var t=document.getElementById(g.dataset.go);if(t)t.scrollIntoView({behavior:'smooth',block:'start'})}
+});
+document.addEventListener('keydown',function(e){var g=e.target.closest&&e.target.closest('[data-go]');if(g&&(e.key==='Enter'||e.key===' ')){e.preventDefault();g.click()}});
+$('#all').addEventListener('click',function(){Object.keys(MAX).forEach(function(k){CH[k]()});$('#resumen').scrollIntoView({behavior:'smooth',block:'start'})});
+var rb=$('#reset'),rt=null;
+rb.addEventListener('click',function(){
+  if(!rt){rb.textContent='¿Seguro? Pulsa otra vez';rt=setTimeout(function(){rb.textContent='Empezar de nuevo';rt=null},4000);return}
+  clearTimeout(rt);rt=null;rb.textContent='Empezar de nuevo';
+  $$('[data-s]').forEach(function(f){if(['nombre','grupo','fecha'].indexOf(f.id)>=0)return;f.value='';mark(f,undefined)});
+  store.v={};var keep={};['nombre','grupo','fecha'].forEach(function(k){keep[k]=$('#'+k).value});store.v=keep;
+  SC={};
+  $$('.fb').forEach(function(f){f.innerHTML=''});$$('[data-score]').forEach(function(c){c.textContent='';c.className='chip'});
+  $$('.sol').forEach(function(b){b.hidden=true});$$('[data-sol]').forEach(function(b){b.textContent='Ver solución';b.setAttribute('aria-expanded','false')});
+  $$('#code5 .ln.mark').forEach(function(l){l.classList.remove('mark')});labels5();totals();persist();
+});
+document.addEventListener('input',function(e){var t=e.target;if(t.hasAttribute&&t.hasAttribute('data-s')){store.v[t.id]=t.value;persist();mark(t,undefined);if(/^e5l/.test(t.id))labels5()}});
+document.addEventListener('change',function(e){var t=e.target;if(t.hasAttribute&&t.hasAttribute('data-s')){store.v[t.id]=t.value;persist();mark(t,undefined)}});
+
+$$('[data-s]').forEach(function(f){if(store.v&&store.v[f.id]!=null)f.value=store.v[f.id]});
+labels5();totals();
+})();
+</script>
+
+</body></html>
