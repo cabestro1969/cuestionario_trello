@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Solucionario Práctica Punto de luz</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --ink:#14202b; --muted:#566574; --line:#c9d3dd;
+  --accent:#1d4cb5; --accent-ink:#ffffff; --accent-soft:#e3ebfb; --ok:#17764a; --warn:#a4400f; --warn-soft:#fbeadf;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-display:'Barlow Condensed','Arial Narrow',Arial,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e151c; --surface:#16202a; --ink:#e8eef4; --muted:#9aaab9; --line:#2c3b49;
+    --accent:#86abff; --accent-ink:#0a1222; --accent-soft:#1c2c4a; --ok:#5fd29b; --warn:#ffb085; --warn-soft:#3a2418; color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55;padding:0 max(16px,env(safe-area-inset-left,0px))}
+h1,h2,h3{margin:0;text-wrap:balance}
+.wrap{max-width:980px;margin:0 auto;padding:20px 0 56px;display:flex;flex-direction:column;gap:20px}
+.sheet-head{background:var(--surface);border:2px solid var(--ink);border-radius:2px}
+.sheet-head .r1{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--ink)}
+.sheet-head .r1 b{font-family:var(--font-display);font-size:38px;line-height:1;letter-spacing:.02em}
+.sheet-head .r1 span{font-weight:600}
+.sheet-head .r2{padding:10px 16px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.stamp{font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--warn);border:1.5px solid var(--warn);padding:3px 10px;border-radius:3px}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:6px;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.card h2{font-family:var(--font-display);font-size:28px;letter-spacing:.02em;text-transform:uppercase;margin-bottom:8px}
+.card h3{font-size:16px;font-weight:600;margin-bottom:4px}
+.lead{margin:0;color:var(--muted);max-width:70ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
+figure{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+figure .paper{background:#fff;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:13.5px;color:var(--muted);max-width:60ch}
+figcaption b{color:var(--ink)}
+.ans{border-top:1px solid var(--line);padding-block:14px;display:flex;flex-direction:column;gap:6px}
+.ans:first-of-type{border-top:0}
+.ans .q{font-weight:600;max-width:75ch}
+.ans .a{margin:0;max-width:75ch}
+.ans .key{display:inline-block;font-family:var(--font-mono);font-size:12px;background:var(--accent-soft);color:var(--accent);padding:2px 8px;border-radius:4px;width:fit-content}
+.ans .note{margin:0;font-size:13.5px;color:var(--muted);max-width:75ch}
+.warnbox{background:var(--warn-soft);border-left:4px solid var(--warn);padding:10px 14px;border-radius:4px;font-size:14px;max-width:75ch}
+ul.cl{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.src{font-size:13px;color:var(--muted)}
+.src a{color:var(--accent)}
+.swatch{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:6px;border:1px solid var(--line)}
+.ln{stroke:#111827;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.tx{font:500 14px 'IBM Plex Sans',sans-serif;fill:#111827}
+.tm{font:500 12px 'IBM Plex Sans',sans-serif;fill:#566574}
+@media (max-width:640px){.sheet-head .r1 b{font-size:30px}}
+@media print{
+  body{background:#fff;color:#000;padding:0}
+  html{background:#fff}
+  .btn,.noprint{display:none!important}
+  .wrap{padding:0;gap:12px;max-width:none}
+  .card,figure{break-inside:avoid}
+  .card{border-color:#999}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="sheet-head">
+    <div class="r1"><b>TECNOLOGIA</b><span>IES Comuneros de Castilla</span></div>
+    <div class="r2">
+      <strong>Práctica 2: “Punto de luz” · Solucionario</strong>
+      <span style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span class="stamp">Solo profesorado</span><button class="btn" type="button" onclick="window.print()">Imprimir / guardar PDF</button></span>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2>Resumen de la práctica</h2>
+    <p class="lead">Instalar un punto de luz en el techo de una habitación y un interruptor junto a la puerta, en la entrada, para encender y apagar la bombilla. El alumno entrega cuatro esquemas (unifilar, multifilar, topográfico y funcional), monta el circuito en el tablero de pruebas y responde cuatro cuestiones. Tiempo previsto: 25 minutos.</p>
+  </section>
+
+  <section class="card">
+    <h2>Esquemas resueltos</h2>
+    <div class="grid2">
+
+      <figure>
+        <div class="paper">
+          <svg viewBox="0 0 640 340" role="img" aria-label="Esquema unifilar resuelto">
+            <rect width="640" height="340" fill="#fff"/>
+            <line class="ln" x1="40" y1="100" x2="260" y2="100"/>
+            <polygon class="ln" points="260,100 300,78 340,100 300,122"/>
+            <path class="ln" d="M280 89 L320 111 M320 89 L280 111" style="stroke-width:1.5"/>
+            <line class="ln" x1="340" y1="100" x2="546" y2="100"/>
+            <path class="ln" d="M546 86 L574 114 M574 86 L546 114"/>
+            <path class="ln" d="M150 110 L170 90"/><text class="tx" x="173" y="88">3</text>
+            <path class="ln" d="M440 110 L460 90"/><text class="tx" x="463" y="88">3</text>
+            <line class="ln" x1="300" y1="122" x2="300" y2="250"/>
+            <path class="ln" d="M290 192 L310 172"/><text class="tx" x="314" y="178">2</text>
+            <circle class="ln" cx="300" cy="270" r="18" fill="#fff"/>
+            <path class="ln" d="M313 257 L334 236"/>
+            <text class="tm" x="40" y="130">Alimentación</text>
+            <text class="tm" x="352" y="70">Caja de derivación</text>
+            <text class="tm" x="500" y="130">Punto de luz</text>
+            <text class="tm" x="330" y="296">Interruptor</text>
+            <text class="tm" x="40" y="326">3 = neutro + retorno + tierra · 2 = fase + retorno</text>
+          </svg>
+        </div>
+        <figcaption><b>Unifilar.</b> Una línea por circuito. Hasta el punto de luz (aspa) llegan 3 conductores y hasta el interruptor (círculo con trazo) llegan 2.</figcaption>
+      </figure>
+
+      <figure>
+        <div class="paper">
+          <svg viewBox="0 0 640 360" role="img" aria-label="Esquema multifilar resuelto">
+            <rect width="640" height="360" fill="#fff"/>
+            <circle class="ln" cx="60" cy="50" r="5"/><text class="tx" x="30" y="38">L1</text>
+            <circle class="ln" cx="60" cy="260" r="5"/><text class="tx" x="36" y="248">N</text>
+            <line class="ln" x1="65" y1="50" x2="580" y2="50"/>
+            <line class="ln" x1="65" y1="260" x2="580" y2="260"/>
+            <path class="ln" d="M70 150 q10 -14 20 0 t20 0"/>
+            <circle cx="400" cy="50" r="4.5" fill="#111827"/>
+            <circle cx="400" cy="260" r="4.5" fill="#111827"/>
+            <line class="ln" x1="400" y1="50" x2="400" y2="92"/>
+            <circle class="ln" cx="400" cy="95" r="3" fill="#fff"/>
+            <path class="ln" d="M400 97 L414 124"/>
+            <circle class="ln" cx="400" cy="128" r="3" fill="#fff"/>
+            <line class="ln" x1="400" y1="131" x2="400" y2="162"/>
+            <circle class="ln" cx="400" cy="178" r="16" fill="#fff"/>
+            <path class="ln" d="M389 167 L411 189 M411 167 L389 189"/>
+            <line class="ln" x1="400" y1="194" x2="400" y2="260"/>
+            <path class="ln" d="M384 178 L340 178 L340 300 L150 300 L150 312"/>
+            <path class="ln" d="M132 312 L168 312 M139 320 L161 320 M146 328 L154 328"/>
+            <text class="tm" x="424" y="112">Interruptor</text>
+            <text class="tm" x="424" y="182">Lámpara</text>
+            <text class="tm" x="176" y="332">Tierra</text>
+            <text class="tm" x="40" y="350">La fase pasa por el interruptor antes de llegar a la lámpara</text>
+          </svg>
+        </div>
+        <figcaption><b>Multifilar.</b> La fase L1 llega al interruptor, el interruptor la lleva a la lámpara y la lámpara cierra el circuito con el neutro N. La tierra va al chasis de la luminaria.</figcaption>
+      </figure>
+
+      <figure>
+        <div class="paper">
+          <svg viewBox="0 0 960 540" role="img" aria-label="Esquema topográfico resuelto">
+            <rect width="960" height="540" fill="#fff"/>
+            <polygon points="150,160 330,70 330,380 150,450" fill="#fbf6a6" stroke="#7a7440" stroke-width="2"/>
+            <rect x="330" y="70" width="400" height="310" fill="#fdf9b8" stroke="#7a7440" stroke-width="2"/>
+            <polygon points="150,450 330,380 730,380 550,450" fill="#f2d9a4" stroke="#7a5a2a" stroke-width="2"/>
+            <g stroke="#c8955a" stroke-width="1.2">
+              <line x1="380" y1="380" x2="200" y2="450"/><line x1="430" y1="380" x2="250" y2="450"/><line x1="480" y1="380" x2="300" y2="450"/>
+              <line x1="530" y1="380" x2="350" y2="450"/><line x1="580" y1="380" x2="400" y2="450"/><line x1="630" y1="380" x2="450" y2="450"/><line x1="680" y1="380" x2="500" y2="450"/>
+              <line x1="270" y1="403" x2="670" y2="403"/><line x1="210" y1="427" x2="610" y2="427"/>
+            </g>
+            <polygon points="190,180 250,150 250,260 190,290" fill="#bfe4f5" stroke="#4a7a8c" stroke-width="2"/>
+            <line x1="220" y1="165" x2="220" y2="275" stroke="#4a7a8c" stroke-width="1.5"/>
+            <rect x="620" y="150" width="80" height="230" fill="#f59a3a" stroke="#8a4a12" stroke-width="3"/>
+            <g fill="#fff" stroke="#8a4a12" stroke-width="1.5">
+              <rect x="634" y="164" width="24" height="22"/><rect x="664" y="164" width="24" height="22"/>
+              <rect x="634" y="192" width="24" height="22"/><rect x="664" y="192" width="24" height="22"/>
+              <rect x="634" y="220" width="24" height="22"/><rect x="664" y="220" width="24" height="22"/>
+            </g>
+            <rect x="655" y="84" width="36" height="16" fill="#fff" stroke="#555" stroke-width="2"/>
+            <g class="ln">
+              <path d="M392 179 L527 92 L655 92"/>
+              <path d="M386 185 L386 185" />
+              <path d="M527 92 L527 242"/>
+              <path d="M448 138 L464 154" style="stroke-width:2"/>
+              <path d="M590 100 L602 84" style="stroke-width:2"/>
+              <path d="M521 176 L533 160" style="stroke-width:2"/>
+              <path d="M373 172 L399 198 M399 172 L373 198"/>
+              <circle cx="527" cy="252" r="10" fill="#fff"/>
+              <path d="M534 245 L548 231"/>
+            </g>
+            <text class="tx" x="468" y="132">3</text>
+            <text class="tx" x="606" y="82">3</text>
+            <text class="tx" x="540" y="168">2</text>
+            <text class="tm" x="458" y="62">Caja de derivación</text>
+            <text class="tm" x="340" y="222">Punto de luz</text>
+            <text class="tm" x="470" y="282">Interruptor</text>
+          </svg>
+        </div>
+        <figcaption><b>Topográfico.</b> Desde la caja de derivación, 3 conductores suben por el techo hasta el punto de luz y 2 bajan por la pared hasta el interruptor, junto al marco de la puerta.</figcaption>
+      </figure>
+
+      <figure>
+        <div class="paper">
+          <svg viewBox="0 0 960 540" role="img" aria-label="Esquema funcional del tablero resuelto">
+            <rect width="960" height="540" fill="#fff"/>
+            <rect x="40" y="30" width="880" height="480" fill="#dcc08f" stroke="#a07a45" stroke-width="3"/>
+            <text class="tm" x="54" y="52" style="fill:#4b3a22">Tablero de pruebas</text>
+            <rect x="250" y="60" width="170" height="130" fill="#eef1f4" stroke="#7d8995" stroke-width="2"/>
+            <rect x="560" y="60" width="170" height="130" fill="#eef1f4" stroke="#7d8995" stroke-width="2"/>
+            <text class="tm" x="258" y="182">Caja de derivación 1</text>
+            <text class="tm" x="568" y="182">Caja de derivación 2</text>
+            <!-- tubos -->
+            <g stroke="#222" stroke-width="26"><line x1="420" y1="118" x2="560" y2="118"/><line x1="645" y1="190" x2="645" y2="330"/><line x1="730" y1="118" x2="775" y2="118"/></g>
+            <g stroke="#666" stroke-width="26" stroke-dasharray="2 5"><line x1="420" y1="118" x2="560" y2="118"/><line x1="645" y1="190" x2="645" y2="330"/><line x1="730" y1="118" x2="775" y2="118"/></g>
+            <!-- regletas -->
+            <rect x="322" y="98" width="26" height="40" fill="#cfd6dd" stroke="#7d8995" stroke-width="1.5"/>
+            <rect x="775" y="98" width="26" height="40" fill="#cfd6dd" stroke="#7d8995" stroke-width="1.5"/>
+            <g fill="#7b8794"><circle cx="335" cy="108" r="3.5"/><circle cx="335" cy="118" r="3.5"/><circle cx="335" cy="128" r="3.5"/><circle cx="788" cy="108" r="3.5"/><circle cx="788" cy="118" r="3.5"/><circle cx="788" cy="128" r="3.5"/></g>
+            <!-- toma de alimentación -->
+            <rect x="70" y="88" width="60" height="54" fill="#f7f1e1" stroke="#6b6454" stroke-width="2"/>
+            <g fill="#6b6454"><circle cx="91" cy="115" r="4"/><circle cx="109" cy="115" r="4"/></g>
+            <text class="tm" x="66" y="158" style="fill:#4b3a22">Alimentación</text>
+            <!-- hilos -->
+            <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M130 108 L788 108" stroke="#2e8b3d"/>
+              <path d="M130 108 L788 108" stroke="#f2d21b" stroke-dasharray="6 6"/>
+              <path d="M130 128 L788 128 L810 128 L810 135 L850 135" stroke="#1f5fd0"/>
+              <path d="M130 118 L640 118 L640 392 L636 404" stroke="#8a4b1f"/>
+              <path d="M654 404 L650 392 L650 118 L810 118 L810 95 L850 95" stroke="#8a4b1f"/>
+            </g>
+            <!-- interruptor -->
+            <rect x="628" y="395" width="34" height="52" rx="4" fill="#f3f3f3" stroke="#6b6b6b" stroke-width="2"/>
+            <rect x="636" y="412" width="18" height="28" fill="#fff" stroke="#6b6b6b" stroke-width="1.5"/>
+            <g fill="#6b6b6b"><circle cx="636" cy="404" r="2.5"/><circle cx="654" cy="404" r="2.5"/></g>
+            <text class="tm" x="672" y="428" style="fill:#4b3a22">Interruptor</text>
+            <!-- lámpara -->
+            <g fill="#f6f6f2" stroke="#8a8a80" stroke-width="2"><circle cx="850" cy="115" r="30"/><circle cx="850" cy="115" r="12" fill="none"/></g>
+            <circle cx="850" cy="95" r="3.5" fill="#b5651d"/><circle cx="850" cy="135" r="3.5" fill="#1f5fd0"/>
+            <text class="tm" x="822" y="160" style="fill:#4b3a22">Lámpara</text>
+            <!-- leyenda -->
+            <g class="tm" style="fill:#4b3a22">
+              <line x1="70" y1="480" x2="100" y2="480" stroke="#8a4b1f" stroke-width="4"/><text x="106" y="484">Fase y retorno</text>
+              <line x1="210" y1="480" x2="240" y2="480" stroke="#1f5fd0" stroke-width="4"/><text x="246" y="484">Neutro</text>
+              <line x1="310" y1="480" x2="340" y2="480" stroke="#2e8b3d" stroke-width="4"/><line x1="310" y1="480" x2="340" y2="480" stroke="#f2d21b" stroke-width="4" stroke-dasharray="6 6"/><text x="346" y="484">Tierra (se deja preparada)</text>
+            </g>
+          </svg>
+        </div>
+        <figcaption><b>Funcional del tablero.</b> La fase (marrón) baja desde la caja 2 al interruptor y vuelve como retorno hasta la lámpara. El neutro (azul) va directo a la lámpara y la tierra llega a la regleta del portalámparas sin conectarse.</figcaption>
+      </figure>
+
+    </div>
+    <p class="lead" style="margin-top:12px">Los esquemas parten de los modelos del PDF original de la práctica. Son una referencia: el alumno puede colocar los elementos de otro modo si el circuito funciona y el interruptor corta la fase.</p>
+  </section>
+
+  <section class="card">
+    <h2>Respuestas a las cuestiones</h2>
+
+    <div class="ans">
+      <div class="q">1ª ¿Por qué se indica que llegan tres hilos hasta la bombilla?</div>
+      <span class="key">Respuesta</span>
+      <p class="a">Porque al punto de luz llegan tres conductores: el <strong>neutro</strong> (azul), el <strong>retorno</strong> o fase que viene del interruptor (marrón) y el de <strong>protección</strong> o tierra (verde-amarillo). El interruptor solo necesita dos: la fase que llega y el retorno hacia la lámpara.</p>
+      <p class="note">Por eso en el unifilar y el topográfico el tramo hacia la lámpara lleva un 3 y el tramo hacia el interruptor lleva un 2.</p>
+    </div>
+
+    <div class="ans">
+      <div class="q">2ª ¿Dónde se debe conectar el hilo de protección en la bombilla? ¿Es obligatorio en los receptores?</div>
+      <span class="key">Respuesta</span>
+      <p class="a">Se conecta al <strong>chasis metálico de la luminaria</strong>, es decir, a sus partes metálicas accesibles. Sí es obligatorio llevar el conductor de protección hasta el punto de luz. En esta práctica el portalámparas es de plástico, así que el hilo llega hasta él pero no se conecta a ningún chasis; en una instalación real se deja preparado por si en el futuro se instala una luminaria metálica.</p>
+      <p class="note">Referencia: REBT, ITC-BT-25, nota 9 de la tabla 1: el punto de luz incluirá conductor de protección. El enunciado de la práctica lo expresa de la misma forma.</p>
+    </div>
+
+    <div class="ans">
+      <div class="q">3ª ¿A qué altura respecto del suelo debemos poner el interruptor?</div>
+      <span class="key">Respuesta orientativa</span>
+      <p class="a">Como referencia habitual, a unos <strong>1,10 m</strong> del suelo, junto a la puerta y en el lado de la manilla para encontrarlo al entrar.</p>
+      <div class="warnbox">Dato a confirmar: no he podido contrastar una altura fija en el REBT. El 1,10 m es el valor de uso habitual en instalaciones de vivienda. En zonas accesibles suele exigirse un intervalo de altura para los mecanismos. Antes de darlo como única respuesta válida, compruébalo con la Guía técnica del REBT o con el criterio de vuestro departamento.</div>
+    </div>
+
+    <div class="ans">
+      <div class="q">4ª ¿Has encontrado alguna dificultad durante el montaje? ¿Cuál?</div>
+      <span class="key">Respuesta abierta</span>
+      <p class="a">No hay una respuesta única; se valora que el alumno concrete la dificultad. Las más habituales son:</p>
+      <ul class="cl">
+        <li>Confundir la fase que llega al interruptor con el retorno que sale de él.</li>
+        <li>Llevar la fase directamente a la lámpara y poner el interruptor en el neutro.</li>
+        <li>Dejar la tierra sin conectar al interruptor o a la regleta, o cortar el hilo equivocado.</li>
+        <li>Pelar demasiado el hilo o dejar puntas de cobre al aire en la regleta.</li>
+        <li>No saber cuántos conductores hay que dibujar en cada tramo del unifilar.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Qué comprobar en el montaje</h2>
+    <div class="grid2">
+      <div>
+        <h3>Conexionado</h3>
+        <ul class="cl">
+          <li><span class="swatch" style="background:#8a4b1f"></span>Fase y retorno en marrón, <span class="swatch" style="background:#1f5fd0"></span>neutro en azul y <span class="swatch" style="background:linear-gradient(135deg,#2e8b3d 50%,#f2d21b 50%)"></span>tierra en verde-amarillo.</li>
+          <li>El interruptor corta la fase, nunca el neutro.</li>
+          <li>El hilo de protección llega hasta el portalámparas aunque no se conecte.</li>
+          <li>Ningún hilo suelto ni punta de cobre al aire en el tablero.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Prueba de funcionamiento</h3>
+        <ul class="cl">
+          <li>Revisión visual antes de dar tensión.</li>
+          <li>Bombilla colocada en el portalámparas y tablero unido a la red con la manguera.</li>
+          <li>En reposo la bombilla está apagada; al pulsar el interruptor se enciende.</li>
+          <li>Si no enciende, revisar el retorno entre el interruptor y la lámpara.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="card noprint">
+    <h3>Fuentes</h3>
+    <p class="src">Conductor de protección en puntos de luz y tabla de circuitos: <a href="https://normatia.com/es/normativa/rebt/2025/itc-bt-25-instalaciones-interiores-en-viviendas-numero-de-circuitos-y-caracteristicas/">ITC-BT-25, Instalaciones interiores en viviendas (Normatia)</a>. Para contrastar la altura de los mecanismos: <a href="https://www.plcmadrid.es/wp-content/uploads/guia_bt_25_jul12R2.pdf">Guía técnica BT-25</a>.</p>
+  </section>
+</main>
+</body>
+</html>
