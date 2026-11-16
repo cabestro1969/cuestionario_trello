@@ -1,0 +1,2973 @@
+<!doctype html>
+<html lang="es"><head>
+  
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AulaFactura · Tutorial y Simulador de la Factura de la Luz</title>
+  <meta name="description" content="Aplicación educativa en HTML para entender todos los apartados de una factura eléctrica española (tarifa 2.0TD, potencia, energía, peajes, impuestos y origen energético) con simulador interactivo y práctica para alumnos.">
+  <meta property="og:title" content="AulaFactura · Tutorial y Simulador de la Factura de la Luz">
+  <meta property="og:description" content="Aprende cómo se calcula tu factura de electricidad y practica con ejercicios interactivos.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Outfit:wght@500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #F8FAFC;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #F1F5F9;
+      --bg-muted: #E2E8F0;
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --border-hairline: #E2E8F0;
+      --border-strong: #CBD5E1;
+      --accent: #059669;
+      --accent-hover: #047857;
+      --accent-soft: #ECFDF5;
+      --accent-border: #A7F3D0;
+      --azure: #0284C7;
+      --azure-soft: #F0F9FF;
+      --amber: #D97706;
+      --amber-soft: #FFFBEB;
+      --danger: #DC2626;
+      --danger-soft: #FEF2F2;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05), 0 4px 14px rgba(15, 23, 42, 0.03);
+      --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+      --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background-color: var(--bg-canvas);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-display);
+      margin: 0;
+      color: var(--text-primary);
+      line-height: 1.2;
+      text-wrap: balance;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    button, input, select {
+      font-family: inherit;
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .num {
+      font-variant-numeric: tabular-nums;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Top Bar Contract: 3 zones, single row */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .topbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+
+    .brand-link {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .brand-link span {
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      overflow-x: auto;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      padding: 8px 2px;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      border-bottom: 2px solid transparent;
+      transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1), border-color 150ms cubic-bezier(0.16, 1, 0.3, 1);
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .nav-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-btn[aria-current="page"] {
+      color: var(--accent);
+      font-weight: 600;
+      border-bottom-color: var(--accent);
+    }
+
+    .primary-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #FFFFFF;
+      background-color: var(--text-primary);
+      border: 1px solid var(--text-primary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-height: 40px;
+      transition: background-color 150ms cubic-bezier(0.16, 1, 0.3, 1), transform 150ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .primary-action-btn:hover {
+      background-color: #1E293B;
+    }
+
+    .primary-action-btn:active {
+      transform: translateY(1px);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px 24px 64px;
+    }
+
+    /* Hero Strip (Compact, editorial, zero clutter) */
+    .page-intro {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 24px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .intro-kicker {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .intro-title {
+      font-size: clamp(1.75rem, 3vw, 2.35rem);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      max-width: 24ch;
+    }
+
+    .intro-lead {
+      font-size: 0.96875rem;
+      color: var(--text-secondary);
+      max-width: 62ch;
+      margin-top: 8px;
+    }
+
+    .mode-switcher {
+      display: inline-flex;
+      background: var(--bg-subtle);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-hairline);
+      gap: 4px;
+    }
+
+    .mode-tab {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      white-space: nowrap;
+      min-height: 40px;
+      transition: background-color 150ms ease, color 150ms ease;
+    }
+
+    .mode-tab:hover {
+      color: var(--text-primary);
+    }
+
+    .mode-tab[aria-selected="true"] {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    }
+
+    /* Sections visibility */
+    .view-panel {
+      display: none;
+    }
+
+    .view-panel.active {
+      display: block;
+    }
+
+    /* Two-Zone Educational Sandbox Layout */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.38fr) minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .sandbox-grid.simulator-layout {
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.38fr);
+    }
+
+    /* Card Surface (Single Elevation) */
+    .surface-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+    }
+
+    /* Interactive Specimen Bill (Tutorial) */
+    .bill-sheet {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .bill-banner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .bill-banner-meta {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    .bill-zone {
+      width: 100%;
+      text-align: left;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+      display: block;
+    }
+
+    .bill-zone:hover {
+      border-color: var(--border-strong);
+      background: #FAFCFF;
+    }
+
+    .bill-zone.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .zone-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .zone-title {
+      font-family: var(--font-display);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .zone-step-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .bill-zone.selected .zone-step-label {
+      color: var(--accent-hover);
+      font-weight: 600;
+    }
+
+    /* Bill inner tables & rows */
+    .kv-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 16px;
+      font-size: 0.84375rem;
+    }
+
+    .kv-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .kv-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .kv-val {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .line-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84375rem;
+    }
+
+    .line-table th,
+    .line-table td {
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+      vertical-align: top;
+    }
+
+    .line-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .line-table td.amount {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      font-weight: 500;
+      padding-left: 12px;
+    }
+
+    .line-table td.formula-col {
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 0.78125rem;
+      padding-left: 10px;
+    }
+
+    .line-total-row td {
+      padding-top: 10px;
+      font-weight: 700;
+      color: var(--text-primary);
+      border-top: 1px solid var(--border-strong);
+    }
+
+    .big-total-bar {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding-top: 10px;
+      margin-top: 6px;
+      border-top: 2px solid var(--text-primary);
+    }
+
+    .big-total-label {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .big-total-value {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--accent-hover);
+    }
+
+    /* Sticky Inspector Panel (Right zone of Tutorial) */
+    .inspector-card {
+      position: sticky;
+      top: 84px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .inspector-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .step-counter {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      font-size: 0.84375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      white-space: nowrap;
+      min-height: 40px;
+      transition: background-color 150ms ease, border-color 150ms ease;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--bg-subtle);
+    }
+
+    .btn-secondary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-accent {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      font-size: 0.84375rem;
+      font-weight: 600;
+      color: #FFFFFF;
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      white-space: nowrap;
+      min-height: 40px;
+      transition: background-color 150ms ease;
+    }
+
+    .btn-accent:hover {
+      background: var(--accent-hover);
+    }
+
+    .inspector-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .inspector-summary {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+    }
+
+    .formula-block {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+    }
+
+    .formula-block-title {
+      font-size: 0.78125rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .formula-code {
+      font-family: var(--font-mono);
+      font-size: 0.84375rem;
+      color: var(--text-primary);
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .bullet-list {
+      margin: 0;
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .tip-box {
+      background: var(--azure-soft);
+      border: 1px solid #BAE6FD;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font-size: 0.875rem;
+      color: #0C4A6E;
+    }
+
+    .tip-box strong {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .step-index-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-hairline);
+    }
+
+    .step-index-btn {
+      background: var(--bg-subtle);
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 7px 8px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-height: 36px;
+    }
+
+    .step-index-btn:hover {
+      background: var(--bg-muted);
+      color: var(--text-primary);
+    }
+
+    .step-index-btn[aria-current="step"] {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent-hover);
+      font-weight: 600;
+    }
+
+    /* Simulator Controls */
+    .control-deck {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .deck-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .deck-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .deck-heading {
+      font-size: 0.96875rem;
+      font-weight: 600;
+    }
+
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .preset-btn {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      min-height: 36px;
+      white-space: nowrap;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+    }
+
+    .slider-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .slider-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.875rem;
+    }
+
+    .slider-label {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .slider-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      height: 6px;
+      cursor: pointer;
+    }
+
+    .range-ticks {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .select-input, .number-input {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      min-height: 40px;
+    }
+
+    /* Simulator Output & Chart */
+    .sim-output-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .kpi-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+    }
+
+    .kpi-label {
+      font-size: 0.78125rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .kpi-val {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .kpi-sub {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .breakdown-card {
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 24px;
+      align-items: center;
+    }
+
+    .legend-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .legend-row {
+      display: grid;
+      grid-template-columns: 12px minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.84375rem;
+    }
+
+    .legend-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+
+    .legend-pct {
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      font-size: 0.8125rem;
+    }
+
+    .legend-eur {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Practice Mode (Alumnos) */
+    .practice-header-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 24px;
+      margin-bottom: 24px;
+    }
+
+    .scenario-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .practice-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.95fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .student-input {
+      width: 112px;
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 0.875rem;
+      text-align: right;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: #FFFFFF;
+      color: var(--text-primary);
+      min-height: 36px;
+    }
+
+    .student-input.is-correct {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: #065F46;
+    }
+
+    .student-input.is-error {
+      border-color: var(--danger);
+      background: var(--danger-soft);
+      color: #991B1B;
+    }
+
+    .feedback-inline {
+      display: block;
+      font-size: 0.75rem;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .feedback-inline.ok {
+      color: var(--accent-hover);
+    }
+
+    .feedback-inline.err {
+      color: var(--danger);
+    }
+
+    .hint-toggle {
+      background: none;
+      border: none;
+      color: var(--azure);
+      font-size: 0.78125rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 2px 0;
+      text-decoration: underline;
+    }
+
+    .hint-text {
+      display: none;
+      margin-top: 4px;
+      font-size: 0.78125rem;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    .hint-text.open {
+      display: block;
+    }
+
+    .quiz-block {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .quiz-question {
+      padding: 14px 16px;
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      background: var(--bg-canvas);
+    }
+
+    .quiz-question-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .quiz-opt {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.84375rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .score-summary {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-subtle);
+      display: none;
+    }
+
+    .score-summary.visible {
+      display: block;
+    }
+
+    /* Glossary Grid */
+    .glossary-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      width: min(380px, 100%);
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+      min-height: 42px;
+    }
+
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .glossary-card {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .glossary-kicker {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .glossary-term {
+      font-size: 1.0625rem;
+      font-weight: 600;
+    }
+
+    .glossary-desc {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    /* Time-of-use schedule strip */
+    .tou-strip {
+      display: grid;
+      grid-template-columns: repeat(24, minmax(0, 1fr));
+      gap: 2px;
+      margin-top: 8px;
+    }
+
+    .tou-hour {
+      height: 18px;
+      border-radius: 2px;
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    .tou-valle { background: #059669; }
+    .tou-llano { background: #0284C7; }
+    .tou-punta { background: #D97706; }
+
+    /* Semantic state text markers (no hue-only) */
+    .state-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .state-punta { color: #B45309; }
+    .state-llano { color: #0369A1; }
+    .state-valle { color: #047857; }
+
+    /* Footer */
+    .site-footer {
+      border-top: 1px solid var(--border-hairline);
+      background: var(--bg-surface);
+      padding: 20px 24px;
+      margin-top: 48px;
+    }
+
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1040px) {
+      .sandbox-grid,
+      .sandbox-grid.simulator-layout,
+      .practice-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .inspector-card {
+        position: static;
+      }
+
+      .kpi-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .glossary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-inner {
+        padding: 10px 16px;
+        gap: 14px;
+      }
+
+      .nav-links {
+        gap: 14px;
+      }
+
+      .primary-action-btn {
+        padding: 8px 12px;
+        font-size: 0.8125rem;
+      }
+
+      .container {
+        padding: 20px 16px 48px;
+      }
+
+      .kv-grid,
+      .breakdown-card,
+      .glossary-grid,
+      .step-index-list {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    @media print {
+      .topbar, .mode-switcher, .inspector-nav, .practice-header-bar .btn-group, .site-footer {
+        display: none !important;
+      }
+      body {
+        background: #FFFFFF;
+      }
+      .surface-card {
+        box-shadow: none;
+        border: 1px solid #CBD5E1;
+      }
+    }
+
+    .export-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.52);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .export-backdrop.open {
+      display: flex;
+    }
+
+    .export-dialog {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.22);
+      width: min(640px, 100%);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .export-textarea {
+      width: 100%;
+      height: 150px;
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      line-height: 1.45;
+      color: var(--text-primary);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      resize: vertical;
+    }
+  </style>
+<script src="/_aistudio-iframe.js?v=1f94f900"></script><script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@2.0.4"></script><style>.aistudio-hover-highlight { box-shadow: inset 0 0 0 0.5px white, inset 0 0 0 1.5px rgba(128,128,128,0.6) !important; }.aistudio-active-highlight { outline: 2px solid #87a9ff !important; outline-offset: -2px !important; box-shadow: 0 0 0 0.5px rgba(0,0,0,0.3), inset 0 0 0 0.5px rgba(0,0,0,0.3) !important; }.aistudio-generating-blur { filter: blur(5px) grayscale(100%) brightness(28%) !important; transition: filter 0.3s ease; }#aistudio-focus-mode-tag { position: absolute; display: none; align-items: center; gap: 4px; background: #87a9ff; border-radius: 12px; z-index: 10000; padding: 8px; color: #32302c; font-family: Inter, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; line-height: 21px; pointer-events: none; }#aistudio-hover-mode-tag { position: absolute; display: none; align-items: center; gap: 4px; background: rgba(128,128,128,0.6); border-radius: 12px; z-index: 10000; padding: 8px; color: white; font-family: Inter, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; line-height: 21px; pointer-events: none; }.aistudio-img-icon { display: none; vertical-align: middle; pointer-events: auto; cursor: pointer; }.aistudio-img-icon.visible { display: inline-flex; }#aistudio-focus-mode-tag .aistudio-img-icon { position: relative; width: 26px; height: 26px; background: #32302c; border-radius: 6px; margin: -4px -4px -4px 0; }#aistudio-focus-mode-tag .aistudio-img-icon::before { content: ""; position: absolute; top: 4px; left: 4px; width: 18px; height: 18px; background-color: white; -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); mask-size: contain; mask-repeat: no-repeat; }#aistudio-hover-mode-tag .aistudio-img-icon { position: relative; width: 18px; height: 18px; margin-left: 4px; }#aistudio-hover-mode-tag .aistudio-img-icon::before { content: ""; position: absolute; top: 0; left: 0; width: 18px; height: 18px; background-color: white; -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); mask-size: contain; mask-repeat: no-repeat; }#aistudio-focus-mode-tag .aistudio-img-icon:hover, #aistudio-hover-mode-tag .aistudio-img-icon:hover { background: #424242 !important; }#aistudio-focus-mode-tag .aistudio-img-icon:active, #aistudio-hover-mode-tag .aistudio-img-icon:active { background: #393f51 !important; }</style></head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="#inicio" class="brand-link" id="brandHomeLink">Aula<span>Factura</span></a>
+      <nav class="nav-links" aria-label="Navegación principal">
+        <button type="button" class="nav-btn" data-view="tutorial" aria-current="page">Tutorial Guiado</button>
+        <button type="button" class="nav-btn" data-view="simulador" aria-current="false">Simulador Libre</button>
+        <button type="button" class="nav-btn" data-view="practica" aria-current="false">Práctica de Alumnos</button>
+        <button type="button" class="nav-btn" data-view="glosario" aria-current="false">Glosario 2.0TD</button>
+      </nav>
+      <button type="button" class="primary-action-btn" id="downloadHtmlBtn" title="Guardar una copia autónoma en un único archivo .html">
+        Descargar HTML
+      </button>
+    </div>
+  </header>
+
+  <main class="container" id="inicio">
+    <section class="page-intro">
+      <div>
+        <div class="intro-kicker">Educación financiera y energética · Tarifa 2.0TD (España) · Datos 100 % ficticios</div>
+        <h1 class="intro-title">Entiende cada euro de la factura de la luz</h1>
+        <p class="intro-lead">
+          Explora una factura eléctrica modelo sin datos personales reales, experimenta cómo cambian los costes en el simulador en tiempo real y pon a prueba los cálculos paso a paso.
+        </p>
+      </div>
+      <div class="mode-switcher" role="tablist" aria-label="Cambiar sección">
+        <button type="button" class="mode-tab" role="tab" data-view="tutorial" aria-selected="true">1. Tutorial</button>
+        <button type="button" class="mode-tab" role="tab" data-view="simulador" aria-selected="false">2. Simulador</button>
+        <button type="button" class="mode-tab" role="tab" data-view="practica" aria-selected="false">3. Práctica</button>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- VISTA 1: TUTORIAL INTERACTIVO                                       -->
+    <!-- =================================================================== -->
+    <section id="view-tutorial" class="view-panel active" aria-labelledby="tutorialHeading">
+      <h2 id="tutorialHeading" style="position:absolute;left:-9999px;">Tutorial interactivo de la factura eléctrica</h2>
+      <div class="sandbox-grid">
+        <!-- ZONA IZQUIERDA: FACTURA MODELO ANONIMIZADA Y CLICABLE -->
+        <div class="surface-card bill-sheet" aria-label="Factura modelo interactiva sin datos personales">
+          <div class="bill-banner">
+            <div>
+              <strong style="font-family:var(--font-display);font-size:1.05rem;">Factura de Electricidad (Modelo Educativo)</strong>
+              <div class="bill-banner-meta">Haz clic en cualquier bloque de la factura para ver su explicación y fórmula</div>
+            </div>
+            <span class="mono" style="font-size:0.8125rem;color:var(--text-muted);">Peaje 2.0TD · Anonimizada</span>
+          </div>
+
+          <!-- BLOQUE 1: CABECERA Y CONTRATO -->
+          <button type="button" class="bill-zone selected" data-step="0" aria-pressed="true">
+            <div class="zone-header">
+              <span class="zone-title">1. Comercializadora, Titular y Datos del Contrato</span>
+              <span class="zone-step-label">Paso 1 / 9</span>
+            </div>
+            <div class="kv-grid">
+              <div class="kv-item">
+                <span class="kv-label">Comercializadora (Ejemplo)</span>
+                <span class="kv-val">Comercializadora Eléctrica Demo, S.A.</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">Titular del contrato (Ficticio)</span>
+                <span class="kv-val">Titular de Muestra · Aula Escolar</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">Dirección de suministro</span>
+                <span class="kv-val">Calle del Aprendizaje, 10 · 00000 Ciudad Demo</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">Nº de contrato / Nº de factura</span>
+                <span class="kv-val mono">000000000 · FAC-DEMO-2026-001</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">Periodo de facturación</span>
+                <span class="kv-val mono">30/09/2026 – 01/11/2026 (32 días)</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">Potencia contratada</span>
+                <span class="kv-val mono">Punta: 3,45 kW · Valle: 3,45 kW</span>
+              </div>
+            </div>
+          </button>
+
+          <!-- BLOQUE 2: RESUMEN DE FACTURA -->
+          <button type="button" class="bill-zone" data-step="1" aria-pressed="false">
+            <div class="zone-header">
+              <span class="zone-title">2. Resumen de Factura (Portada)</span>
+              <span class="zone-step-label">Paso 2 / 9</span>
+            </div>
+            <table class="line-table">
+              <tbody>
+                <tr><td>Energía (Potencia + Consumo + IEE)</td><td class="amount">25,55 €</td></tr>
+                <tr><td>Descuentos sobre consumo de energía</td><td class="amount">-0,91 €</td></tr>
+                <tr><td>Cargos normativos (Bono Social fijo)</td><td class="amount">0,79 €</td></tr>
+                <tr><td>Servicios y otros conceptos (Contador + Pack)</td><td class="amount">9,04 €</td></tr>
+                <tr><td>IVA (21 % sobre 34,47 €)</td><td class="amount">7,24 €</td></tr>
+              </tbody>
+            </table>
+            <div class="big-total-bar">
+              <span class="big-total-label">TOTAL A PAGAR</span>
+              <span class="big-total-value">41,71 €</span>
+            </div>
+          </button>
+
+          <!-- BLOQUE 3: EVOLUCIÓN DE CONSUMO -->
+          <button type="button" class="bill-zone" data-step="2" aria-pressed="false">
+            <div class="zone-header">
+              <span class="zone-title">3. Información sobre Consumo y Comparativa</span>
+              <span class="zone-step-label">Paso 3 / 9</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:16px;align-items:center;">
+              <svg viewBox="0 0 280 96" width="100%" height="96" role="img" aria-label="Gráfico de evolución de consumo de los últimos 9 meses en kWh">
+                <line x1="20" y1="76" x2="270" y2="76" stroke="#CBD5E1" stroke-width="1"></line>
+                <line x1="20" y1="44" x2="270" y2="44" stroke="#E2E8F0" stroke-dasharray="3 3" stroke-width="1"></line>
+                <line x1="20" y1="14" x2="270" y2="14" stroke="#E2E8F0" stroke-dasharray="3 3" stroke-width="1"></line>
+                <text x="2" y="18" font-size="8" fill="#64748B" font-family="IBM Plex Mono">250</text>
+                <text x="2" y="48" font-size="8" fill="#64748B" font-family="IBM Plex Mono">125</text>
+                <text x="8" y="79" font-size="8" fill="#64748B" font-family="IBM Plex Mono">0</text>
+                <rect x="30" y="64" width="16" height="12" rx="2" fill="#059669" opacity="0.7"></rect>
+                <rect x="57" y="56" width="16" height="20" rx="2" fill="#059669" opacity="0.7"></rect>
+                <rect x="84" y="48" width="16" height="28" rx="2" fill="#059669" opacity="0.75"></rect>
+                <rect x="111" y="52" width="16" height="24" rx="2" fill="#059669" opacity="0.75"></rect>
+                <rect x="138" y="46" width="16" height="30" rx="2" fill="#059669" opacity="0.8"></rect>
+                <rect x="165" y="18" width="16" height="58" rx="2" fill="#D97706"></rect>
+                <rect x="192" y="25" width="16" height="51" rx="2" fill="#D97706" opacity="0.85"></rect>
+                <rect x="219" y="50" width="16" height="26" rx="2" fill="#059669" opacity="0.8"></rect>
+                <rect x="246" y="62" width="16" height="14" rx="2" fill="#0284C7"></rect>
+                <text x="32" y="89" font-size="7.5" fill="#64748B" font-family="IBM Plex Mono">M1</text>
+                <text x="59" y="89" font-size="7.5" fill="#64748B" font-family="IBM Plex Mono">M2</text>
+                <text x="86" y="89" font-size="7.5" fill="#64748B" font-family="IBM Plex Mono">M3</text>
+                <text x="113" y="89" font-size="7.5" fill="#64748B" font-family="IBM Plex Mono">M4</text>
+                <text x="140" y="89" font-size="7.5" fill="#64748B" font-family="IBM Plex Mono">M5</text>
+                <text x="167" y="89" font-size="7.5" fill="#64748B" font-family="IBM Plex Mono">M6</text>
+                <text x="194" y="89" font-size="7.5" fill="#64748B" font-family="IBM Plex Mono">M7</text>
+                <text x="221" y="89" font-size="7.5" fill="#64748B" font-family="IBM Plex Mono">M8</text>
+                <text x="245" y="89" font-size="7.5" fill="#0284C7" font-weight="600" font-family="IBM Plex Mono">Act</text>
+              </svg>
+              <div class="kv-grid" style="grid-template-columns:1fr;gap:6px;">
+                <div class="kv-item">
+                  <span class="kv-label">Consumo total periodo</span>
+                  <span class="kv-val mono">42 kWh (1,30 €/día)</span>
+                </div>
+                <div class="kv-item">
+                  <span class="kv-label">Media mismo código postal</span>
+                  <span class="kv-val mono">138,53 kWh</span>
+                </div>
+              </div>
+            </div>
+          </button>
+
+          <!-- BLOQUE 4: TÉRMINO DE POTENCIA -->
+          <button type="button" class="bill-zone" data-step="3" aria-pressed="false">
+            <div class="zone-header">
+              <span class="zone-title">4. Detalle: Término de Potencia Facturada (Coste Fijo)</span>
+              <span class="zone-step-label">Paso 4 / 9</span>
+            </div>
+            <table class="line-table">
+              <tbody>
+                <tr>
+                  <td>Potencia Punta (P1)</td>
+                  <td class="formula-col">3,45 kW × 32 d × 0,113671 €/kW·d</td>
+                  <td class="amount">12,55 €</td>
+                </tr>
+                <tr>
+                  <td>Potencia Valle (P2/P3)</td>
+                  <td class="formula-col">3,45 kW × 32 d × 0,065726 €/kW·d</td>
+                  <td class="amount">7,26 €</td>
+                </tr>
+                <tr class="line-total-row">
+                  <td colspan="2">Total importe potencia contratada</td>
+                  <td class="amount">19,81 €</td>
+                </tr>
+              </tbody>
+            </table>
+          </button>
+
+          <!-- BLOQUE 5: TÉRMINO DE ENERGÍA -->
+          <button type="button" class="bill-zone" data-step="4" aria-pressed="false">
+            <div class="zone-header">
+              <span class="zone-title">5. Detalle: Energía Consumida, Tramos y Descuentos</span>
+              <span class="zone-step-label">Paso 5 / 9</span>
+            </div>
+            <table class="line-table">
+              <tbody>
+                <tr>
+                  <td>Energía consumida (Lectura real)</td>
+                  <td class="formula-col">42 kWh × 0,1071 €/kWh</td>
+                  <td class="amount">4,50 €</td>
+                </tr>
+                <tr>
+                  <td>Descuento comercial 15 %</td>
+                  <td class="formula-col">15 % s/ 4,50 €</td>
+                  <td class="amount">-0,68 €</td>
+                </tr>
+                <tr>
+                  <td>Descuento fidelidad 5 %</td>
+                  <td class="formula-col">5 % s/ 4,50 €</td>
+                  <td class="amount">-0,23 €</td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="margin-top:8px;font-size:0.78125rem;color:var(--text-secondary);" class="mono">
+              Consumos por periodo: Punta 6 kWh · Llano 5 kWh · Valle 31 kWh
+            </div>
+          </button>
+
+          <!-- BLOQUE 6: CARGOS NORMATIVOS E IMPUESTOS -->
+          <button type="button" class="bill-zone" data-step="5" aria-pressed="false">
+            <div class="zone-header">
+              <span class="zone-title">6. Cargos Normativos, Impuesto Eléctrico e IVA</span>
+              <span class="zone-step-label">Paso 6 / 9</span>
+            </div>
+            <table class="line-table">
+              <tbody>
+                <tr>
+                  <td>Financiación Bono Social fijo</td>
+                  <td class="formula-col">32 días × 0,024688 €/día</td>
+                  <td class="amount">0,79 €</td>
+                </tr>
+                <tr>
+                  <td>Impuesto sobre Electricidad (IEE)</td>
+                  <td class="formula-col">5,11269632 % s/ 24,19 €</td>
+                  <td class="amount">1,24 €</td>
+                </tr>
+                <tr>
+                  <td>IVA aplicado sobre Base Imponible</td>
+                  <td class="formula-col">21 % s/ 34,47 €</td>
+                  <td class="amount">7,24 €</td>
+                </tr>
+              </tbody>
+            </table>
+          </button>
+
+          <!-- BLOQUE 7: SERVICIOS Y ALQUILER DE CONTADOR -->
+          <button type="button" class="bill-zone" data-step="6" aria-pressed="false">
+            <div class="zone-header">
+              <span class="zone-title">7. Servicios y Otros Conceptos (Contador y Mantenimiento)</span>
+              <span class="zone-step-label">Paso 7 / 9</span>
+            </div>
+            <table class="line-table">
+              <tbody>
+                <tr>
+                  <td>Alquiler equipos de medida (regulado)</td>
+                  <td class="formula-col">32 días × 0,02663 €/día</td>
+                  <td class="amount">0,85 €</td>
+                </tr>
+                <tr>
+                  <td>Servicio de mantenimiento opcional</td>
+                  <td class="formula-col">1,03 meses × 7,95 €/mes</td>
+                  <td class="amount">8,19 €</td>
+                </tr>
+                <tr class="line-total-row">
+                  <td colspan="2">Total servicios y otros conceptos</td>
+                  <td class="amount">9,04 €</td>
+                </tr>
+              </tbody>
+            </table>
+          </button>
+
+          <!-- BLOQUE 8: INFORMACIÓN ADICIONAL Y CUPS -->
+          <button type="button" class="bill-zone" data-step="7" aria-pressed="false">
+            <div class="zone-header">
+              <span class="zone-title">8. Información Adicional, CUPS, Distribuidora y Peajes</span>
+              <span class="zone-step-label">Paso 8 / 9</span>
+            </div>
+            <div class="kv-grid">
+              <div class="kv-item">
+                <span class="kv-label">Identificación del suministro (CUPS)</span>
+                <span class="kv-val mono">ES 0000 0000 0000 0000 XX</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">Peaje de acceso (ATR) y Mercado</span>
+                <span class="kv-val">2.0TD · Libre (vs. PVPC Regulado)</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">Empresa distribuidora (zona)</span>
+                <span class="kv-val">Distribuidora de Redes Eléctricas (ejemplo)</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">Desglose peajes de acceso (sin imp.)</span>
+                <span class="kv-val mono">10,28 € incluidos (no son coste extra)</span>
+              </div>
+            </div>
+          </button>
+
+          <!-- BLOQUE 9: ORIGEN DE LA ELECTRICIDAD E IMPACTO AMBIENTAL -->
+          <button type="button" class="bill-zone" data-step="8" aria-pressed="false">
+            <div class="zone-header">
+              <span class="zone-title">9. Origen de la Electricidad e Impacto Medioambiental</span>
+              <span class="zone-step-label">Paso 9 / 9</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:0.8125rem;">
+              <div>
+                <div class="kv-label" style="margin-bottom:4px;">Mix de generación (ejemplo 2025)</div>
+                <div class="mono">Renovable: 51,4 % (Nac: 55,2 %)</div>
+                <div class="mono">Nuclear: 19,5 % · Gas CC: 18,4 %</div>
+              </div>
+              <div>
+                <div class="kv-label" style="margin-bottom:4px;">Etiqueta CNMC (Escala A mínimo – G máximo)</div>
+                <div class="mono">CO₂: 132 g/kWh (Media nac: 107)</div>
+                <div class="mono">Categoría ambiental: E / F</div>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <!-- ZONA DERECHA: INSPECTOR DIDÁCTICO -->
+        <aside class="surface-card inspector-card" aria-live="polite" id="tutorialInspector">
+          <div class="inspector-nav">
+            <span class="step-counter" id="inspectorCounter">Apartado 1 de 9</span>
+            <div class="btn-group">
+              <button type="button" class="btn-secondary" id="prevStepBtn" disabled="">Anterior</button>
+              <button type="button" class="btn-accent" id="nextStepBtn">Siguiente</button>
+            </div>
+          </div>
+
+          <h2 class="inspector-title" id="inspectorTitle">1. Comercializadora, Titular y Datos del Contrato</h2>
+          <p class="inspector-summary" id="inspectorSummary">Identifica qué empresa emite la factura (comercializadora), a quién pertenece el contrato, dónde se suministra la luz y cuántos días abarca el recibo.</p>
+
+          <div class="formula-block">
+            <div class="formula-block-title" id="inspectorFormulaTitle">Diferencia clave en España</div>
+            <div class="formula-code" id="inspectorFormula">Comercializadora = quien te vende la luz y emite la factura<br>Distribuidora = propietaria de los cables y el contador (asignada por zona)</div>
+          </div>
+
+          <div>
+            <div class="kv-label" style="margin-bottom:6px;font-weight:600;">Qué debes comprobar aquí</div>
+            <ul class="bullet-list" id="inspectorPoints"><li>En el mercado regulado (PVPC) solo pueden facturar Comercializadoras de Referencia (como Energía XXI, Curenergía, Baser, etc.).</li><li>En el mercado libre puedes elegir cualquier comercializadora y las condiciones pactadas (permanencia, fecha fin de contrato, descuentos).</li><li>Comprueba siempre las fechas de inicio y fin del periodo para saber si te cobran un mes (~30 días) o dos meses (~60 días).</li></ul>
+          </div>
+
+          <div class="tip-box" id="inspectorTipBox">
+            <strong>Clave práctica (Guía Energía XXI / CNMC)</strong>
+            <span id="inspectorTip">Si ves cargos que no reconoces o quieres cambiar de compañía, necesitarás el número de contrato o el código CUPS, nunca tus contraseñas bancarias.</span>
+          </div>
+
+          <div>
+            <div class="kv-label" style="margin-bottom:8px;font-weight:600;">Índice rápido de apartados</div>
+            <div class="step-index-list" id="stepIndexList"></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- VISTA 2: SIMULADOR LIBRE                                            -->
+    <!-- =================================================================== -->
+    <section id="view-simulador" class="view-panel" aria-labelledby="simHeading">
+      <h2 id="simHeading" style="position:absolute;left:-9999px;">Simulador interactivo de factura eléctrica 2.0TD</h2>
+      <div class="sandbox-grid simulator-layout">
+        <!-- CONTROLES DEL SIMULADOR -->
+        <div class="surface-card control-deck">
+          <div class="deck-section">
+            <h3 class="deck-heading">Escenarios rápidos de partida</h3>
+            <div class="preset-row">
+              <button type="button" class="preset-btn" data-preset="ejemplo-pdf">Caso factura modelo (42 kWh)</button>
+              <button type="button" class="preset-btn" data-preset="piso-estandar">Vivienda habitual (240 kWh)</button>
+              <button type="button" class="preset-btn" data-preset="pvpc-tramos">Regulado 3 tramos (320 kWh)</button>
+              <button type="button" class="preset-btn" data-preset="vacio-verano">Segunda residencia (0 kWh)</button>
+            </div>
+          </div>
+
+          <div class="deck-section">
+            <h3 class="deck-heading">Modalidad de tarifa y periodo</h3>
+            <div class="mode-switcher" style="width:100%;">
+              <button type="button" class="mode-tab" style="flex:1;" id="simModeLibre" aria-selected="true">Mercado Libre (1 precio)</button>
+              <button type="button" class="mode-tab" style="flex:1;" id="simModeTramos" aria-selected="false">3 Tramos (Punta / Llano / Valle)</button>
+            </div>
+
+            <div class="slider-field">
+              <div class="slider-top">
+                <label class="slider-label" for="simDias">Días facturados</label>
+                <span class="slider-value" id="valSimDias">32 días</span>
+              </div>
+              <input type="range" id="simDias" min="15" max="62" step="1" value="32">
+              <div class="range-ticks"><span>15 d</span><span>30 d</span><span>45 d</span><span>62 d</span></div>
+            </div>
+          </div>
+
+          <div class="deck-section">
+            <h3 class="deck-heading">Término de Potencia Contratada (kW)</h3>
+            <div class="slider-field">
+              <div class="slider-top">
+                <label class="slider-label" for="simPotPunta">Potencia Punta (P1)</label>
+                <span class="slider-value" id="valSimPotPunta">3,45 kW</span>
+              </div>
+              <input type="range" id="simPotPunta" min="1.15" max="9.20" step="0.05" value="3.45">
+            </div>
+
+            <div class="slider-field">
+              <div class="slider-top">
+                <label class="slider-label" for="simPotValle">Potencia Valle (P2/P3)</label>
+                <span class="slider-value" id="valSimPotValle">3,45 kW</span>
+              </div>
+              <input type="range" id="simPotValle" min="1.15" max="9.20" step="0.05" value="3.45">
+            </div>
+          </div>
+
+          <div class="deck-section" id="simConsumoLibreBox" style="display: flex;">
+            <h3 class="deck-heading">Consumo Eléctrico (Precio único + Descuento)</h3>
+            <div class="slider-field">
+              <div class="slider-top">
+                <label class="slider-label" for="simKwhTotal">Energía consumida</label>
+                <span class="slider-value" id="valSimKwhTotal">42 kWh</span>
+              </div>
+              <input type="range" id="simKwhTotal" min="0" max="700" step="1" value="42">
+              <div class="range-ticks"><span>0 kWh</span><span>250 kWh</span><span>500 kWh</span><span>700 kWh</span></div>
+            </div>
+
+            <div class="slider-field">
+              <div class="slider-top">
+                <label class="slider-label" for="simPrecioLibre">Precio del kWh</label>
+                <span class="slider-value" id="valSimPrecioLibre">0,1071 €/kWh</span>
+              </div>
+              <input type="range" id="simPrecioLibre" min="0.07" max="0.28" step="0.005" value="0.1071">
+            </div>
+
+            <div class="slider-field">
+              <div class="slider-top">
+                <label class="slider-label" for="simDescuento">Descuento sobre energía</label>
+                <span class="slider-value" id="valSimDescuento">20 %</span>
+              </div>
+              <input type="range" id="simDescuento" min="0" max="30" step="1" value="20">
+            </div>
+          </div>
+
+          <div class="deck-section" id="simConsumoTramosBox" style="display:none;">
+            <h3 class="deck-heading">Consumo por Tramos Horarios 2.0TD</h3>
+            <div class="slider-field">
+              <div class="slider-top">
+                <label class="slider-label" for="simKwhPunta"><span class="state-tag state-punta">▲ PUNTA</span> (0,195 €/kWh)</label>
+                <span class="slider-value" id="valSimKwhPunta">80 kWh</span>
+              </div>
+              <input type="range" id="simKwhPunta" min="0" max="300" step="1" value="80">
+            </div>
+
+            <div class="slider-field">
+              <div class="slider-top">
+                <label class="slider-label" for="simKwhLlano"><span class="state-tag state-llano">■ LLANO</span> (0,132 €/kWh)</label>
+                <span class="slider-value" id="valSimKwhLlano">90 kWh</span>
+              </div>
+              <input type="range" id="simKwhLlano" min="0" max="300" step="1" value="90">
+            </div>
+
+            <div class="slider-field">
+              <div class="slider-top">
+                <label class="slider-label" for="simKwhValle"><span class="state-tag state-valle">▼ VALLE</span> (0,084 €/kWh)</label>
+                <span class="slider-value" id="valSimKwhValle">150 kWh</span>
+              </div>
+              <input type="range" id="simKwhValle" min="0" max="400" step="1" value="150">
+            </div>
+
+            <div>
+              <div class="kv-label">Franjas horarias entre semana (fines de semana y festivos: todo Valle)</div>
+              <div class="tou-strip" aria-hidden="true" id="touStripVisual"></div>
+            </div>
+          </div>
+
+          <div class="deck-section">
+            <h3 class="deck-heading">Servicios opcionales e impuestos</h3>
+            <label class="checkbox-row">
+              <input type="checkbox" id="simAlquiler" checked="">
+              <span>Incluir alquiler de contador digital (0,02663 €/día)</span>
+            </label>
+            <label class="checkbox-row">
+              <input type="checkbox" id="simPack" checked="">
+              <span>Incluir servicio de mantenimiento opcional (7,95 €/mes)</span>
+            </label>
+            <label class="checkbox-row">
+              <input type="checkbox" id="simBono" checked="">
+              <span>Incluir financiación Bono Social fijo (0,024688 €/día)</span>
+            </label>
+            <div>
+              <label class="kv-label" for="simIvaRate" style="display:block;margin-bottom:4px;">Tipo de IVA aplicable</label>
+              <select id="simIvaRate" class="select-input">
+                <option value="0.21" selected="">IVA General (21 %)</option>
+                <option value="0.10">IVA Reducido educativo / medida temporal (10 %)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- SALIDA EN TIEMPO REAL DEL SIMULADOR -->
+        <div class="sim-output-stack">
+          <div class="kpi-strip">
+            <div class="kpi-box">
+              <div class="kpi-label">Total Factura</div>
+              <div class="kpi-val" id="kpiTotal">41,72 €</div>
+              <div class="kpi-sub" id="kpiPorDia">1,30 € / día</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Coste Fijo (Potencia + Serv.)</div>
+              <div class="kpi-val" id="kpiFijo">29,64 €</div>
+              <div class="kpi-sub" id="kpiFijoPct">86 % de la base</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Energía Consumida Neta</div>
+              <div class="kpi-val" id="kpiEnergia">3,60 €</div>
+              <div class="kpi-sub" id="kpiKwhTotal">42 kWh totales</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Impuestos (IEE + IVA)</div>
+              <div class="kpi-val" id="kpiImpuestos">8,48 €</div>
+              <div class="kpi-sub" id="kpiImpPct">20,3 % del total</div>
+            </div>
+          </div>
+
+          <div class="surface-card breakdown-card">
+            <div style="display:flex;justify-content:center;">
+              <svg id="simDonutSvg" viewBox="0 0 160 160" width="160" height="160" role="img" aria-label="Distribución porcentual del importe total de la factura"><circle cx="80" cy="80" r="56" fill="none" stroke="#F1F5F9" stroke-width="22"></circle><circle cx="80" cy="80" r="56" fill="none" stroke="#059669" stroke-width="22" stroke-dasharray="167.07 351.86" stroke-dashoffset="0.00" transform="rotate(-90 80 80)"></circle><circle cx="80" cy="80" r="56" fill="none" stroke="#0284C7" stroke-width="22" stroke-dasharray="30.36 351.86" stroke-dashoffset="-167.07" transform="rotate(-90 80 80)"></circle><circle cx="80" cy="80" r="56" fill="none" stroke="#D97706" stroke-width="22" stroke-dasharray="82.90 351.86" stroke-dashoffset="-197.44" transform="rotate(-90 80 80)"></circle><circle cx="80" cy="80" r="56" fill="none" stroke="#475569" stroke-width="22" stroke-dasharray="71.52 351.86" stroke-dashoffset="-280.34" transform="rotate(-90 80 80)"></circle><text x="80" y="76" text-anchor="middle" font-size="11" fill="#64748B" font-family="Plus Jakarta Sans">TOTAL</text><text x="80" y="94" text-anchor="middle" font-size="14" font-weight="600" fill="#0F172A" font-family="IBM Plex Mono">41,72 €</text></svg>
+            </div>
+            <div class="legend-list" id="simLegend"></div>
+          </div>
+
+          <div class="surface-card bill-sheet" style="gap:12px;">
+            <div class="zone-header" style="margin-bottom:4px;">
+              <h3 class="zone-title" style="font-size:1.05rem;">Desglose completo de la factura simulada</h3>
+              <span class="mono" style="font-size:0.8125rem;color:var(--text-muted);" id="simPeriodoBadge">32 días · Mercado Libre</span>
+            </div>
+
+            <table class="line-table">
+              <tbody id="simDetailBody"></tbody>
+            </table>
+
+            <div class="big-total-bar">
+              <span class="big-total-label">TOTAL IMPORTE FACTURA SIMULADA</span>
+              <span class="big-total-value" id="simGrandTotal">41,72 €</span>
+            </div>
+
+            <div class="tip-box" id="simInsightBox">
+              <strong>Lectura didáctica de esta simulación</strong>
+              <span id="simInsightText">Atención: el servicio opcional de mantenimiento (8,19 €) cuesta más que toda la electricidad que has consumido (3,60 €).</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- VISTA 3: PRÁCTICA DE ALUMNOS (EJERCICIOS EVALUABLES)                -->
+    <!-- =================================================================== -->
+    <section id="view-practica" class="view-panel" aria-labelledby="practiceHeading">
+      <h2 id="practiceHeading" style="position:absolute;left:-9999px;">Simulador de práctica para alumnos</h2>
+
+      <div class="surface-card practice-header-bar">
+        <div>
+          <h3 style="font-size:1.1rem;font-weight:700;" id="practiceCaseTitle">Supuesto 1: Apartamento de bajo consumo (Mercado Libre)</h3>
+          <div class="bill-banner-meta" id="practiceCaseMeta">Calcula cada apartado con redondeo a 2 decimales (0,01 €) y pulsa Comprobar.</div>
+        </div>
+        <div class="scenario-tabs" role="group" aria-label="Elegir supuesto práctico">
+          <button type="button" class="preset-btn" data-case="0">Supuesto 1 (Básico)</button>
+          <button type="button" class="preset-btn" data-case="1">Supuesto 2 (Estándar)</button>
+          <button type="button" class="preset-btn" data-case="2">Supuesto 3 (3 Tramos)</button>
+          <button type="button" class="btn-secondary" id="randomCaseBtn">Generar caso aleatorio</button>
+        </div>
+      </div>
+
+      <div class="practice-grid">
+        <!-- HOJA DE CÁLCULO DEL ALUMNO -->
+        <div class="surface-card bill-sheet">
+          <div class="zone-header" style="margin-bottom:4px;">
+            <span class="zone-title" style="font-size:1.05rem;">Hoja de cálculo de la factura hipotética</span>
+            <span class="mono" style="font-size:0.8125rem;color:var(--text-muted);" id="practiceSpecs">30 días · Tarifa 2.0TD</span>
+          </div>
+
+          <div class="formula-block" id="practiceDataSheet"><div class="formula-block-title">Datos del contrato hipotético para realizar tus cálculos</div><div class="kv-grid" style="font-size:0.84375rem;"><div><strong>Periodo:</strong> 30 días</div><div><strong>Potencia contratada:</strong> P1 3,45 kW (0,110 €/kW·d) · P2 3,45 kW (0,060 €/kW·d)</div><div><strong>Consumo:</strong> 100 kWh a 0,14 €/kWh (Descuento energía 10 %)</div><div><strong>Bono social / Contador:</strong> 0,025 €/día · 0,027 €/día</div><div><strong>Potencia máx. anual registrada:</strong> 2,85 kW</div><div><strong>Impuestos:</strong> IEE 5,11269632 % · IVA 21 %</div></div></div>
+
+          <table class="line-table">
+            <thead>
+              <tr style="text-align:left;font-size:0.78125rem;color:var(--text-muted);">
+                <th style="padding-bottom:8px;">Concepto de la factura</th>
+                <th style="padding-bottom:8px;">Datos / Fórmula</th>
+                <th style="padding-bottom:8px;text-align:right;">Tu cálculo (€)</th>
+              </tr>
+            </thead>
+            <tbody id="practiceTableBody"></tbody>
+          </table>
+
+          <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;padding-top:8px;">
+            <div class="btn-group">
+              <button type="button" class="btn-accent" id="checkPracticeBtn">Comprobar mis cálculos</button>
+              <button type="button" class="btn-secondary" id="solvePracticeBtn">Ver solución paso a paso</button>
+              <button type="button" class="btn-secondary" id="resetPracticeBtn">Limpiar respuestas</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PREGUNTAS CONCEPTUALES Y RESULTADO -->
+        <div class="surface-card control-deck">
+          <div>
+            <h3 class="deck-heading" style="margin-bottom:4px;">Preguntas de comprensión de la factura</h3>
+            <p class="bill-banner-meta">Responde sobre la factura anterior aplicando los conceptos de Energía XXI y la tarifa 2.0TD.</p>
+          </div>
+
+          <div class="quiz-block" id="practiceQuizBlock"></div>
+
+          <div class="score-summary" id="practiceScoreBox" aria-live="polite"></div>
+
+          <div class="tip-box">
+            <strong>Regla de redondeo para clase</strong>
+            <span>Calcula cada línea individualmente redondeando a 2 decimales (céntimos de euro) antes de sumar los subtotales. Se admite un margen de ±0,02 € por redondeos intermedios.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- VISTA 4: GLOSARIO TÉCNICO 2.0TD                                     -->
+    <!-- =================================================================== -->
+    <section id="view-glosario" class="view-panel" aria-labelledby="glossaryHeading">
+      <div class="glossary-toolbar">
+        <div>
+          <h2 id="glossaryHeading" style="font-size:1.35rem;">Glosario de conceptos eléctricos y regulatorios</h2>
+          <p class="bill-banner-meta">Términos oficiales del mercado regulado (Energía XXI / PVPC) y del mercado libre.</p>
+        </div>
+        <input type="search" id="glossarySearch" class="search-input" placeholder="Buscar concepto (ej. CUPS, PVPC, potencia, IEE...)" aria-label="Buscar en el glosario">
+      </div>
+
+      <div class="glossary-grid" id="glossaryGrid"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>AulaFactura · Recurso didáctico abierto en HTML puro sin recopilación de datos personales.</span>
+      <span>Basado en la estructura estándar de la tarifa española 2.0TD (CNMC y guía de comprensión de factura regulada).</span>
+    </div>
+  </footer>
+
+  <div class="export-backdrop" id="exportModal" role="dialog" aria-modal="true" aria-labelledby="exportModalTitle">
+    <div class="export-dialog">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <h2 id="exportModalTitle" style="font-size:1.2rem;">Exportar aplicación en HTML autónomo</h2>
+        <button type="button" class="btn-secondary" id="closeExportBtn" style="min-height:36px;padding:6px 12px;">Cerrar</button>
+      </div>
+      <p style="font-size:0.9rem;color:var(--text-secondary);">
+        Se ha generado el archivo único <span class="mono">tutorial-simulador-factura-luz.html</span> listo para abrir sin conexión. Si el entorno de vista previa bloquea la descarga automática, puedes usar el enlace directo o copiar el código completo y guardarlo como archivo <span class="mono">.html</span>.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+        <a id="exportDirectLink" download="tutorial-simulador-factura-luz.html" class="btn-accent" style="text-decoration:none;">Guardar archivo .html</a>
+        <button type="button" class="btn-secondary" id="copyHtmlBtn">Copiar código HTML</button>
+        <span id="copyHtmlStatus" style="font-size:0.8125rem;color:var(--accent-hover);font-weight:600;"></span>
+      </div>
+      <div>
+        <label class="kv-label" for="exportCodeArea" style="display:block;margin-bottom:6px;">Código fuente HTML completo</label>
+        <textarea id="exportCodeArea" class="export-textarea" readonly=""></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ------------------------------------------------------------------ */
+      /* UTILIDADES NUMÉRICAS Y DE FORMATO                                  */
+      /* ------------------------------------------------------------------ */
+      function r2(n) {
+        return Math.round((n + Number.EPSILON) * 100) / 100;
+      }
+
+      function eur(n) {
+        return n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+      }
+
+      function numEs(n, dec) {
+        return n.toLocaleString('es-ES', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+      }
+
+      function escHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      /* ------------------------------------------------------------------ */
+      /* NAVEGACIÓN ENTRE VISTAS                                            */
+      /* ------------------------------------------------------------------ */
+      var currentView = 'tutorial';
+      var navButtons = document.querySelectorAll('.nav-btn[data-view]');
+      var modeTabs = document.querySelectorAll('.mode-tab[data-view]');
+      var panels = {
+        tutorial: document.getElementById('view-tutorial'),
+        simulador: document.getElementById('view-simulador'),
+        practica: document.getElementById('view-practica'),
+        glosario: document.getElementById('view-glosario')
+      };
+
+      function switchView(viewName) {
+        if (!panels[viewName]) return;
+        currentView = viewName;
+        Object.keys(panels).forEach(function (key) {
+          panels[key].classList.toggle('active', key === viewName);
+        });
+        navButtons.forEach(function (btn) {
+          btn.setAttribute('aria-current', btn.dataset.view === viewName ? 'page' : 'false');
+        });
+        modeTabs.forEach(function (tab) {
+          tab.setAttribute('aria-selected', tab.dataset.view === viewName ? 'true' : 'false');
+        });
+      }
+
+      navButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          switchView(btn.dataset.view);
+        });
+      });
+
+      modeTabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          switchView(tab.dataset.view);
+        });
+      });
+
+      document.getElementById('brandHomeLink').addEventListener('click', function (e) {
+        e.preventDefault();
+        switchView('tutorial');
+      });
+
+      switchView('tutorial');
+
+      /* ------------------------------------------------------------------ */
+      /* SECCIÓN 1: TUTORIAL PASO A PASO (9 BLOQUES DE LA FACTURA)          */
+      /* ------------------------------------------------------------------ */
+      var tutorialSteps = [
+        {
+          short: '1. Contrato',
+          title: '1. Comercializadora, Titular y Datos del Contrato',
+          summary: 'Identifica qué empresa emite la factura (comercializadora), a quién pertenece el contrato, dónde se suministra la luz y cuántos días abarca el recibo.',
+          formulaTitle: 'Diferencia clave en España',
+          formula: 'Comercializadora = quien te vende la luz y emite la factura\nDistribuidora = propietaria de los cables y el contador (asignada por zona)',
+          points: [
+            'En el mercado regulado (PVPC) solo pueden facturar Comercializadoras de Referencia (como Energía XXI, Curenergía, Baser, etc.).',
+            'En el mercado libre puedes elegir cualquier comercializadora y las condiciones pactadas (permanencia, fecha fin de contrato, descuentos).',
+            'Comprueba siempre las fechas de inicio y fin del periodo para saber si te cobran un mes (~30 días) o dos meses (~60 días).'
+          ],
+          tip: 'Si ves cargos que no reconoces o quieres cambiar de compañía, necesitarás el número de contrato o el código CUPS, nunca tus contraseñas bancarias.'
+        },
+        {
+          short: '2. Resumen',
+          title: '2. Resumen de Factura (Los 5 grandes bloques)',
+          summary: 'Es la vista rápida de la primera página: agrupa lo que pagas en cinco grandes líneas para saber de un vistazo de dónde sale el total.',
+          formulaTitle: 'Estructura de la portada',
+          formula: 'Total = Energía (Potencia + Consumo + IEE) - Descuentos + Cargos + Servicios + IVA',
+          points: [
+            'Energía: combina el término fijo (potencia) y el variable (consumo en kWh), más el impuesto eléctrico.',
+            'Descuentos: rebajas promocionales que aplican algunas tarifas del mercado libre (en el regulado PVPC no existen descuentos comerciales).',
+            'Servicios y otros conceptos: incluye el alquiler obligatorio del contador y, si los hubiera, servicios adicionales contratados.'
+          ],
+          tip: 'Si la factura parece alta aunque hayas consumido pocos kWh (como en este ejemplo de 42 kWh = 41,71 €), mira cuánto pesa el bloque fijo de potencia y los servicios opcionales.'
+        },
+        {
+          short: '3. Consumo',
+          title: '3. Evolución de Consumo y Comparativa Vecinal',
+          summary: 'Muestra tu consumo histórico en kWh de los últimos meses y lo compara con el gasto medio diario y el consumo medio de tu mismo código postal.',
+          formulaTitle: 'Cálculo del consumo medio diario',
+          formula: 'Gasto medio diario (€/día) = Importe total (€) ÷ Días facturados\nEn el ejemplo: 41,71 € ÷ 32 días ≈ 1,30 €/día',
+          points: [
+            'Las barras te permiten detectar picos estacionales (por ejemplo, aire acondicionado en agosto o calefacción eléctrica en invierno).',
+            'Verifica si las lecturas son REALES (tomadas por el contador inteligente telegestionado) o ESTIMADAS (que se regularizan en la factura siguiente).',
+            'En la web de tu distribuidora puedes consultar tu consumo hora a hora gratuitamente.'
+          ],
+          tip: 'Una vivienda media en España consume en torno a 200–300 kWh al mes. Comparar tu dato con la media de tu código postal te indica si tienes electrodomésticos poco eficientes o fugas de consumo fantasma.'
+        },
+        {
+          short: '4. Potencia',
+          title: '4. Término de Potencia Facturada (Coste Fijo)',
+          summary: 'Es lo que pagas por la capacidad máxima de electricidad simultánea que puedes usar (medida en kW) sin que salte el interruptor de control de potencia (ICP) del contador.',
+          formulaTitle: 'Fórmula exacta del Término de Potencia',
+          formula: 'Importe Potencia = (kW Punta × Días × Precio P1) + (kW Valle × Días × Precio P2)\nEjemplo: (3,45 × 32 × 0,113671) + (3,45 × 32 × 0,065726) = 12,55 + 7,26 = 19,81 €',
+          points: [
+            'Se paga SIEMPRE, aunque el consumo sea 0 kWh (por ejemplo, una vivienda cerrada en vacaciones).',
+            'Con la tarifa 2.0TD puedes contratar dos potencias distintas: una para horas Punta/Llano (P1) y otra más barata para noches y fines de semana (P2/Valle).',
+            'La factura informa de la potencia máxima demandada en el último año (ej. 3,86 kW): si nunca te acercas a lo contratado, puedes bajar potencia.'
+          ],
+          tip: 'Según la guía de Energía XXI, ajustar la potencia contratada a tus necesidades reales es una de las formas más directas y permanentes de ahorrar en la parte fija de la factura.'
+        },
+        {
+          short: '5. Energía',
+          title: '5. Término de Energía Consumida y Discriminación Horaria',
+          summary: 'Refleja la electricidad que realmente has gastado en tu hogar durante el periodo, medida en kilovatios-hora (kWh).',
+          formulaTitle: 'Fórmula del Término de Energía',
+          formula: 'Importe Energía = kWh consumidos × Precio (€/kWh)\nCon 3 tramos: (kWh Punta × P1) + (kWh Llano × P2) + (kWh Valle × P3)',
+          points: [
+            'En el mercado regulado (PVPC, como Energía XXI), el precio del kWh cambia cada hora según el mercado mayorista y tiene 3 periodos: Punta (caro), Llano (medio) y Valle (económico).',
+            'En el mercado libre existen tarifas de precio fijo 24 horas (como en la factura modelo: 0,1071 €/kWh) con posibles descuentos porcentuales sobre el consumo.',
+            'Los descuentos del ejemplo (-15 % y -5 %) solo se aplican al consumo de energía (4,50 €), NO a la potencia ni a los impuestos.'
+          ],
+          tip: 'Desplazar lavadoras, lavavajillas o carga de vehículos a horario Valle (00:00 a 08:00 y todo el fin de semana) reduce drásticamente el término de energía en tarifas con discriminación horaria.'
+        },
+        {
+          short: '6. Impuestos',
+          title: '6. Cargos Normativos, Impuesto Eléctrico (IEE) e IVA',
+          summary: 'Son conceptos regulados por ley que todas las comercializadoras deben recaudar e ingresar.',
+          formulaTitle: 'Cálculo de Cargos e Impuestos',
+          formula: 'Bono Social fijo = Días × 0,024688 €/día (32 × 0,024688 = 0,79 €)\nImpuesto Electricidad (IEE) = 5,11269632 % × Base (24,19 €) = 1,24 €\nIVA = 21 % × Base Imponible total (34,47 €) = 7,24 €',
+          points: [
+            'Financiación Bono Social: pequeña cuota diaria fija que financia los descuentos para consumidores vulnerables.',
+            'Impuesto Especial sobre la Electricidad (IEE): porcentaje aplicado sobre la suma de potencia, energía neta y cargos vinculados.',
+            'IVA: se aplica al final sobre absolutamente todo (energía, potencia, IEE, alquiler de contador y servicios).'
+          ],
+          tip: 'Observa que el IVA también grava el Impuesto sobre la Electricidad y el alquiler del contador. Por eso en el resumen del ejemplo el 20,3 % del total corresponde a impuestos.'
+        },
+        {
+          short: '7. Servicios',
+          title: '7. Alquiler de Contador y Servicios Opcionales',
+          summary: 'Agrupa el alquiler obligatorio del equipo de medida (si no es de tu propiedad) y posibles servicios de mantenimiento o asistencia contratados aparte.',
+          formulaTitle: 'Desglose de Servicios y Otros Conceptos',
+          formula: 'Alquiler contador = 32 días × 0,02663 €/día = 0,85 €\nPack Mantenimiento = 1,03 meses × 7,95 €/mes = 8,19 €\nTotal bloque = 0,85 + 8,19 = 9,04 €',
+          points: [
+            'El alquiler del contador tiene un precio regulado por el Gobierno y se transfiere íntegramente a la empresa distribuidora.',
+            'Los packs de mantenimiento o reparación eléctrica NO son obligatorios para tener luz.',
+            'En esta factura de 41,71 €, el pack opcional (8,19 € + IVA = 9,91 €) supone casi una cuarta parte del recibo total, más del doble que la energía consumida.'
+          ],
+          tip: 'Consejo clave de Energía XXI y organizaciones de consumidores: revisa siempre este apartado para comprobar que no tienes servicios adicionales activados que no necesitas o no recuerdas haber contratado.'
+        },
+        {
+          short: '8. CUPS y Peajes',
+          title: '8. Información Adicional, Código CUPS y Peajes de Acceso',
+          summary: 'Contiene la ficha técnica de tu instalación eléctrica, los datos bancarios domiciliados y el desglose informativo de los costes regulados de red.',
+          formulaTitle: 'Qué es el código CUPS',
+          formula: 'ES + 4 dígitos (distribuidora) + 12 dígitos + 2 letras de control\nEjemplo anonimizado: ES 0000 0000 0000 0000 XX',
+          points: [
+            'CUPS (Código Universal de Punto de Suministro): es el "DNI" único e invariable de tu vivienda. Aunque cambies de compañía o titular, el CUPS no cambia.',
+            'Peaje de acceso 2.0TD: es la tarifa de acceso doméstica estándar en España (potencias contratadas hasta 15 kW).',
+            'El desglose de peajes de acceso (10,28 € en la factura modelo) indica qué parte de lo que ya pagas va a mantener las redes de transporte y distribución; NO es un cargo extra sumado al total.'
+          ],
+          tip: 'Si comparas ofertas en el comparador oficial de la CNMC (comparador.cnmc.gob.es), ten a mano tu CUPS o tus consumos por tramos (Punta, Llano y Valle) para obtener una simulación real.'
+        },
+        {
+          short: '9. Origen',
+          title: '9. Origen de la Electricidad e Impacto Medioambiental',
+          summary: 'Por normativa de la CNMC, todas las facturas deben informar de qué fuentes (renovables, nuclear, gas, carbón) procede la energía que comercializa tu compañía.',
+          formulaTitle: 'Indicadores ambientales obligatorios (Escala A–G)',
+          formula: 'Emisiones CO₂ eq. (g/kWh) y Residuos Radiactivos (μg/kWh)\nEscala: A (mínimo impacto) → D (media nacional) → G (máximo impacto)',
+          points: [
+            'Compara el mix de tu comercializadora frente al mix de generación nacional de España.',
+            'Una comercializadora con Garantía de Origen (GdO) 100 % renovable obtendrá etiqueta A en emisiones y residuos.',
+            'En la factura modelo aparece además un código QR que enlaza directamente al comparador oficial de ofertas de la CNMC.'
+          ],
+          tip: 'Elegir energía con certificado de origen renovable (GdO) no cambia la electricidad física que llega a tus enchufes, pero obliga a la comercializadora a adquirir certificados equivalentes de plantas renovables.'
+        }
+      ];
+
+      var activeStep = 0;
+      var billZones = document.querySelectorAll('.bill-zone[data-step]');
+      var stepIndexListEl = document.getElementById('stepIndexList');
+
+      // Render quick index buttons
+      stepIndexListEl.innerHTML = '';
+      tutorialSteps.forEach(function (st, idx) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'step-index-btn';
+        btn.textContent = st.short;
+        btn.dataset.step = String(idx);
+        btn.addEventListener('click', function () {
+          setTutorialStep(idx);
+        });
+        stepIndexListEl.appendChild(btn);
+      });
+
+      function setTutorialStep(idx) {
+        activeStep = Math.max(0, Math.min(tutorialSteps.length - 1, idx));
+        var st = tutorialSteps[activeStep];
+
+        billZones.forEach(function (z) {
+          var isSel = Number(z.dataset.step) === activeStep;
+          z.classList.toggle('selected', isSel);
+          z.setAttribute('aria-pressed', isSel ? 'true' : 'false');
+        });
+
+        var indexBtns = stepIndexListEl.querySelectorAll('.step-index-btn');
+        indexBtns.forEach(function (b) {
+          b.setAttribute('aria-current', Number(b.dataset.step) === activeStep ? 'step' : 'false');
+        });
+
+        document.getElementById('inspectorCounter').textContent = 'Apartado ' + (activeStep + 1) + ' de ' + tutorialSteps.length;
+        document.getElementById('inspectorTitle').textContent = st.title;
+        document.getElementById('inspectorSummary').textContent = st.summary;
+        document.getElementById('inspectorFormulaTitle').textContent = st.formulaTitle;
+        document.getElementById('inspectorFormula').innerHTML = escHtml(st.formula).replace(/\n/g, '<br>');
+
+        var ul = document.getElementById('inspectorPoints');
+        ul.innerHTML = '';
+        st.points.forEach(function (pt) {
+          var li = document.createElement('li');
+          li.textContent = pt;
+          ul.appendChild(li);
+        });
+
+        document.getElementById('inspectorTip').textContent = st.tip;
+        document.getElementById('prevStepBtn').disabled = activeStep === 0;
+        document.getElementById('nextStepBtn').disabled = activeStep === tutorialSteps.length - 1;
+      }
+
+      billZones.forEach(function (zone) {
+        zone.addEventListener('click', function () {
+          setTutorialStep(Number(zone.dataset.step));
+        });
+      });
+
+      document.getElementById('prevStepBtn').addEventListener('click', function () {
+        setTutorialStep(activeStep - 1);
+      });
+      document.getElementById('nextStepBtn').addEventListener('click', function () {
+        setTutorialStep(activeStep + 1);
+      });
+
+      setTutorialStep(0);
+
+      /* ------------------------------------------------------------------ */
+      /* SECCIÓN 2: SIMULADOR LIBRE                                         */
+      /* ------------------------------------------------------------------ */
+      var simState = {
+        mode: 'libre', // 'libre' | 'tramos'
+        dias: 32,
+        potPunta: 3.45,
+        potValle: 3.45,
+        kwhTotal: 42,
+        precioLibre: 0.1071,
+        descuento: 20,
+        kwhPunta: 80,
+        kwhLlano: 90,
+        kwhValle: 150,
+        alquiler: true,
+        pack: true,
+        bono: true,
+        ivaRate: 0.21
+      };
+
+      var PRICES = {
+        potPuntaDia: 0.113671,
+        potValleDia: 0.065726,
+        kwhPunta: 0.195,
+        kwhLlano: 0.132,
+        kwhValle: 0.084,
+        bonoDia: 0.024688,
+        alquilerDia: 0.02663,
+        packMes: 7.95,
+        ieeRate: 0.0511269632
+      };
+
+      // Render 24h TOU strip
+      var touStripEl = document.getElementById('touStripVisual');
+      touStripEl.innerHTML = '';
+      for (var h = 0; h < 24; h++) {
+        var cell = document.createElement('div');
+        var cls = 'tou-valle';
+        if ((h >= 8 && h < 10) || (h >= 14 && h < 18) || (h >= 22 && h < 24)) cls = 'tou-llano';
+        if ((h >= 10 && h < 14) || (h >= 18 && h < 22)) cls = 'tou-punta';
+        cell.className = 'tou-hour ' + cls;
+        cell.textContent = h;
+        touStripEl.appendChild(cell);
+      }
+
+      var elSimDias = document.getElementById('simDias');
+      var elSimPotPunta = document.getElementById('simPotPunta');
+      var elSimPotValle = document.getElementById('simPotValle');
+      var elSimKwhTotal = document.getElementById('simKwhTotal');
+      var elSimPrecioLibre = document.getElementById('simPrecioLibre');
+      var elSimDescuento = document.getElementById('simDescuento');
+      var elSimKwhPunta = document.getElementById('simKwhPunta');
+      var elSimKwhLlano = document.getElementById('simKwhLlano');
+      var elSimKwhValle = document.getElementById('simKwhValle');
+      var elSimAlquiler = document.getElementById('simAlquiler');
+      var elSimPack = document.getElementById('simPack');
+      var elSimBono = document.getElementById('simBono');
+      var elSimIva = document.getElementById('simIvaRate');
+      var btnModeLibre = document.getElementById('simModeLibre');
+      var btnModeTramos = document.getElementById('simModeTramos');
+
+      function syncSimControls() {
+        elSimDias.value = simState.dias;
+        elSimPotPunta.value = simState.potPunta;
+        elSimPotValle.value = simState.potValle;
+        elSimKwhTotal.value = simState.kwhTotal;
+        elSimPrecioLibre.value = simState.precioLibre;
+        elSimDescuento.value = simState.descuento;
+        elSimKwhPunta.value = simState.kwhPunta;
+        elSimKwhLlano.value = simState.kwhLlano;
+        elSimKwhValle.value = simState.kwhValle;
+        elSimAlquiler.checked = simState.alquiler;
+        elSimPack.checked = simState.pack;
+        elSimBono.checked = simState.bono;
+        elSimIva.value = String(simState.ivaRate);
+
+        var isLibre = simState.mode === 'libre';
+        btnModeLibre.setAttribute('aria-selected', isLibre ? 'true' : 'false');
+        btnModeTramos.setAttribute('aria-selected', !isLibre ? 'true' : 'false');
+        document.getElementById('simConsumoLibreBox').style.display = isLibre ? 'flex' : 'none';
+        document.getElementById('simConsumoTramosBox').style.display = !isLibre ? 'flex' : 'none';
+      }
+
+      function renderSim() {
+        var d = simState.dias;
+        document.getElementById('valSimDias').textContent = d + ' días';
+        document.getElementById('valSimPotPunta').textContent = numEs(simState.potPunta, 2) + ' kW';
+        document.getElementById('valSimPotValle').textContent = numEs(simState.potValle, 2) + ' kW';
+        document.getElementById('valSimKwhTotal').textContent = simState.kwhTotal + ' kWh';
+        document.getElementById('valSimPrecioLibre').textContent = numEs(simState.precioLibre, 4) + ' €/kWh';
+        document.getElementById('valSimDescuento').textContent = simState.descuento + ' %';
+        document.getElementById('valSimKwhPunta').textContent = simState.kwhPunta + ' kWh';
+        document.getElementById('valSimKwhLlano').textContent = simState.kwhLlano + ' kWh';
+        document.getElementById('valSimKwhValle').textContent = simState.kwhValle + ' kWh';
+
+        var potPuntaEur = r2(simState.potPunta * d * PRICES.potPuntaDia);
+        var potValleEur = r2(simState.potValle * d * PRICES.potValleDia);
+        var potTotalEur = r2(potPuntaEur + potValleEur);
+
+        var kwhTotal = 0;
+        var energiaBrutaEur = 0;
+        var descuentoEur = 0;
+        var energiaNetaEur = 0;
+        var rowsHtml = '';
+
+        rowsHtml += '<tr><td>Potencia Punta (P1)</td><td class="formula-col">' + numEs(simState.potPunta, 2) + ' kW × ' + d + ' d × ' + numEs(PRICES.potPuntaDia, 6) + ' €</td><td class="amount">' + eur(potPuntaEur) + '</td></tr>';
+        rowsHtml += '<tr><td>Potencia Valle (P2)</td><td class="formula-col">' + numEs(simState.potValle, 2) + ' kW × ' + d + ' d × ' + numEs(PRICES.potValleDia, 6) + ' €</td><td class="amount">' + eur(potValleEur) + '</td></tr>';
+
+        if (simState.mode === 'libre') {
+          kwhTotal = simState.kwhTotal;
+          energiaBrutaEur = r2(kwhTotal * simState.precioLibre);
+          descuentoEur = simState.descuento > 0 ? r2(energiaBrutaEur * (simState.descuento / 100)) : 0;
+          energiaNetaEur = r2(energiaBrutaEur - descuentoEur);
+          rowsHtml += '<tr><td>Energía consumida (Precio único)</td><td class="formula-col">' + kwhTotal + ' kWh × ' + numEs(simState.precioLibre, 4) + ' €</td><td class="amount">' + eur(energiaBrutaEur) + '</td></tr>';
+          if (descuentoEur > 0) {
+            rowsHtml += '<tr><td>Descuento sobre consumo (' + simState.descuento + ' %)</td><td class="formula-col">' + simState.descuento + ' % s/ ' + eur(energiaBrutaEur) + '</td><td class="amount">-' + eur(descuentoEur) + '</td></tr>';
+          }
+        } else {
+          var ePunta = r2(simState.kwhPunta * PRICES.kwhPunta);
+          var eLlano = r2(simState.kwhLlano * PRICES.kwhLlano);
+          var eValle = r2(simState.kwhValle * PRICES.kwhValle);
+          kwhTotal = simState.kwhPunta + simState.kwhLlano + simState.kwhValle;
+          energiaBrutaEur = r2(ePunta + eLlano + eValle);
+          energiaNetaEur = energiaBrutaEur;
+          rowsHtml += '<tr><td>Energía Punta (P1)</td><td class="formula-col">' + simState.kwhPunta + ' kWh × ' + numEs(PRICES.kwhPunta, 3) + ' €</td><td class="amount">' + eur(ePunta) + '</td></tr>';
+          rowsHtml += '<tr><td>Energía Llano (P2)</td><td class="formula-col">' + simState.kwhLlano + ' kWh × ' + numEs(PRICES.kwhLlano, 3) + ' €</td><td class="amount">' + eur(eLlano) + '</td></tr>';
+          rowsHtml += '<tr><td>Energía Valle (P3)</td><td class="formula-col">' + simState.kwhValle + ' kWh × ' + numEs(PRICES.kwhValle, 3) + ' €</td><td class="amount">' + eur(eValle) + '</td></tr>';
+        }
+
+        var bonoEur = simState.bono ? r2(d * PRICES.bonoDia) : 0;
+        if (simState.bono) {
+          rowsHtml += '<tr><td>Financiación Bono Social fijo</td><td class="formula-col">' + d + ' días × ' + numEs(PRICES.bonoDia, 6) + ' €</td><td class="amount">' + eur(bonoEur) + '</td></tr>';
+        }
+
+        var baseIee = r2(potTotalEur + energiaNetaEur + bonoEur);
+        var ieeEur = r2(baseIee * PRICES.ieeRate);
+        rowsHtml += '<tr><td>Impuesto sobre Electricidad (IEE)</td><td class="formula-col">5,112696 % s/ ' + eur(baseIee) + '</td><td class="amount">' + eur(ieeEur) + '</td></tr>';
+
+        var alquilerEur = simState.alquiler ? r2(d * PRICES.alquilerDia) : 0;
+        if (simState.alquiler) {
+          rowsHtml += '<tr><td>Alquiler equipo de medida</td><td class="formula-col">' + d + ' días × ' + numEs(PRICES.alquilerDia, 5) + ' €</td><td class="amount">' + eur(alquilerEur) + '</td></tr>';
+        }
+
+        var mesesFactor = r2(d / 31.07);
+        var packEur = simState.pack ? r2(mesesFactor * PRICES.packMes) : 0;
+        if (simState.pack) {
+          rowsHtml += '<tr><td>Servicio mantenimiento opcional</td><td class="formula-col">' + numEs(mesesFactor, 2) + ' meses × ' + eur(PRICES.packMes) + '</td><td class="amount">' + eur(packEur) + '</td></tr>';
+        }
+
+        var baseIva = r2(baseIee + ieeEur + alquilerEur + packEur);
+        var ivaEur = r2(baseIva * simState.ivaRate);
+        var total = r2(baseIva + ivaEur);
+
+        rowsHtml += '<tr class="line-total-row"><td colspan="2">Importe Base Imponible (sin IVA)</td><td class="amount">' + eur(baseIva) + '</td></tr>';
+        rowsHtml += '<tr><td>IVA (' + Math.round(simState.ivaRate * 100) + ' %)</td><td class="formula-col">' + Math.round(simState.ivaRate * 100) + ' % s/ ' + eur(baseIva) + '</td><td class="amount">' + eur(ivaEur) + '</td></tr>';
+
+        document.getElementById('simDetailBody').innerHTML = rowsHtml;
+        document.getElementById('simGrandTotal').textContent = eur(total);
+        document.getElementById('simPeriodoBadge').textContent = d + ' días · ' + (simState.mode === 'libre' ? 'Mercado Libre' : '3 Tramos 2.0TD');
+
+        // KPIs
+        var costeFijoSinImp = r2(potTotalEur + bonoEur + alquilerEur + packEur);
+        var totalImp = r2(ieeEur + ivaEur);
+        document.getElementById('kpiTotal').textContent = eur(total);
+        document.getElementById('kpiPorDia').textContent = eur(total / d) + ' / día';
+        document.getElementById('kpiFijo').textContent = eur(costeFijoSinImp);
+        document.getElementById('kpiFijoPct').textContent = total > 0 ? Math.round((costeFijoSinImp / baseIva) * 100) + ' % de la base' : '0 %';
+        document.getElementById('kpiEnergia').textContent = eur(energiaNetaEur);
+        document.getElementById('kpiKwhTotal').textContent = kwhTotal + ' kWh totales';
+        document.getElementById('kpiImpuestos').textContent = eur(totalImp);
+        document.getElementById('kpiImpPct').textContent = total > 0 ? numEs((totalImp / total) * 100, 1) + ' % del total' : '0 %';
+
+        // Donut chart SVG
+        var slices = [
+          { label: 'Potencia contratada', val: potTotalEur, color: '#059669' },
+          { label: 'Energía consumida neta', val: energiaNetaEur, color: '#0284C7' },
+          { label: 'Servicios y contador', val: r2(alquilerEur + packEur + bonoEur), color: '#D97706' },
+          { label: 'Impuestos (IEE + IVA)', val: totalImp, color: '#475569' }
+        ];
+
+        renderDonut(slices, total);
+
+        // Diagnostic insight
+        var pctFijo = total > 0 ? Math.round(((potTotalEur + bonoEur + alquilerEur + packEur) / baseIva) * 100) : 0;
+        var msg = '';
+        if (kwhTotal === 0) {
+          msg = 'Con 0 kWh consumidos sigues pagando ' + eur(total) + ' en costes fijos e impuestos. Reducir la potencia contratada o eliminar servicios opcionales bajaría este mínimo fijo.';
+        } else if (simState.pack && packEur > energiaNetaEur) {
+          msg = 'Atención: el servicio opcional de mantenimiento (' + eur(packEur) + ') cuesta más que toda la electricidad que has consumido (' + eur(energiaNetaEur) + ').';
+        } else if (simState.mode === 'tramos' && simState.kwhPunta > simState.kwhValle) {
+          msg = 'Tienes más consumo en horas Punta (' + simState.kwhPunta + ' kWh) que en horas Valle (' + simState.kwhValle + ' kWh). Trasladar parte de ese consumo a horario nocturno o fin de semana abarataría la factura.';
+        } else {
+          msg = 'El ' + pctFijo + ' % de tu base imponible corresponde a conceptos fijos independientes del consumo y el resto al gasto variable en kWh.';
+        }
+        document.getElementById('simInsightText').textContent = msg;
+      }
+
+      function renderDonut(slices, total) {
+        var svg = document.getElementById('simDonutSvg');
+        var legend = document.getElementById('simLegend');
+        var r = 56;
+        var circ = 2 * Math.PI * r;
+        var offset = 0;
+        var svgInner = '<circle cx="80" cy="80" r="' + r + '" fill="none" stroke="#F1F5F9" stroke-width="22" />';
+        var legInner = '';
+
+        slices.forEach(function (s) {
+          var pct = total > 0 ? (s.val / total) : 0;
+          var dash = pct * circ;
+          if (dash > 0.2) {
+            svgInner += '<circle cx="80" cy="80" r="' + r + '" fill="none" stroke="' + s.color + '" stroke-width="22" stroke-dasharray="' + dash.toFixed(2) + ' ' + circ.toFixed(2) + '" stroke-dashoffset="' + (-offset).toFixed(2) + '" transform="rotate(-90 80 80)" />';
+          }
+          offset += dash;
+          legInner += '<div class="legend-row">' +
+            '<span class="legend-swatch" style="background:' + s.color + ';"></span>' +
+            '<span>' + escHtml(s.label) + '</span>' +
+            '<span class="legend-pct">' + numEs(pct * 100, 1) + ' %</span>' +
+            '<span class="legend-eur">' + eur(s.val) + '</span>' +
+          '</div>';
+        });
+
+        svgInner += '<text x="80" y="76" text-anchor="middle" font-size="11" fill="#64748B" font-family="Plus Jakarta Sans">TOTAL</text>';
+        svgInner += '<text x="80" y="94" text-anchor="middle" font-size="14" font-weight="600" fill="#0F172A" font-family="IBM Plex Mono">' + escHtml(eur(total)) + '</text>';
+
+        svg.innerHTML = svgInner;
+        legend.innerHTML = legInner;
+      }
+
+      // Bind simulator inputs
+      [
+        [elSimDias, 'dias', parseInt],
+        [elSimPotPunta, 'potPunta', parseFloat],
+        [elSimPotValle, 'potValle', parseFloat],
+        [elSimKwhTotal, 'kwhTotal', parseInt],
+        [elSimPrecioLibre, 'precioLibre', parseFloat],
+        [elSimDescuento, 'descuento', parseInt],
+        [elSimKwhPunta, 'kwhPunta', parseInt],
+        [elSimKwhLlano, 'kwhLlano', parseInt],
+        [elSimKwhValle, 'kwhValle', parseInt]
+      ].forEach(function (item) {
+        item[0].addEventListener('input', function () {
+          simState[item[1]] = item[2](item[0].value, 10);
+          renderSim();
+        });
+      });
+
+      elSimAlquiler.addEventListener('change', function () { simState.alquiler = elSimAlquiler.checked; renderSim(); });
+      elSimPack.addEventListener('change', function () { simState.pack = elSimPack.checked; renderSim(); });
+      elSimBono.addEventListener('change', function () { simState.bono = elSimBono.checked; renderSim(); });
+      elSimIva.addEventListener('change', function () { simState.ivaRate = parseFloat(elSimIva.value); renderSim(); });
+
+      btnModeLibre.addEventListener('click', function () { simState.mode = 'libre'; syncSimControls(); renderSim(); });
+      btnModeTramos.addEventListener('click', function () { simState.mode = 'tramos'; syncSimControls(); renderSim(); });
+
+      document.querySelectorAll('.preset-btn[data-preset]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var p = btn.dataset.preset;
+          if (p === 'ejemplo-pdf') {
+            Object.assign(simState, { mode: 'libre', dias: 32, potPunta: 3.45, potValle: 3.45, kwhTotal: 42, precioLibre: 0.1071, descuento: 20, alquiler: true, pack: true, bono: true, ivaRate: 0.21 });
+          } else if (p === 'piso-estandar') {
+            Object.assign(simState, { mode: 'libre', dias: 30, potPunta: 4.60, potValle: 4.60, kwhTotal: 240, precioLibre: 0.135, descuento: 10, alquiler: true, pack: false, bono: true, ivaRate: 0.21 });
+          } else if (p === 'pvpc-tramos') {
+            Object.assign(simState, { mode: 'tramos', dias: 30, potPunta: 4.60, potValle: 4.60, kwhPunta: 70, kwhLlano: 90, kwhValle: 160, alquiler: true, pack: false, bono: true, ivaRate: 0.21 });
+          } else if (p === 'vacio-verano') {
+            Object.assign(simState, { mode: 'libre', dias: 30, potPunta: 3.45, potValle: 3.45, kwhTotal: 0, precioLibre: 0.12, descuento: 0, alquiler: true, pack: false, bono: true, ivaRate: 0.21 });
+          }
+          syncSimControls();
+          renderSim();
+        });
+      });
+
+      syncSimControls();
+      renderSim();
+
+      /* ------------------------------------------------------------------ */
+      /* SECCIÓN 3: PRÁCTICA DE ALUMNOS (EJERCICIOS EVALUABLES)             */
+      /* ------------------------------------------------------------------ */
+      var fixedCases = [
+        {
+          title: 'Supuesto 1: Apartamento de bajo consumo (Mercado Libre)',
+          dias: 30,
+          potPunta: 3.45,
+          potValle: 3.45,
+          pPotPunta: 0.11,
+          pPotValle: 0.06,
+          mode: 'libre',
+          kwh: 100,
+          pKwh: 0.14,
+          descuentoPct: 10,
+          bonoDia: 0.025,
+          alquilerDia: 0.027,
+          packMes: 0,
+          ivaPct: 21,
+          maxPotAnual: 2.85,
+          questions: [
+            {
+              q: 'Si el titular del contrato nunca superó los 2,85 kW de potencia máxima demandada en el último año, ¿qué medida de ahorro es más recomendable?',
+              opts: [
+                'Cambiar de contador digital por uno analógico.',
+                'Valorar bajar la potencia contratada (por ejemplo de 3,45 kW a 3,00 kW) para reducir el término fijo.',
+                'Solicitar que el Impuesto Eléctrico pase a ser voluntario.'
+              ],
+              correct: 1
+            },
+            {
+              q: 'El descuento del 10 % aplicado en este supuesto reduce el importe de:',
+              opts: [
+                'Solo el coste de la energía consumida (kWh), no la potencia ni los impuestos.',
+                'La factura completa incluido el IVA.',
+                'El alquiler del contador de la distribuidora.'
+              ],
+              correct: 0
+            }
+          ]
+        },
+        {
+          title: 'Supuesto 2: Vivienda estándar con servicio opcional',
+          dias: 31,
+          potPunta: 4.60,
+          potValle: 4.60,
+          pPotPunta: 0.113,
+          pPotValle: 0.065,
+          mode: 'libre',
+          kwh: 220,
+          pKwh: 0.15,
+          descuentoPct: 0,
+          bonoDia: 0.025,
+          alquilerDia: 0.027,
+          packMes: 7.95,
+          ivaPct: 21,
+          maxPotAnual: 4.10,
+          questions: [
+            {
+              q: '¿Cuál de los siguientes conceptos de esta factura NO es obligatorio para disponer de suministro eléctrico?',
+              opts: [
+                'Alquiler del equipo de medida (contador).',
+                'Financiación del Bono Social fijo.',
+                'Servicio de mantenimiento opcional (7,95 €/mes).'
+              ],
+              correct: 2
+            },
+            {
+              q: '¿Qué código de 20-22 caracteres (empezando por ES) identifica esta vivienda de forma única ante cualquier comercializadora?',
+              opts: [
+                'El código BIC bancario.',
+                'El código CUPS (Código Universal de Punto de Suministro).',
+                'El número de serie del recibo.'
+              ],
+              correct: 1
+            }
+          ]
+        },
+        {
+          title: 'Supuesto 3: Tarifa regulada 2.0TD con 3 tramos horarios',
+          dias: 30,
+          potPunta: 4.00,
+          potValle: 4.00,
+          pPotPunta: 0.11,
+          pPotValle: 0.06,
+          mode: 'tramos',
+          kwhPunta: 60,
+          kwhLlano: 80,
+          kwhValle: 140,
+          pKwhPunta: 0.20,
+          pKwhLlano: 0.13,
+          pKwhValle: 0.08,
+          bonoDia: 0.025,
+          alquilerDia: 0.027,
+          packMes: 0,
+          ivaPct: 21,
+          maxPotAnual: 3.70,
+          questions: [
+            {
+              q: 'En una tarifa con 3 periodos horarios (como el PVPC de Energía XXI), ¿cuándo es más barato poner la lavadora o cargar aparatos?',
+              opts: [
+                'De 10:00 a 14:00 en días laborables (Punta).',
+                'De 00:00 a 08:00 todos los días, y las 24 horas de sábados, domingos y festivos nacionales (Valle).',
+                'De 18:00 a 22:00 entre semana.'
+              ],
+              correct: 1
+            },
+            {
+              q: '¿Por qué es importante comprobar si la lectura del contador es "real" y no "estimada"?',
+              opts: [
+                'Porque las lecturas reales reflejan los kWh exactos medidos por el contador inteligente y evitan regularizaciones posteriores.',
+                'Porque las lecturas estimadas están exentas de pagar IVA.',
+                'Porque las lecturas reales eliminan el término de potencia.'
+              ],
+              correct: 0
+            }
+          ]
+        }
+      ];
+
+      var activeCase = null;
+      var activePracticeRows = [];
+
+      function buildPracticeSolution(c) {
+        var rows = [];
+        var potPunta = r2(c.potPunta * c.dias * c.pPotPunta);
+        var potValle = r2(c.potValle * c.dias * c.pPotValle);
+        rows.push({
+          id: 'potPunta',
+          label: 'Potencia Punta (P1)',
+          formula: numEs(c.potPunta, 2) + ' kW × ' + c.dias + ' d × ' + numEs(c.pPotPunta, 3) + ' €/kW·d',
+          hint: 'Multiplica ' + c.potPunta + ' × ' + c.dias + ' × ' + c.pPotPunta + ' y redondea a 2 decimales.',
+          expected: potPunta
+        });
+        rows.push({
+          id: 'potValle',
+          label: 'Potencia Valle (P2)',
+          formula: numEs(c.potValle, 2) + ' kW × ' + c.dias + ' d × ' + numEs(c.pPotValle, 3) + ' €/kW·d',
+          hint: 'Multiplica ' + c.potValle + ' × ' + c.dias + ' × ' + c.pPotValle + ' y redondea a 2 decimales.',
+          expected: potValle
+        });
+
+        var energiaNeta = 0;
+        if (c.mode === 'libre') {
+          var eBruta = r2(c.kwh * c.pKwh);
+          rows.push({
+            id: 'energiaBruta',
+            label: 'Energía consumida',
+            formula: c.kwh + ' kWh × ' + numEs(c.pKwh, 2) + ' €/kWh',
+            hint: 'Multiplica ' + c.kwh + ' × ' + c.pKwh + '.',
+            expected: eBruta
+          });
+          if (c.descuentoPct > 0) {
+            var desc = r2(eBruta * (c.descuentoPct / 100));
+            rows.push({
+              id: 'descuento',
+              label: 'Descuento energía (' + c.descuentoPct + ' %)',
+              formula: c.descuentoPct + ' % de ' + eur(eBruta) + ' (escribe importe positivo descontado)',
+              hint: 'Calcula ' + eBruta + ' × ' + (c.descuentoPct / 100) + ' (introduce el valor en positivo, ej. ' + numEs(desc, 2) + ').',
+              expected: desc,
+              isNegativeDisplay: true
+            });
+            energiaNeta = r2(eBruta - desc);
+          } else {
+            energiaNeta = eBruta;
+          }
+        } else {
+          var eP = r2(c.kwhPunta * c.pKwhPunta);
+          var eL = r2(c.kwhLlano * c.pKwhLlano);
+          var eV = r2(c.kwhValle * c.pKwhValle);
+          var eSum = r2(eP + eL + eV);
+          rows.push({
+            id: 'energiaTramos',
+            label: 'Energía total 3 tramos',
+            formula: '(' + c.kwhPunta + '×' + numEs(c.pKwhPunta, 2) + ') + (' + c.kwhLlano + '×' + numEs(c.pKwhLlano, 2) + ') + (' + c.kwhValle + '×' + numEs(c.pKwhValle, 2) + ')',
+            hint: 'Suma los 3 tramos: ' + numEs(eP, 2) + ' + ' + numEs(eL, 2) + ' + ' + numEs(eV, 2) + '.',
+            expected: eSum
+          });
+          energiaNeta = eSum;
+        }
+
+        var bono = r2(c.dias * c.bonoDia);
+        rows.push({
+          id: 'bono',
+          label: 'Financiación Bono Social fijo',
+          formula: c.dias + ' días × ' + numEs(c.bonoDia, 3) + ' €/día',
+          hint: 'Multiplica ' + c.dias + ' × ' + c.bonoDia + '.',
+          expected: bono
+        });
+
+        var baseIee = r2(potPunta + potValle + energiaNeta + bono);
+        var iee = r2(baseIee * 0.0511269632);
+        rows.push({
+          id: 'iee',
+          label: 'Impuesto Eléctrico (5,1127 %)',
+          formula: '5,11269632 % sobre (' + numEs(potPunta, 2) + ' + ' + numEs(potValle, 2) + ' + ' + numEs(energiaNeta, 2) + ' + ' + numEs(bono, 2) + ')',
+          hint: 'Suma Potencia Punta + Potencia Valle + Energía neta + Bono (' + numEs(baseIee, 2) + ' €) y multiplica por 0,0511269632.',
+          expected: iee
+        });
+
+        var alq = r2(c.dias * c.alquilerDia);
+        rows.push({
+          id: 'alquiler',
+          label: 'Alquiler contador digital',
+          formula: c.dias + ' días × ' + numEs(c.alquilerDia, 3) + ' €/día',
+          hint: 'Multiplica ' + c.dias + ' × ' + c.alquilerDia + '.',
+          expected: alq
+        });
+
+        var pack = c.packMes > 0 ? r2(c.packMes) : 0;
+        if (pack > 0) {
+          rows.push({
+            id: 'pack',
+            label: 'Servicio mantenimiento (1 mes)',
+            formula: 'Cuota fija mensual indicada: ' + eur(pack),
+            hint: 'Introduce el coste fijo del servicio adicional: ' + numEs(pack, 2) + '.',
+            expected: pack
+          });
+        }
+
+        var baseIva = r2(baseIee + iee + alq + pack);
+        rows.push({
+          id: 'baseIva',
+          label: 'Base Imponible (Total sin IVA)',
+          formula: 'Suma de todos los apartados anteriores',
+          hint: 'Suma Base IEE (' + numEs(baseIee, 2) + ') + IEE (' + numEs(iee, 2) + ') + Alquiler (' + numEs(alq, 2) + ')' + (pack > 0 ? ' + Servicio (' + numEs(pack, 2) + ')' : '') + '.',
+          expected: baseIva
+        });
+
+        var iva = r2(baseIva * (c.ivaPct / 100));
+        rows.push({
+          id: 'iva',
+          label: 'IVA (' + c.ivaPct + ' %)',
+          formula: c.ivaPct + ' % sobre Base Imponible',
+          hint: 'Multiplica tu Base Imponible × ' + (c.ivaPct / 100) + '.',
+          expected: iva
+        });
+
+        var total = r2(baseIva + iva);
+        rows.push({
+          id: 'total',
+          label: 'TOTAL FACTURA (€)',
+          formula: 'Base Imponible + IVA',
+          hint: 'Suma Base Imponible + cuota de IVA.',
+          expected: total,
+          isGrandTotal: true
+        });
+
+        return rows;
+      }
+
+      function loadPracticeCase(caseObj) {
+        activeCase = caseObj;
+        activePracticeRows = buildPracticeSolution(caseObj);
+
+        document.getElementById('practiceCaseTitle').textContent = caseObj.title;
+        document.getElementById('practiceSpecs').textContent = caseObj.dias + ' días · Tarifa 2.0TD';
+
+        // Data sheet
+        var ds = '';
+        ds += '<div class="formula-block-title">Datos del contrato hipotético para realizar tus cálculos</div>';
+        ds += '<div class="kv-grid" style="font-size:0.84375rem;">';
+        ds += '<div><strong>Periodo:</strong> ' + caseObj.dias + ' días</div>';
+        ds += '<div><strong>Potencia contratada:</strong> P1 ' + numEs(caseObj.potPunta, 2) + ' kW (' + numEs(caseObj.pPotPunta, 3) + ' €/kW·d) · P2 ' + numEs(caseObj.potValle, 2) + ' kW (' + numEs(caseObj.pPotValle, 3) + ' €/kW·d)</div>';
+        if (caseObj.mode === 'libre') {
+          ds += '<div><strong>Consumo:</strong> ' + caseObj.kwh + ' kWh a ' + numEs(caseObj.pKwh, 2) + ' €/kWh' + (caseObj.descuentoPct > 0 ? ' (Descuento energía ' + caseObj.descuentoPct + ' %)' : '') + '</div>';
+        } else {
+          ds += '<div><strong>Consumo tramos:</strong> Punta ' + caseObj.kwhPunta + ' kWh (' + numEs(caseObj.pKwhPunta, 2) + ' €) · Llano ' + caseObj.kwhLlano + ' kWh (' + numEs(caseObj.pKwhLlano, 2) + ' €) · Valle ' + caseObj.kwhValle + ' kWh (' + numEs(caseObj.pKwhValle, 2) + ' €)</div>';
+        }
+        ds += '<div><strong>Bono social / Contador:</strong> ' + numEs(caseObj.bonoDia, 3) + ' €/día · ' + numEs(caseObj.alquilerDia, 3) + ' €/día' + (caseObj.packMes > 0 ? ' · Pack ' + eur(caseObj.packMes) : '') + '</div>';
+        ds += '<div><strong>Potencia máx. anual registrada:</strong> ' + numEs(caseObj.maxPotAnual, 2) + ' kW</div>';
+        ds += '<div><strong>Impuestos:</strong> IEE 5,11269632 % · IVA ' + caseObj.ivaPct + ' %</div>';
+        ds += '</div>';
+        document.getElementById('practiceDataSheet').innerHTML = ds;
+
+        // Input table
+        var tbody = document.getElementById('practiceTableBody');
+        tbody.innerHTML = '';
+        activePracticeRows.forEach(function (row) {
+          var tr = document.createElement('tr');
+          if (row.isGrandTotal) tr.className = 'line-total-row';
+          var signPrefix = row.isNegativeDisplay ? '− ' : '';
+          tr.innerHTML =
+            '<td><strong>' + escHtml(row.label) + '</strong></td>' +
+            '<td class="formula-col">' +
+              escHtml(row.formula) +
+              '<br><button type="button" class="hint-toggle" data-hint-id="' + row.id + '">Ver pista</button>' +
+              '<span class="hint-text" id="hint-' + row.id + '">' + escHtml(row.hint) + '</span>' +
+            '</td>' +
+            '<td style="text-align:right;white-space:nowrap;">' +
+              signPrefix +
+              '<input type="number" step="0.01" class="student-input" id="in-' + row.id + '" placeholder="0.00" aria-label="' + escHtml(row.label) + '">' +
+              '<span class="feedback-inline" id="fb-' + row.id + '"></span>' +
+            '</td>';
+          tbody.appendChild(tr);
+        });
+
+        tbody.querySelectorAll('.hint-toggle').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var hEl = document.getElementById('hint-' + btn.dataset.hintId);
+            var open = hEl.classList.toggle('open');
+            btn.textContent = open ? 'Ocultar pista' : 'Ver pista';
+          });
+        });
+
+        // Quiz questions
+        var qBlock = document.getElementById('practiceQuizBlock');
+        qBlock.innerHTML = '';
+        caseObj.questions.forEach(function (qItem, qi) {
+          var div = document.createElement('div');
+          div.className = 'quiz-question';
+          var optsHtml = '';
+          qItem.opts.forEach(function (opt, oi) {
+            optsHtml += '<label class="quiz-opt">' +
+              '<input type="radio" name="pq-' + qi + '" value="' + oi + '"> ' +
+              '<span>' + escHtml(opt) + '</span>' +
+            '</label>';
+          });
+          div.innerHTML = '<div class="quiz-question-title">' + (qi + 1) + '. ' + escHtml(qItem.q) + '</div>' +
+            '<div class="quiz-options">' + optsHtml + '</div>' +
+            '<span class="feedback-inline" id="qfb-' + qi + '"></span>';
+          qBlock.appendChild(div);
+        });
+
+        var scoreBox = document.getElementById('practiceScoreBox');
+        scoreBox.classList.remove('visible');
+        scoreBox.innerHTML = '';
+      }
+
+      function parseStudentNumber(val) {
+        if (val === '' || val === null || val === undefined) return NaN;
+        var norm = String(val).trim().replace(',', '.');
+        return parseFloat(norm);
+      }
+
+      document.getElementById('checkPracticeBtn').addEventListener('click', function () {
+        var okCount = 0;
+        var totalItems = activePracticeRows.length + activeCase.questions.length;
+
+        activePracticeRows.forEach(function (row) {
+          var inp = document.getElementById('in-' + row.id);
+          var fb = document.getElementById('fb-' + row.id);
+          var val = Math.abs(parseStudentNumber(inp.value));
+          inp.classList.remove('is-correct', 'is-error');
+          if (!isNaN(val) && Math.abs(val - row.expected) <= 0.025) {
+            inp.classList.add('is-correct');
+            fb.className = 'feedback-inline ok';
+            fb.textContent = '✓ Correcto (' + eur(row.expected) + ')';
+            okCount++;
+          } else {
+            inp.classList.add('is-error');
+            fb.className = 'feedback-inline err';
+            fb.textContent = isNaN(val) ? '✕ Falta cálculo' : '✕ Revisar cálculo';
+          }
+        });
+
+        activeCase.questions.forEach(function (qItem, qi) {
+          var checked = document.querySelector('input[name="pq-' + qi + '"]:checked');
+          var qfb = document.getElementById('qfb-' + qi);
+          if (checked && Number(checked.value) === qItem.correct) {
+            qfb.className = 'feedback-inline ok';
+            qfb.textContent = '✓ Respuesta correcta';
+            okCount++;
+          } else {
+            qfb.className = 'feedback-inline err';
+            qfb.textContent = '✕ Revisa este concepto';
+          }
+        });
+
+        var scoreBox = document.getElementById('practiceScoreBox');
+        var pct = Math.round((okCount / totalItems) * 100);
+        scoreBox.classList.add('visible');
+        scoreBox.innerHTML = '<strong>Resultado de la práctica: ' + okCount + ' de ' + totalItems + ' apartados correctos (' + pct + ' %)</strong>' +
+          '<p style="margin-top:4px;font-size:0.875rem;color:var(--text-secondary);">' +
+          (okCount === totalItems
+            ? 'Excelente trabajo: dominas todos los cálculos y conceptos de esta factura.'
+            : 'Revisa los apartados marcados con ✕. Puedes abrir "Ver pista" en cada línea para comprobar la fórmula.') +
+          '</p>';
+      });
+
+      document.getElementById('solvePracticeBtn').addEventListener('click', function () {
+        activePracticeRows.forEach(function (row) {
+          var inp = document.getElementById('in-' + row.id);
+          var fb = document.getElementById('fb-' + row.id);
+          inp.value = row.expected.toFixed(2);
+          inp.classList.remove('is-error');
+          inp.classList.add('is-correct');
+          fb.className = 'feedback-inline ok';
+          fb.textContent = 'Solución: ' + eur(row.expected);
+        });
+        activeCase.questions.forEach(function (qItem, qi) {
+          var radios = document.querySelectorAll('input[name="pq-' + qi + '"]');
+          if (radios[qItem.correct]) radios[qItem.correct].checked = true;
+          var qfb = document.getElementById('qfb-' + qi);
+          qfb.className = 'feedback-inline ok';
+          qfb.textContent = '✓ Opción correcta marcada';
+        });
+        var scoreBox = document.getElementById('practiceScoreBox');
+        scoreBox.classList.add('visible');
+        scoreBox.innerHTML = '<strong>Solución mostrada</strong><p style="margin-top:4px;font-size:0.875rem;color:var(--text-secondary);">Pulsa "Ver pista" en cualquier fila para estudiar el procedimiento aritmético paso a paso.</p>';
+      });
+
+      document.getElementById('resetPracticeBtn').addEventListener('click', function () {
+        loadPracticeCase(activeCase);
+      });
+
+      document.querySelectorAll('.preset-btn[data-case]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          loadPracticeCase(fixedCases[Number(btn.dataset.case)]);
+        });
+      });
+
+      document.getElementById('randomCaseBtn').addEventListener('click', function () {
+        var pots = [3.45, 4.00, 4.60, 5.75];
+        var pot = pots[Math.floor(Math.random() * pots.length)];
+        var dias = 28 + Math.floor(Math.random() * 5); // 28..32
+        var kwh = 80 + Math.floor(Math.random() * 220);
+        var pKwh = r2(0.11 + Math.random() * 0.08);
+        var desc = [0, 5, 10, 15][Math.floor(Math.random() * 4)];
+        var pack = Math.random() > 0.5 ? 7.95 : 0;
+        loadPracticeCase({
+          title: 'Supuesto Aleatorio de Aula (' + dias + ' días · ' + kwh + ' kWh)',
+          dias: dias,
+          potPunta: pot,
+          potValle: pot,
+          pPotPunta: 0.11,
+          pPotValle: 0.06,
+          mode: 'libre',
+          kwh: kwh,
+          pKwh: pKwh,
+          descuentoPct: desc,
+          bonoDia: 0.025,
+          alquilerDia: 0.027,
+          packMes: pack,
+          ivaPct: 21,
+          maxPotAnual: r2(pot - 0.65),
+          questions: fixedCases[pack > 0 ? 1 : 0].questions
+        });
+      });
+
+      loadPracticeCase(fixedCases[0]);
+
+      /* ------------------------------------------------------------------ */
+      /* SECCIÓN 4: GLOSARIO TÉCNICO                                        */
+      /* ------------------------------------------------------------------ */
+      var glossaryTerms = [
+        {
+          cat: 'Identificación',
+          term: 'Código CUPS',
+          desc: 'Código Universal de Punto de Suministro. Es el identificador único e invariable de tu instalación eléctrica (empieza por ES seguido de 20-22 caracteres). Se necesita para cambiar de tarifa o compañía.'
+        },
+        {
+          cat: 'Mercado eléctrico',
+          term: 'PVPC vs. Mercado Libre',
+          desc: 'El PVPC (Precio Voluntario para el Pequeño Consumidor) es la tarifa regulada por el Gobierno, ofrecida por comercializadoras de referencia como Energía XXI, con precio distinto cada hora. En el mercado libre cada empresa fija sus precios y descuentos.'
+        },
+        {
+          cat: 'Coste fijo',
+          term: 'Término de Potencia (kW)',
+          desc: 'Importe fijo diario que pagas según los kilovatios contratados, consumas electricidad o no. Determina cuántos electrodomésticos puedes encender a la vez sin que salte el limitador del contador.'
+        },
+        {
+          cat: 'Coste variable',
+          term: 'Término de Energía (kWh)',
+          desc: 'Coste proporcional a la electricidad realmente consumida durante el periodo de facturación. En tarifa 2.0TD puede tener un precio único (mercado libre) o 3 periodos horarios (Punta, Llano y Valle).'
+        },
+        {
+          cat: 'Tarifa 2.0TD',
+          term: 'Tramos horarios Punta, Llano y Valle',
+          desc: 'Punta (10–14h y 18–22h laborables, más caro), Llano (8–10h, 14–18h y 22–24h laborables, precio medio) y Valle (00–08h laborables y las 24h de fines de semana y festivos nacionales, más económico).'
+        },
+        {
+          cat: 'Agentes del sistema',
+          term: 'Comercializadora vs. Distribuidora',
+          desc: 'La comercializadora te vende la energía y emite la factura (puedes elegirla libremente). La distribuidora gestiona los cables, el contador y repara averías en tu zona geográfica.'
+        },
+        {
+          cat: 'Cargos regulados',
+          term: 'Peajes de acceso (ATR) y Cargos',
+          desc: 'Costes regulados por la CNMC y el Ministerio para mantener las redes de transporte y distribución y financiar costes del sistema (renovables, déficit, sistemas extrapeninsulares). Ya están incluidos en los precios de la factura.'
+        },
+        {
+          cat: 'Impuestos',
+          term: 'Impuesto Eléctrico (IEE) e IVA',
+          desc: 'El IEE (5,11269632 %) grava el suministro eléctrico (potencia + energía) y forma parte de la base sobre la que después se aplica el IVA (generalmente 21 %).'
+        },
+        {
+          cat: 'Protección social',
+          term: 'Bono Social Eléctrico',
+          desc: 'Descuento en la tarifa PVPC para hogares vulnerables que cumplan los requisitos de renta o familia numerosa. Todos los consumidores contribuyen a financiarlo mediante una pequeña cuota diaria fija en la factura.'
+        },
+        {
+          cat: 'Equipos y servicios',
+          term: 'Alquiler de contador vs. Servicios opcionales',
+          desc: 'El alquiler del contador digital es un importe regulado (~0,81 €/mes) que cobra la distribuidora. En cambio, los packs de mantenimiento o reparación eléctrica son opcionales y conviene revisar si se desean mantener.'
+        },
+        {
+          cat: 'Medición',
+          term: 'Lectura Real vs. Lectura Estimada',
+          desc: 'La lectura real recoge exactamente los kWh marcados por el contador digital. Si por fallo puntual de comunicación se emite una lectura estimada, el exceso o defecto se regulariza automáticamente en la factura siguiente.'
+        },
+        {
+          cat: 'Sostenibilidad',
+          term: 'Origen de la Electricidad (GdO)',
+          desc: 'Etiqueta informativa supervisada por la CNMC que compara las fuentes de generación (renovables, nuclear, gas, carbón) y las emisiones de CO₂ (escala A–G) de tu comercializadora frente a la media nacional.'
+        }
+      ];
+
+      function renderGlossary(filterText) {
+        var q = (filterText || '').trim().toLowerCase();
+        var grid = document.getElementById('glossaryGrid');
+        grid.innerHTML = '';
+        var filtered = glossaryTerms.filter(function (item) {
+          return !q || item.term.toLowerCase().indexOf(q) !== -1 || item.desc.toLowerCase().indexOf(q) !== -1 || item.cat.toLowerCase().indexOf(q) !== -1;
+        });
+
+        if (filtered.length === 0) {
+          grid.innerHTML = '<div class="surface-card glossary-card" style="grid-column:1/-1;"><p class="glossary-desc">No se han encontrado términos que coincidan con «' + escHtml(filterText) + '».</p></div>';
+          return;
+        }
+
+        filtered.forEach(function (item) {
+          var card = document.createElement('article');
+          card.className = 'surface-card glossary-card';
+          card.innerHTML =
+            '<div class="glossary-kicker">' + escHtml(item.cat) + '</div>' +
+            '<h3 class="glossary-term">' + escHtml(item.term) + '</h3>' +
+            '<p class="glossary-desc">' + escHtml(item.desc) + '</p>';
+          grid.appendChild(card);
+        });
+      }
+
+      document.getElementById('glossarySearch').addEventListener('input', function (e) {
+        renderGlossary(e.target.value);
+      });
+      renderGlossary('');
+
+      /* ------------------------------------------------------------------ */
+      /* EXPORTACIÓN EN UN SOLO ARCHIVO HTML AUTÓNOMO                       */
+      /* ------------------------------------------------------------------ */
+      var exportModal = document.getElementById('exportModal');
+      var exportCodeArea = document.getElementById('exportCodeArea');
+      var exportDirectLink = document.getElementById('exportDirectLink');
+      var copyHtmlStatus = document.getElementById('copyHtmlStatus');
+      var lastExportUrl = null;
+
+      function buildStandaloneHtml() {
+        var clone = document.documentElement.cloneNode(true);
+        // Eliminar scripts inyectados por servidores de desarrollo (ej. Vite client)
+        var devScripts = clone.querySelectorAll('script[type="module"], script[src*="@vite"]');
+        devScripts.forEach(function (s) { s.parentNode.removeChild(s); });
+        // Asegurar que el modal de exportación aparezca cerrado en el archivo guardado
+        var clonedModal = clone.querySelector('#exportModal');
+        if (clonedModal) clonedModal.classList.remove('open');
+        var clonedArea = clone.querySelector('#exportCodeArea');
+        if (clonedArea) clonedArea.textContent = '';
+        var clonedLink = clone.querySelector('#exportDirectLink');
+        if (clonedLink) clonedLink.removeAttribute('href');
+        // Limpiar contenedores generados dinámicamente para un arranque limpio al abrir el archivo
+        ['stepIndexList', 'touStripVisual', 'simDetailBody', 'simLegend', 'practiceTableBody', 'practiceQuizBlock', 'glossaryGrid'].forEach(function (id) {
+          var el = clone.querySelector('#' + id);
+          if (el) el.innerHTML = '';
+        });
+        return '<!doctype html>\n' + clone.outerHTML;
+      }
+
+      document.getElementById('downloadHtmlBtn').addEventListener('click', function () {
+        var htmlContent = buildStandaloneHtml();
+        var blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        if (lastExportUrl) URL.revokeObjectURL(lastExportUrl);
+        lastExportUrl = URL.createObjectURL(blob);
+
+        // Intento de descarga directa
+        var a = document.createElement('a');
+        a.href = lastExportUrl;
+        a.download = 'tutorial-simulador-factura-luz.html';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        // Mostrar diálogo con enlace directo + copia al portapapeles como respaldo garantizado
+        exportDirectLink.href = lastExportUrl;
+        exportCodeArea.value = htmlContent;
+        copyHtmlStatus.textContent = '';
+        exportModal.classList.add('open');
+      });
+
+      document.getElementById('copyHtmlBtn').addEventListener('click', function () {
+        var text = exportCodeArea.value;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            copyHtmlStatus.textContent = '✓ Código HTML copiado al portapapeles';
+          }).catch(function () {
+            exportCodeArea.select();
+            document.execCommand('copy');
+            copyHtmlStatus.textContent = '✓ Código seleccionado y copiado';
+          });
+        } else {
+          exportCodeArea.select();
+          document.execCommand('copy');
+          copyHtmlStatus.textContent = '✓ Código seleccionado y copiado';
+        }
+      });
+
+      document.getElementById('closeExportBtn').addEventListener('click', function () {
+        exportModal.classList.remove('open');
+      });
+
+      exportModal.addEventListener('click', function (e) {
+        if (e.target === exportModal) exportModal.classList.remove('open');
+      });
+    })();
+  </script>
+
+
+</body></html>
