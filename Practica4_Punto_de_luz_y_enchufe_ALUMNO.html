@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Práctica Punto de luz y enchufe</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: hoja de prácticas de taller. Cabecera encuadrada como el PDF, barra fija con progreso y descarga, cuatro tableros de dibujo sobre papel cuadriculado, cuestiones y comprobación. */
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --ink:#14202b; --muted:#566574; --line:#c9d3dd;
+  --accent:#1d4cb5; --accent-ink:#ffffff; --accent-soft:#e3ebfb; --ok:#17764a; --warn:#a4400f;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-display:'Barlow Condensed','Arial Narrow',Arial,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e151c; --surface:#16202a; --ink:#e8eef4; --muted:#9aaab9; --line:#2c3b49;
+    --accent:#86abff; --accent-ink:#0a1222; --accent-soft:#1c2c4a; --ok:#5fd29b; --warn:#ffb085; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e151c; --surface:#16202a; --ink:#e8eef4; --muted:#9aaab9; --line:#2c3b49;
+  --accent:#86abff; --accent-ink:#0a1222; --accent-soft:#1c2c4a; --ok:#5fd29b; --warn:#ffb085; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--font-body); font-size:15px; line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:20px;padding-block:0 48px}
+h1,h2,h3{margin:0;text-wrap:balance}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* barra fija */
+.bar{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:var(--surface);
+  border-bottom:1px solid var(--line); margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));
+  padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));
+}
+.bar-in{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}
+.bar-title{display:flex;flex-direction:column;min-width:0}
+.bar-title strong{font-family:var(--font-display);font-size:20px;letter-spacing:.02em;text-transform:uppercase;line-height:1.1}
+.bar-title span{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.meter{height:6px;width:140px;max-width:100%;background:var(--line);border-radius:3px;overflow:hidden;margin-top:4px}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .25s}
+.btn{
+  border:1px solid var(--line); background:var(--surface); border-radius:6px; padding:7px 12px; cursor:pointer;
+  min-height:36px; line-height:1.2;
+}
+.btn:hover{border-color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600;padding-inline:16px}
+.btn.primary:disabled{opacity:.6;cursor:progress}
+.btn.danger[data-armed="true"]{background:var(--warn);color:#fff;border-color:var(--warn)}
+
+/* cabecera encuadrada */
+.sheet-head{background:var(--surface);border:2px solid var(--ink);border-radius:2px}
+.sheet-head .row1{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--ink)}
+.sheet-head .row1 b{font-family:var(--font-display);font-size:38px;line-height:1;letter-spacing:.02em}
+.sheet-head .row1 span{font-weight:600}
+.sheet-head .row2{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;padding:12px 16px}
+.field{display:flex;flex-direction:column;gap:2px;min-width:0}
+.field label{font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.field input{border:0;border-bottom:1.5px solid var(--ink);background:transparent;padding:4px 2px;border-radius:0;min-width:0;width:100%}
+.titlebar{background:var(--surface);border:2px solid var(--ink);border-radius:2px;padding:8px 16px;font-weight:600;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* enunciado */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.card h2{font-family:var(--font-display);font-size:26px;letter-spacing:.02em;text-transform:uppercase;margin-bottom:6px}
+details.card summary{cursor:pointer;font-family:var(--font-display);font-size:26px;text-transform:uppercase;letter-spacing:.02em;list-style-position:inside}
+.brief{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:10px}
+.brief h3{font-size:15px;font-weight:600;margin-bottom:4px}
+.brief ul{margin:0;padding-left:18px}
+.brief p{margin:0;max-width:65ch}
+.tag{display:inline-block;font-family:var(--font-mono);font-size:12px;background:var(--accent-soft);color:var(--accent);padding:2px 8px;border-radius:4px}
+
+/* tableros de dibujo */
+.board{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.board-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.board-head h3{font-family:var(--font-display);font-size:24px;text-transform:uppercase;letter-spacing:.02em}
+.board-head .state{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.board-head .state.done{color:var(--ok)}
+.hint{margin:0;color:var(--muted);max-width:70ch}
+.tools{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.group{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.group .lbl{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:2px}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{outline:3px solid var(--accent);outline-offset:2px}
+.sw.t{background:repeating-linear-gradient(45deg,#2e8b3d 0 5px,#f2d21b 5px 10px)}
+.opt{display:flex;gap:6px;align-items:center;font-size:13px}
+.opt select{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:5px 6px}
+.spacer{flex:1 1 20px}
+.stage{position:relative;border:1px solid var(--line);background:#fff;border-radius:4px;overflow:hidden}
+.stage canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;touch-action:none;cursor:crosshair}
+.stage .txt{position:absolute;transform:translate(0,-50%);border:1.5px solid #1d4cb5;background:#fffdf0;color:#111827;border-radius:3px;padding:2px 4px;font-size:16px;min-width:120px;max-width:60%}
+
+/* cuestiones */
+.q{display:flex;flex-direction:column;gap:6px;padding-block:12px;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:0}
+.q label{font-weight:600;max-width:75ch}
+.q textarea{
+  width:100%;min-height:96px;resize:vertical;border:1px solid var(--line);border-radius:6px;background:var(--surface);padding:10px 12px;line-height:1.7;
+  background-image:repeating-linear-gradient(transparent 0 25px,var(--line) 25px 26px);background-position:0 9px;
+}
+.checks{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.checks label{display:flex;gap:10px;align-items:flex-start}
+.checks input{width:20px;height:20px;margin-top:2px;flex:none;accent-color:var(--accent)}
+.foot{color:var(--muted);font-size:13px;max-width:70ch}
+.toast{
+  position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+  background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;max-width:90vw;z-index:40;font-size:14px;
+}
+@media (max-width:640px){
+  .sheet-head .row2{grid-template-columns:1fr 1fr}
+  .sheet-head .row2 .field:first-child{grid-column:1/-1}
+  .sheet-head .row1 b{font-size:30px}
+  .meter{display:none}
+}
+</style>
+
+<div class="bar">
+  <div class="bar-in">
+    <div class="bar-title">
+      <strong>Práctica 4 · Punto de luz y enchufe</strong>
+      <span id="progressText">0 de 7 apartados</span>
+      <div class="meter" aria-hidden="true"><i id="progressBar"></i></div>
+    </div>
+    <button class="btn primary" id="btnPdf" type="button">Descargar PDF</button>
+  </div>
+</div>
+
+<main class="wrap">
+  <header class="sheet-head">
+    <div class="row1"><b>TECNOLOGIA</b><span>IES Comuneros de Castilla</span></div>
+    <div class="row2">
+      <div class="field"><label for="f-name">Nombre</label><input id="f-name" type="text" autocomplete="name"></div>
+      <div class="field"><label for="f-group">Grupo</label><input id="f-group" type="text"></div>
+      <div class="field"><label for="f-date">Fecha</label><input id="f-date" type="date"></div>
+    </div>
+  </header>
+  <div class="titlebar"><span>Prácticas de Instalaciones en la vivienda</span><span>Práctica 4: “Punto de luz y enchufe”</span></div>
+
+  <details class="card" open>
+    <summary>Enunciado</summary>
+    <div class="brief">
+      <div>
+        <h3>1. Objetivos</h3>
+        <ul>
+          <li>Conocer los esquemas eléctricos de viviendas: multifilar, unifilar, topográfico y funcional.</li>
+          <li>Realizar el montaje práctico de un punto de luz y un enchufe sobre un tablero de pruebas.</li>
+          <li>Familiarizarse con tomas, cajas de derivación, tubos, hilos, regletas de conexión, interruptor y toma de corriente.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>2. Descripción</h3>
+        <p>Queremos colocar un punto de luz en el techo de una habitación y una toma de corriente. Para encender y apagar la bombilla se colocará un interruptor junto a la puerta, en la entrada, y bajo este se encontrará la toma de corriente. Haz el diseño necesario, dibuja todos los esquemas y móntalo en el tablero de pruebas.</p>
+        <p style="margin-top:8px"><span class="tag">Tiempo: 25 minutos</span></p>
+      </div>
+    </div>
+  </details>
+
+  <div id="boards" style="display:contents"></div>
+
+  <section class="card" aria-labelledby="h-q">
+    <h2 id="h-q">Cuestiones</h2>
+    <div id="questions"></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-c">
+    <h2 id="h-c">Comprobación del montaje</h2>
+    <div class="checks" id="checks"></div>
+    <div class="field" style="margin-top:14px">
+      <label for="f-obs">Observaciones</label>
+      <textarea id="f-obs" rows="3" style="border:1px solid var(--line);border-radius:6px;background:var(--surface);padding:8px 10px;width:100%;resize:vertical"></textarea>
+    </div>
+  </section>
+
+  <p class="foot">Tu trabajo se guarda automáticamente en este navegador. El PDF se genera en tu ordenador con todo lo que hayas dibujado y escrito.</p>
+</main>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+"use strict";
+var W=960,H=540,S=2;
+var STORE="practica4-punto-de-luz-y-enchufe-v1";
+
+var COLORS=[
+  {id:"k",name:"Negro",hex:"#111827"},
+  {id:"f",name:"Marrón (fase)",hex:"#8a4b1f"},
+  {id:"n",name:"Azul (neutro)",hex:"#1f5fd0"},
+  {id:"t",name:"Verde-amarillo (tierra)",hex:"#2e8b3d"}
+];
+function hexOf(id){for(var i=0;i<COLORS.length;i++){if(COLORS[i].id===id)return COLORS[i].hex;}return "#111827";}
+var TOOLS=[["pen","Lápiz"],["line","Línea"],["rect","Rectángulo"],["circle","Círculo"],["text","Texto"],["erase","Borrar"]];
+var STAMPS={caja:"Caja deriv.",hilos:"3 hilos",hilos2:"2 hilos",hilos5:"5 hilos",lampX:"Punto de luz",interU:"Interruptor",toma:"Toma",lampM:"Lámpara",interM:"Interruptor",tierra:"Tierra",borne:"Borne",punto:"Unión",regleta:"Regleta",interF:"Interruptor",tomaF:"Toma real"};
+
+var QUESTIONS=[
+  "¿Por qué se indica que llegan cinco hilos hasta el interruptor?",
+  "¿Qué debemos variar en el esquema unifilar para que se ajuste al montaje del tablero?",
+  "Modifica el montaje del tablero para que se ajuste al esquema unifilar."
+];
+var CHECKS=[
+  "He revisado que las conexiones están bien hechas y no queda ningún hilo suelto en el tablero.",
+  "He conectado una bombilla en el portalámparas.",
+  "He unido el tablero a la red con la manguera: la bombilla se enciende y se apaga con el interruptor.",
+  "He introducido una lámpara en el enchufe y he comprobado que funciona."
+];
+
+/* ---------- fondos de los tableros ---------- */
+function poly(ctx,pts,fill,stroke,lw){
+  ctx.beginPath();
+  for(var i=0;i<pts.length;i++){ if(i===0){ctx.moveTo(pts[i][0],pts[i][1]);}else{ctx.lineTo(pts[i][0],pts[i][1]);} }
+  ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill();}
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw||1.5;ctx.stroke();}
+}
+function bgRoom(ctx){
+  poly(ctx,[[150,160],[330,70],[330,380],[150,450]],"#fbf6a6","#7a7440",2);
+  ctx.fillStyle="#fdf9b8";ctx.fillRect(330,70,400,310);
+  ctx.strokeStyle="#7a7440";ctx.lineWidth=2;ctx.strokeRect(330,70,400,310);
+  poly(ctx,[[150,450],[330,380],[730,380],[550,450]],"#f2d9a4","#7a5a2a",2);
+  ctx.strokeStyle="#c8955a";ctx.lineWidth=1.2;
+  var i,t;
+  for(i=1;i<8;i++){t=i/8;ctx.beginPath();ctx.moveTo(330+400*t,380);ctx.lineTo(150+400*t,450);ctx.stroke();}
+  for(i=1;i<3;i++){t=i/3;ctx.beginPath();ctx.moveTo(330-180*t,380+70*t);ctx.lineTo(730-180*t,380+70*t);ctx.stroke();}
+  poly(ctx,[[190,180],[250,150],[250,260],[190,290]],"#bfe4f5","#4a7a8c",2);
+  ctx.strokeStyle="#4a7a8c";ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(220,165);ctx.lineTo(220,275);ctx.stroke();
+  ctx.fillStyle="#f59a3a";ctx.fillRect(620,150,80,230);
+  ctx.strokeStyle="#8a4a12";ctx.lineWidth=3;ctx.strokeRect(620,150,80,230);
+  ctx.fillStyle="#fff";ctx.strokeStyle="#8a4a12";ctx.lineWidth=1.5;
+  for(var r=0;r<3;r++){for(var c=0;c<2;c++){ctx.fillRect(634+c*30,164+r*28,24,22);ctx.strokeRect(634+c*30,164+r*28,24,22);}}
+  ctx.strokeStyle="#8a4a12";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(634,300);ctx.lineTo(646,306);ctx.stroke();
+  ctx.fillStyle="#fff";ctx.strokeStyle="#555";ctx.lineWidth=1.5;ctx.fillRect(655,84,36,16);ctx.strokeRect(655,84,36,16);
+  ctx.fillStyle="#6b6b3a";ctx.font="500 12px 'IBM Plex Sans',sans-serif";ctx.textBaseline="alphabetic";
+  ctx.fillText("Caja de derivación",600,78);
+}
+function bgBoard(ctx){
+  ctx.fillStyle="#dcc08f";ctx.fillRect(40,30,880,480);
+  ctx.strokeStyle="#a07a45";ctx.lineWidth=3;ctx.strokeRect(40,30,880,480);
+  var seed=7,k;
+  ctx.fillStyle="rgba(120,84,40,.35)";
+  for(k=0;k<160;k++){seed=(seed*9301+49297)%233280;var rx=seed/233280;seed=(seed*9301+49297)%233280;var ry=seed/233280;ctx.fillRect(46+rx*868,36+ry*468,2,2);}
+  ctx.fillStyle="#4b3a22";ctx.font="500 12px 'IBM Plex Sans',sans-serif";ctx.textBaseline="alphabetic";
+  ctx.fillText("Tablero de pruebas",54,52);
+  function box(x,label){
+    ctx.fillStyle="#eef1f4";ctx.strokeStyle="#7d8995";ctx.lineWidth=2;ctx.fillRect(x,60,170,130);ctx.strokeRect(x,60,170,130);
+    ctx.fillStyle="#4b5663";ctx.font="500 11px 'IBM Plex Sans',sans-serif";ctx.fillText(label,x+8,182);
+  }
+  box(250,"Caja de derivación 1");
+  box(560,"Caja de derivación 2");
+  function tube(x1,y1,x2,y2){
+    ctx.lineCap="butt";ctx.strokeStyle="#222";ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+    ctx.strokeStyle="#666";ctx.setLineDash([2,5]);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);
+  }
+  tube(420,118,560,118);tube(335,190,335,330);tube(645,190,645,330);tube(730,118,775,118);
+  function regleta(x,y){
+    ctx.fillStyle="#cfd6dd";ctx.strokeStyle="#7d8995";ctx.lineWidth=1.5;ctx.fillRect(x,y,26,40);ctx.strokeRect(x,y,26,40);
+    ctx.fillStyle="#7b8794";for(var j=0;j<3;j++){ctx.beginPath();ctx.arc(x+13,y+10+j*10,3.5,0,Math.PI*2);ctx.fill();}
+  }
+  regleta(322,98);regleta(775,98);
+  function wire(x1,y1,x2,y2,c){
+    ctx.lineCap="round";ctx.lineWidth=3;
+    if(c==="t"){
+      ctx.strokeStyle="#2e8b3d";ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+      ctx.setLineDash([6,6]);ctx.strokeStyle="#f2d21b";ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);
+    }else{
+      ctx.strokeStyle=(c==="f")?"#8a4b1f":"#1f5fd0";ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+    }
+  }
+  ctx.fillStyle="#f7f1e1";ctx.strokeStyle="#6b6454";ctx.lineWidth=2;ctx.fillRect(70,88,60,54);ctx.strokeRect(70,88,60,54);
+  ctx.fillStyle="#6b6454";ctx.beginPath();ctx.arc(91,115,4,0,Math.PI*2);ctx.arc(109,115,4,0,Math.PI*2);ctx.fill();
+  wire(130,108,335,108,"t");wire(130,118,335,118,"f");wire(130,128,335,128,"n");
+  ctx.fillStyle="#4b3a22";ctx.font="500 11px 'IBM Plex Sans',sans-serif";
+  ctx.fillText("Alimentación",66,158);
+  ctx.fillStyle="#f6f6f2";ctx.strokeStyle="#8a8a80";ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(850,115,30,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.arc(850,115,12,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle="#b5651d";ctx.beginPath();ctx.arc(850,95,3.5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#1f5fd0";ctx.beginPath();ctx.arc(850,135,3.5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#4b3a22";ctx.fillText("Lámpara",822,160);
+  ctx.setLineDash([6,5]);ctx.strokeStyle="#6b4f2a";ctx.lineWidth=1.5;
+  ctx.strokeRect(265,385,140,100);ctx.strokeRect(575,385,140,100);ctx.setLineDash([]);
+  ctx.fillStyle="#4b3a22";ctx.font="500 11px 'IBM Plex Sans',sans-serif";
+  ctx.fillText("Zona de la toma de corriente",272,478);ctx.fillText("Zona del interruptor",582,478);
+}
+
+var BOARDS=[
+  {id:"unifilar",title:"Esquema unifilar",hint:"Una sola línea por circuito. Con una sola caja de derivación, el interruptor junto a la puerta y la toma de corriente justo debajo. Indica con trazos oblicuos el número de hilos de cada tramo.",stamps:["caja","hilos","hilos2","hilos5","lampX","interU","toma"],bg:null},
+  {id:"multifilar",title:"Esquema multifilar",hint:"Dibuja cada conductor. La fase pasa por el interruptor hasta la lámpara, que cierra con el neutro N. La toma de corriente va conectada directamente a la fase, al neutro y a la tierra.",stamps:["borne","punto","interM","lampM","toma","tierra"],bg:null},
+  {id:"topografico",title:"Esquema topográfico",hint:"Sitúa en la habitación la caja de derivación, el punto de luz en el techo, el interruptor junto a la puerta con la toma de corriente bajo él y el recorrido de los tubos con su número de hilos.",stamps:["caja","hilos","hilos2","hilos5","lampX","interU","toma"],bg:bgRoom},
+  {id:"funcional",title:"Esquema funcional del tablero",hint:"Lleva los hilos desde la regleta hasta la toma, el interruptor y la lámpara. Marrón para la fase y el retorno, azul para el neutro y verde-amarillo para la tierra.",stamps:["interF","tomaF","regleta","punto"],bg:bgBoard}
+];
+
+/* ---------- símbolos ---------- */
+function stampDraw(ctx,s){
+  var x=s.x,y=s.y,col=hexOf(s.c),w=s.w;
+  ctx.save();ctx.translate(x,y);ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=w;ctx.lineCap="round";ctx.lineJoin="round";
+  if(s.k==="toma"){
+    ctx.beginPath();ctx.arc(0,0,16,Math.PI,2*Math.PI);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(-16,0);ctx.lineTo(16,0);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(0,-30);ctx.stroke();
+  }else if(s.k==="caja"){
+    ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(24,0);ctx.lineTo(0,20);ctx.lineTo(-24,0);ctx.closePath();ctx.stroke();
+    ctx.beginPath();ctx.moveTo(-24,0);ctx.lineTo(24,0);ctx.moveTo(0,-20);ctx.lineTo(0,20);ctx.stroke();
+  }else if(s.k==="hilos"){
+    ctx.beginPath();ctx.moveTo(-9,9);ctx.lineTo(9,-9);ctx.stroke();
+    ctx.font="600 18px 'IBM Plex Sans',sans-serif";ctx.textBaseline="middle";ctx.fillText("3",12,-12);
+  }else if(s.k==="tierra"){
+    ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(0,0);ctx.moveTo(-16,0);ctx.lineTo(16,0);ctx.moveTo(-10,7);ctx.lineTo(10,7);ctx.moveTo(-4,14);ctx.lineTo(4,14);ctx.stroke();
+  }else if(s.k==="borne"){
+    ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(0,0,6,0,Math.PI*2);ctx.fill();ctx.stroke();
+  }else if(s.k==="punto"){
+    ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fill();
+  }else if(s.k==="regleta"){
+    ctx.fillStyle="#cfd6dd";ctx.strokeStyle="#4b5663";ctx.lineWidth=2;ctx.fillRect(-40,-14,80,28);ctx.strokeRect(-40,-14,80,28);
+    ctx.fillStyle="#4b5663";
+    for(var i=0;i<3;i++){ctx.beginPath();ctx.arc(-20+i*20,0,5,0,Math.PI*2);ctx.fill();}
+  }else if(s.k==="hilos2"){
+    ctx.beginPath();ctx.moveTo(-9,9);ctx.lineTo(9,-9);ctx.stroke();
+    ctx.font="600 18px 'IBM Plex Sans',sans-serif";ctx.textBaseline="middle";ctx.fillText("2",12,-12);
+  }else if(s.k==="hilos5"){
+    ctx.beginPath();ctx.moveTo(-9,9);ctx.lineTo(9,-9);ctx.stroke();
+    ctx.font="600 18px 'IBM Plex Sans',sans-serif";ctx.textBaseline="middle";ctx.fillText("5",12,-12);
+  }else if(s.k==="hilos6"){
+    ctx.beginPath();ctx.moveTo(-9,9);ctx.lineTo(9,-9);ctx.stroke();
+    ctx.font="600 18px 'IBM Plex Sans',sans-serif";ctx.textBaseline="middle";ctx.fillText("6",12,-12);
+  }else if(s.k==="lampX"){
+    ctx.beginPath();ctx.moveTo(-13,-13);ctx.lineTo(13,13);ctx.moveTo(13,-13);ctx.lineTo(-13,13);ctx.stroke();
+  }else if(s.k==="interU"){
+    ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(0,0,12,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.moveTo(9,-9);ctx.lineTo(24,-24);ctx.stroke();
+  }else if(s.k==="lampM"){
+    ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(0,0,15,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.moveTo(-10,-10);ctx.lineTo(10,10);ctx.moveTo(10,-10);ctx.lineTo(-10,10);ctx.stroke();
+  }else if(s.k==="interM"){
+    ctx.beginPath();ctx.moveTo(0,-30);ctx.lineTo(0,-17);ctx.stroke();
+    ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(0,-14,3,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,-12);ctx.lineTo(13,8);ctx.stroke();
+    ctx.beginPath();ctx.arc(0,11,3,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,14);ctx.lineTo(0,30);ctx.stroke();
+  }else if(s.k==="interF"){
+    ctx.fillStyle="#f3f3f3";ctx.strokeStyle="#6b6b6b";ctx.lineWidth=2;
+    ctx.fillRect(-17,-26,34,52);ctx.strokeRect(-17,-26,34,52);
+    ctx.fillStyle="#fff";ctx.fillRect(-9,-12,18,26);ctx.strokeRect(-9,-12,18,26);
+    ctx.fillStyle="#6b6b6b";ctx.beginPath();ctx.arc(-8,-19,2.5,0,Math.PI*2);ctx.arc(8,-19,2.5,0,Math.PI*2);ctx.fill();
+  }else if(s.k==="tomaF"){
+    ctx.fillStyle="#f7f1e1";ctx.strokeStyle="#6b6454";ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(-26,-20);ctx.lineTo(26,-20);ctx.quadraticCurveTo(30,-20,30,-16);ctx.lineTo(30,16);ctx.quadraticCurveTo(30,20,26,20);ctx.lineTo(-26,20);ctx.quadraticCurveTo(-30,20,-30,16);ctx.lineTo(-30,-16);ctx.quadraticCurveTo(-30,-20,-26,-20);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.fillStyle="#6b6454";ctx.beginPath();ctx.arc(-9,0,3.5,0,Math.PI*2);ctx.arc(9,0,3.5,0,Math.PI*2);ctx.fill();
+    ctx.fillRect(-2,-20,4,6);ctx.fillRect(-2,14,4,6);
+  }
+  ctx.restore();
+}
+
+/* ---------- dibujo de formas ---------- */
+function strokeWith(ctx,s,fn){
+  ctx.lineCap="round";ctx.lineJoin="round";
+  if(s.c==="t"){
+    ctx.setLineDash([]);ctx.strokeStyle="#2e8b3d";ctx.lineWidth=s.w;fn();
+    ctx.setLineDash([s.w*1.8,s.w*1.8]);ctx.strokeStyle="#f2d21b";fn();ctx.setLineDash([]);
+  }else{
+    ctx.strokeStyle=hexOf(s.c);ctx.lineWidth=s.w;fn();
+  }
+}
+function shapeDraw(ctx,s){
+  if(s.t==="pen"){
+    strokeWith(ctx,s,function(){
+      ctx.beginPath();ctx.moveTo(s.p[0][0],s.p[0][1]);
+      if(s.p.length===1){ctx.lineTo(s.p[0][0]+0.01,s.p[0][1]);}
+      for(var i=1;i<s.p.length;i++){ctx.lineTo(s.p[i][0],s.p[i][1]);}
+      ctx.stroke();
+    });
+  }else if(s.t==="line"){
+    strokeWith(ctx,s,function(){ctx.beginPath();ctx.moveTo(s.x1,s.y1);ctx.lineTo(s.x2,s.y2);ctx.stroke();});
+  }else if(s.t==="rect"){
+    strokeWith(ctx,s,function(){ctx.beginPath();ctx.rect(Math.min(s.x1,s.x2),Math.min(s.y1,s.y2),Math.abs(s.x2-s.x1),Math.abs(s.y2-s.y1));ctx.stroke();});
+  }else if(s.t==="circle"){
+    var r=Math.hypot(s.x2-s.x1,s.y2-s.y1);
+    strokeWith(ctx,s,function(){ctx.beginPath();ctx.arc(s.x1,s.y1,r,0,Math.PI*2);ctx.stroke();});
+  }else if(s.t==="text"){
+    ctx.fillStyle=hexOf(s.c);ctx.font="500 "+s.sz+"px 'IBM Plex Sans',sans-serif";ctx.textBaseline="middle";ctx.fillText(s.text,s.x,s.y);
+  }else if(s.t==="stamp"){
+    stampDraw(ctx,s);
+  }
+}
+function segDist(px,py,ax,ay,bx,by){
+  var dx=bx-ax,dy=by-ay,l=dx*dx+dy*dy,t=l?((px-ax)*dx+(py-ay)*dy)/l:0;
+  t=Math.max(0,Math.min(1,t));return Math.hypot(px-(ax+t*dx),py-(ay+t*dy));
+}
+function shapeDist(s,x,y){
+  var d=1e9,i;
+  if(s.t==="pen"){for(i=0;i<s.p.length;i++){d=Math.min(d,Math.hypot(x-s.p[i][0],y-s.p[i][1]));}}
+  else if(s.t==="line"){d=segDist(x,y,s.x1,s.y1,s.x2,s.y2);}
+  else if(s.t==="rect"){
+    var x0=Math.min(s.x1,s.x2),x1=Math.max(s.x1,s.x2),y0=Math.min(s.y1,s.y2),y1=Math.max(s.y1,s.y2);
+    d=Math.min(segDist(x,y,x0,y0,x1,y0),segDist(x,y,x1,y0,x1,y1),segDist(x,y,x1,y1,x0,y1),segDist(x,y,x0,y1,x0,y0));
+  }else if(s.t==="circle"){d=Math.abs(Math.hypot(x-s.x1,y-s.y1)-Math.hypot(s.x2-s.x1,s.y2-s.y1));}
+  else if(s.t==="text"){var tw=s.text.length*s.sz*0.55;d=(x>=s.x-4&&x<=s.x+tw+4&&Math.abs(y-s.y)<=s.sz*0.7)?0:1e9;}
+  else if(s.t==="stamp"){d=Math.max(0,Math.hypot(x-s.x,y-s.y)-20);}
+  return d;
+}
+
+function renderBoard(ctx,b){
+  ctx.fillStyle="#ffffff";ctx.fillRect(0,0,W,H);
+  var v;
+  ctx.lineWidth=1;
+  for(v=0;v<=W;v+=20){ctx.strokeStyle=(v%100===0)?"#c3d4e8":"#e3ebf5";ctx.beginPath();ctx.moveTo(v+0.5,0);ctx.lineTo(v+0.5,H);ctx.stroke();}
+  for(v=0;v<=H;v+=20){ctx.strokeStyle=(v%100===0)?"#c3d4e8":"#e3ebf5";ctx.beginPath();ctx.moveTo(0,v+0.5);ctx.lineTo(W,v+0.5);ctx.stroke();}
+  if(b.def.bg){b.def.bg(ctx);}
+  var list=state.shapes[b.def.id];
+  for(var i=0;i<list.length;i++){shapeDraw(ctx,list[i]);}
+  if(b.draft){shapeDraw(ctx,b.draft);}
+}
+
+/* ---------- estado y guardado ---------- */
+function todayStr(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
+var state={name:"",group:"",date:todayStr(),answers:["","",""],checks:[false,false,false],obs:"",shapes:{unifilar:[],multifilar:[],topografico:[],funcional:[]}};
+try{
+  var raw=localStorage.getItem(STORE);
+  if(raw){
+    var saved=JSON.parse(raw);
+    if(saved&&typeof saved==="object"){
+      state.name=saved.name||"";state.group=saved.group||"";state.date=saved.date||state.date;state.obs=saved.obs||"";
+      if(Array.isArray(saved.answers)){for(var a=0;a<3;a++){state.answers[a]=String(saved.answers[a]||"");}}
+      if(Array.isArray(saved.checks)){for(var c=0;c<3;c++){state.checks[c]=!!saved.checks[c];}}
+      if(saved.shapes){for(var key in state.shapes){if(Array.isArray(saved.shapes[key])){state.shapes[key]=saved.shapes[key];}}}
+    }
+  }
+}catch(e){}
+var saveTimer=null;
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(function(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch(e){}},400);
+}
+function progress(){
+  var n=0,k;
+  for(k in state.shapes){if(state.shapes[k].length>0){n++;}}
+  for(var i=0;i<QUESTIONS.length;i++){if(state.answers[i].trim()){n++;}}
+  document.getElementById("progressText").textContent=n+" de 7 apartados";
+  document.getElementById("progressBar").style.width=(n/7*100)+"%";
+  BOARDS_UI.forEach(function(b){
+    var st=b.stateEl,has=state.shapes[b.def.id].length>0;
+    st.textContent=has?"Con dibujo":"Sin dibujo";st.className="state"+(has?" done":"");
+  });
+}
+function changed(){save();progress();}
+
+/* ---------- interfaz de los tableros ---------- */
+function el(tag,attrs,kids){
+  var n=document.createElement(tag),k;
+  if(attrs){for(k in attrs){if(k==="class"){n.className=attrs[k];}else if(k==="text"){n.textContent=attrs[k];}else{n.setAttribute(k,attrs[k]);}}}
+  if(kids){kids.forEach(function(c){if(c){n.appendChild(c);}});}
+  return n;
+}
+var BOARDS_UI=[];
+var boardsHost=document.getElementById("boards");
+
+BOARDS.forEach(function(def){
+  var b={def:def,tool:"pen",color:"k",width:3,snap:true,draft:null,textEl:null};
+  var section=el("section",{"class":"board","aria-labelledby":"h-"+def.id});
+  var stateEl=el("span",{"class":"state",text:"Sin dibujo"});
+  section.appendChild(el("div",{"class":"board-head"},[el("h3",{id:"h-"+def.id,text:def.title}),stateEl]));
+  section.appendChild(el("p",{"class":"hint",text:def.hint}));
+  b.stateEl=stateEl;
+
+  var tools=el("div",{"class":"tools"});
+  var toolBtns=[];
+  function setTool(id){
+    b.tool=id;
+    toolBtns.forEach(function(x){x.el.setAttribute("aria-pressed",x.id===id?"true":"false");});
+    canvas.style.cursor=(id==="text")?"text":(id==="erase"?"not-allowed":"crosshair");
+  }
+  var g1=el("div",{"class":"group",role:"group","aria-label":"Herramientas"},[el("span",{"class":"lbl",text:"Dibujar"})]);
+  TOOLS.forEach(function(t){
+    var btn=el("button",{"class":"btn",type:"button","aria-pressed":t[0]==="pen"?"true":"false",text:t[1]});
+    btn.addEventListener("click",function(){setTool(t[0]);});
+    toolBtns.push({id:t[0],el:btn});g1.appendChild(btn);
+  });
+  var g2=el("div",{"class":"group",role:"group","aria-label":"Símbolos"},[el("span",{"class":"lbl",text:"Símbolos"})]);
+  def.stamps.forEach(function(sid){
+    var btn=el("button",{"class":"btn",type:"button","aria-pressed":"false",text:STAMPS[sid]});
+    btn.addEventListener("click",function(){setTool("stamp:"+sid);});
+    toolBtns.push({id:"stamp:"+sid,el:btn});g2.appendChild(btn);
+  });
+  tools.appendChild(g1);tools.appendChild(g2);
+  section.appendChild(tools);
+
+  var tools2=el("div",{"class":"tools"});
+  var g3=el("div",{"class":"group",role:"group","aria-label":"Color"},[el("span",{"class":"lbl",text:"Color"})]);
+  var swBtns=[];
+  COLORS.forEach(function(c){
+    var sw=el("button",{"class":"sw"+(c.id==="t"?" t":""),type:"button","aria-label":c.name,title:c.name,"aria-pressed":c.id==="k"?"true":"false"});
+    if(c.id!=="t"){sw.style.background=c.hex;}
+    sw.addEventListener("click",function(){b.color=c.id;swBtns.forEach(function(x){x.el.setAttribute("aria-pressed",x.id===c.id?"true":"false");});});
+    swBtns.push({id:c.id,el:sw});g3.appendChild(sw);
+  });
+  var selId="w-"+def.id;
+  var sel=el("select",{id:selId},[el("option",{value:"2",text:"Fino"}),el("option",{value:"3",text:"Medio"}),el("option",{value:"5",text:"Grueso"})]);
+  sel.value="3";
+  sel.addEventListener("change",function(){b.width=parseInt(sel.value,10);});
+  var optW=el("div",{"class":"opt"},[el("label",{"for":selId,text:"Trazo"}),sel]);
+  var snapId="s-"+def.id;
+  var snapCb=el("input",{id:snapId,type:"checkbox",checked:"checked"});
+  snapCb.addEventListener("change",function(){b.snap=snapCb.checked;});
+  var optS=el("div",{"class":"opt"},[snapCb,el("label",{"for":snapId,text:"Imán a la cuadrícula"})]);
+  var undo=el("button",{"class":"btn",type:"button",text:"Deshacer"});
+  var clear=el("button",{"class":"btn danger",type:"button",text:"Borrar todo","data-armed":"false"});
+  var armTimer=null;
+  undo.addEventListener("click",function(){state.shapes[def.id].pop();redraw();changed();});
+  clear.addEventListener("click",function(){
+    if(clear.getAttribute("data-armed")==="true"){
+      clearTimeout(armTimer);clear.setAttribute("data-armed","false");clear.textContent="Borrar todo";
+      state.shapes[def.id]=[];redraw();changed();
+    }else{
+      clear.setAttribute("data-armed","true");clear.textContent="¿Seguro? Pulsa otra vez";
+      armTimer=setTimeout(function(){clear.setAttribute("data-armed","false");clear.textContent="Borrar todo";},3500);
+    }
+  });
+  tools2.appendChild(g3);tools2.appendChild(optW);tools2.appendChild(optS);tools2.appendChild(el("span",{"class":"spacer"}));tools2.appendChild(undo);tools2.appendChild(clear);
+  section.appendChild(tools2);
+
+  var stage=el("div",{"class":"stage"});
+  var canvas=document.createElement("canvas");
+  canvas.width=W*S;canvas.height=H*S;
+  canvas.setAttribute("role","img");
+  canvas.setAttribute("aria-label",def.title+": zona de dibujo");
+  stage.appendChild(canvas);
+  section.appendChild(stage);
+  boardsHost.appendChild(section);
+
+  var ctx=canvas.getContext("2d");
+  function redraw(){ctx.setTransform(S,0,0,S,0,0);renderBoard(ctx,b);}
+  b.redraw=redraw;b.canvas=canvas;
+  BOARDS_UI.push(b);
+
+  function pos(e){
+    var r=canvas.getBoundingClientRect();
+    return {x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};
+  }
+  function sn(v){return b.snap?Math.round(v/10)*10:v;}
+  function closeText(commit){
+    if(!b.textEl){return;}
+    var inp=b.textEl.node,val=inp.value.trim(),p=b.textEl.p;
+    b.textEl=null;
+    if(inp.parentNode){inp.parentNode.removeChild(inp);}
+    if(commit&&val){state.shapes[def.id].push({t:"text",x:p.x,y:p.y,text:val,sz:18,c:b.color,w:b.width});redraw();changed();}
+  }
+  function openText(p){
+    closeText(true);
+    var inp=el("input",{"class":"txt",type:"text","aria-label":"Texto para el esquema",maxlength:"60"});
+    inp.style.left=(p.x/W*100)+"%";inp.style.top=(p.y/H*100)+"%";
+    stage.appendChild(inp);
+    b.textEl={node:inp,p:p};
+    inp.addEventListener("keydown",function(ev){
+      if(ev.key==="Enter"){ev.preventDefault();closeText(true);}
+      else if(ev.key==="Escape"){ev.preventDefault();closeText(false);}
+    });
+    inp.addEventListener("blur",function(){closeText(true);});
+    setTimeout(function(){inp.focus();},0);
+  }
+  var drawing=false;
+  canvas.addEventListener("pointerdown",function(e){
+    if(e.button!==undefined&&e.button!==0){return;}
+    e.preventDefault();
+    var p=pos(e);
+    if(b.tool==="text"){openText({x:sn(p.x),y:sn(p.y)});return;}
+    closeText(true);
+    if(b.tool==="erase"){
+      var list=state.shapes[def.id],best=-1,bd=14;
+      for(var i=list.length-1;i>=0;i--){var d=shapeDist(list[i],p.x,p.y);if(d<bd){bd=d;best=i;}}
+      if(best>=0){list.splice(best,1);redraw();changed();}
+      return;
+    }
+    if(b.tool.indexOf("stamp:")===0){
+      state.shapes[def.id].push({t:"stamp",k:b.tool.slice(6),x:sn(p.x),y:sn(p.y),c:b.color,w:b.width<3?2:3});
+      redraw();changed();return;
+    }
+    drawing=true;
+    try{canvas.setPointerCapture(e.pointerId);}catch(err){}
+    if(b.tool==="pen"){b.draft={t:"pen",c:b.color,w:b.width,p:[[p.x,p.y]]};}
+    else{b.draft={t:b.tool,c:b.color,w:b.width,x1:sn(p.x),y1:sn(p.y),x2:sn(p.x),y2:sn(p.y)};}
+    redraw();
+  });
+  canvas.addEventListener("pointermove",function(e){
+    if(!drawing||!b.draft){return;}
+    var p=pos(e);
+    if(b.draft.t==="pen"){b.draft.p.push([p.x,p.y]);}
+    else{b.draft.x2=sn(p.x);b.draft.y2=sn(p.y);}
+    redraw();
+  });
+  function end(){
+    if(!drawing){return;}
+    drawing=false;
+    var d=b.draft;b.draft=null;
+    if(d){
+      var keep=true;
+      if(d.t!=="pen"&&d.x1===d.x2&&d.y1===d.y2){keep=false;}
+      if(keep){state.shapes[def.id].push(d);changed();}
+    }
+    redraw();
+  }
+  canvas.addEventListener("pointerup",end);
+  canvas.addEventListener("pointercancel",end);
+  redraw();
+});
+
+/* ---------- campos de texto ---------- */
+function bindInput(id,key,isDate){
+  var n=document.getElementById(id);n.value=state[key];
+  n.addEventListener("input",function(){state[key]=n.value;changed();});
+}
+bindInput("f-name","name");bindInput("f-group","group");bindInput("f-date","date");bindInput("f-obs","obs");
+
+var qHost=document.getElementById("questions");
+QUESTIONS.forEach(function(q,i){
+  var id="q"+(i+1);
+  var ta=el("textarea",{id:id,rows:"4"});
+  ta.value=state.answers[i];
+  ta.addEventListener("input",function(){state.answers[i]=ta.value;changed();});
+  qHost.appendChild(el("div",{"class":"q"},[el("label",{"for":id,text:(i+1)+"ª "+q}),ta]));
+});
+var cHost=document.getElementById("checks");
+CHECKS.forEach(function(t,i){
+  var id="c"+(i+1);
+  var cb=el("input",{id:id,type:"checkbox"});
+  cb.checked=state.checks[i];
+  cb.addEventListener("change",function(){state.checks[i]=cb.checked;changed();});
+  cHost.appendChild(el("label",{"for":id},[cb,el("span",{text:t})]));
+});
+
+/* ---------- avisos ---------- */
+var toastTimer=null;
+function toast(msg){
+  var t=document.getElementById("toast");
+  t.textContent=msg;t.hidden=false;
+  clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.hidden=true;},4500);
+}
+
+/* ---------- PDF ---------- */
+function fmtDate(s){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||"");return m?m[3]+"/"+m[2]+"/"+m[1]:(s||"");}
+function boardImage(b){
+  var c=document.createElement("canvas");c.width=W*S;c.height=H*S;
+  var cx=c.getContext("2d");cx.setTransform(S,0,0,S,0,0);
+  var tmp={def:b.def,draft:null};
+  renderBoard(cx,tmp);
+  return c.toDataURL("image/jpeg",0.92);
+}
+function buildPdf(){
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({unit:"mm",format:"a4"});
+  var M=15,CW=180,y;
+  function head(){
+    doc.setDrawColor(20);doc.setLineWidth(0.4);doc.rect(M,12,CW,22);doc.line(M,23,M+CW,23);
+    doc.setTextColor(20);doc.setFont("helvetica","bold");doc.setFontSize(20);doc.text("TECNOLOGIA",M+6,20.5);
+    doc.setFontSize(11);doc.text("IES Comuneros de Castilla",M+CW-4,19.5,{align:"right"});
+    doc.setFontSize(10);doc.text("Nombre:",M+3,30);doc.text("Grupo:",M+108,30);doc.text("Fecha:",M+138,30);
+    doc.setFont("helvetica","normal");
+    doc.text(doc.splitTextToSize(state.name||"",82)[0]||"",M+19,30);
+    doc.text(state.group||"",M+121,30);doc.text(fmtDate(state.date),M+152,30);
+    doc.setFillColor(235,235,235);doc.rect(M,38,CW,9,"FD");
+    doc.setFont("helvetica","bold");doc.setFontSize(10.5);
+    doc.text("Prácticas de Instalaciones en la vivienda",M+3,44);
+    doc.text("Práctica 4: \"Punto de luz y enchufe\"",M+CW-3,44,{align:"right"});
+  }
+  function mini(){
+    doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor(110);
+    doc.text("Práctica 4 instalaciones en la vivienda",M,10);
+    doc.text("Punto de luz y enchufe"+(state.name?"  ·  "+state.name:""),M+CW,10,{align:"right"});
+    doc.setTextColor(20);
+  }
+  function placeBoard(i,top){
+    var b=BOARDS_UI[i];
+    doc.setFont("helvetica","bold");doc.setFontSize(11);doc.setTextColor(20);
+    doc.text(b.def.title,M,top);
+    var iw=170,ih=iw*H/W,ix=M+(CW-iw)/2;
+    doc.addImage(boardImage(b),"JPEG",ix,top+2,iw,ih);
+    doc.setDrawColor(150);doc.setLineWidth(0.2);doc.rect(ix,top+2,iw,ih);
+    return top+2+ih+8;
+  }
+  head();
+  y=placeBoard(0,54);
+  placeBoard(1,y);
+  doc.addPage();mini();
+  y=placeBoard(2,18);
+  placeBoard(3,y);
+  doc.addPage();mini();
+  y=20;
+  function need(h){if(y+h>280){doc.addPage();mini();y=20;}}
+  doc.setFont("helvetica","bold");doc.setFontSize(13);doc.text("Cuestiones",M,y);y+=8;
+  QUESTIONS.forEach(function(q,i){
+    var ql=doc.splitTextToSize((i+1)+"ª "+q,CW);
+    need(ql.length*5+12);
+    doc.setFont("helvetica","bold");doc.setFontSize(10);doc.setTextColor(20);
+    doc.text(ql,M,y);y+=ql.length*5+1;
+    var ans=(state.answers[i]||"").trim();
+    doc.setFont("helvetica","normal");doc.setTextColor(ans?20:140);
+    var al=doc.splitTextToSize(ans||"(sin responder)",CW-4);
+    for(var k=0;k<al.length;k++){need(5);doc.text(al[k],M+4,y);y+=5;}
+    y+=5;
+  });
+  need(20);
+  doc.setTextColor(20);doc.setFont("helvetica","bold");doc.setFontSize(13);doc.text("Comprobación del montaje",M,y);y+=8;
+  doc.setFontSize(10);
+  CHECKS.forEach(function(t,i){
+    var cl=doc.splitTextToSize(t,CW-10);
+    need(cl.length*5+3);
+    doc.setDrawColor(20);doc.setLineWidth(0.3);doc.rect(M,y-3.2,4,4);
+    if(state.checks[i]){doc.setLineWidth(0.5);doc.line(M+0.8,y-1.2,M+1.9,y+0.1);doc.line(M+1.9,y+0.1,M+3.4,y-2.5);}
+    doc.setFont("helvetica","normal");doc.text(cl,M+8,y);y+=cl.length*5+3;
+  });
+  var obs=(state.obs||"").trim();
+  if(obs){
+    y+=3;need(12);doc.setFont("helvetica","bold");doc.text("Observaciones",M,y);y+=6;
+    doc.setFont("helvetica","normal");
+    var ol=doc.splitTextToSize(obs,CW-4);
+    for(var j=0;j<ol.length;j++){need(5);doc.text(ol[j],M+4,y);y+=5;}
+  }
+  var n=doc.getNumberOfPages();
+  for(var p=1;p<=n;p++){doc.setPage(p);doc.setFont("helvetica","normal");doc.setFontSize(9);doc.setTextColor(110);doc.text(String(p),M+CW/2,290,{align:"center"});}
+  return doc.output("blob");
+}
+function fileName(){
+  var base=(state.name||"").trim().replace(/[^A-Za-z0-9ÁÉÍÓÚÜÑáéíóúüñ]+/g,"_").replace(/^_+|_+$/g,"");
+  return "Practica4_Punto_de_luz_y_enchufe"+(base?"_"+base:"")+".pdf";
+}
+function saveBlob(blob,name){
+  var cap=null;
+  try{cap=(window.claude&&window.claude.use)?window.claude.use("downloads"):null;}catch(e){cap=null;}
+  return Promise.resolve(cap).then(function(dl){
+    if(dl){
+      return dl.save({filename:name,data:blob}).then(function(){toast("PDF guardado: "+name);},function(err){
+        if(err&&err.code==="declined"){toast("Descarga cancelada.");}
+        else{toast("No se pudo guardar el PDF desde esta vista. Abre la versión en archivo .html.");}
+      });
+    }
+    var a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);a.download=name;a.style.display="none";
+    document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);if(a.parentNode){a.parentNode.removeChild(a);}},2000);
+    toast("PDF generado: "+name);
+  });
+}
+var btnPdf=document.getElementById("btnPdf");
+btnPdf.addEventListener("click",function(){
+  if(!window.jspdf){toast("No se ha cargado el generador de PDF. Comprueba la conexión y recarga.");return;}
+  btnPdf.disabled=true;btnPdf.textContent="Generando…";
+  setTimeout(function(){
+    var blob=null;
+    try{blob=buildPdf();}catch(err){toast("No se pudo generar el PDF.");}
+    var done=function(){btnPdf.disabled=false;btnPdf.textContent="Descargar PDF";};
+    if(blob){saveBlob(blob,fileName()).then(done,done);}else{done();}
+  },30);
+});
+
+if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){BOARDS_UI.forEach(function(b){b.redraw();});});}
+progress();
+})();
+</script>
+
+</html>
