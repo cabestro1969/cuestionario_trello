@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Solucionario Práctica Dos puntos de luz</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --ink:#14202b; --muted:#566574; --line:#c9d3dd;
+  --accent:#1d4cb5; --accent-ink:#ffffff; --accent-soft:#e3ebfb; --ok:#17764a; --warn:#a4400f; --warn-soft:#fbeadf;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-display:'Barlow Condensed','Arial Narrow',Arial,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e151c; --surface:#16202a; --ink:#e8eef4; --muted:#9aaab9; --line:#2c3b49;
+    --accent:#86abff; --accent-ink:#0a1222; --accent-soft:#1c2c4a; --ok:#5fd29b; --warn:#ffb085; --warn-soft:#3a2418; color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55;padding:0 max(16px,env(safe-area-inset-left,0px))}
+h1,h2,h3{margin:0;text-wrap:balance}
+.wrap{max-width:980px;margin:0 auto;padding:20px 0 56px;display:flex;flex-direction:column;gap:20px}
+.sheet-head{background:var(--surface);border:2px solid var(--ink);border-radius:2px}
+.sheet-head .r1{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--ink)}
+.sheet-head .r1 b{font-family:var(--font-display);font-size:38px;line-height:1;letter-spacing:.02em}
+.sheet-head .r1 span{font-weight:600}
+.sheet-head .r2{padding:10px 16px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.stamp{font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--warn);border:1.5px solid var(--warn);padding:3px 10px;border-radius:3px}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:6px;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.card h2{font-family:var(--font-display);font-size:28px;letter-spacing:.02em;text-transform:uppercase;margin-bottom:8px}
+.card h3{font-size:16px;font-weight:600;margin-bottom:4px}
+.lead{margin:0;color:var(--muted);max-width:70ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
+figure{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+figure .paper{background:#fff;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:13.5px;color:var(--muted);max-width:60ch}
+figcaption b{color:var(--ink)}
+.ans{border-top:1px solid var(--line);padding-block:14px;display:flex;flex-direction:column;gap:6px}
+.ans:first-of-type{border-top:0}
+.ans .q{font-weight:600;max-width:75ch}
+.ans .a{margin:0;max-width:75ch}
+.ans .key{display:inline-block;font-family:var(--font-mono);font-size:12px;background:var(--accent-soft);color:var(--accent);padding:2px 8px;border-radius:4px;width:fit-content}
+.ans .note{margin:0;font-size:13.5px;color:var(--muted);max-width:75ch}
+.warnbox{background:var(--warn-soft);border-left:4px solid var(--warn);padding:10px 14px;border-radius:4px;font-size:14px;max-width:75ch}
+ul.cl{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.src{font-size:13px;color:var(--muted)}
+.src a{color:var(--accent)}
+.swatch{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:6px;border:1px solid var(--line)}
+.ln{stroke:#111827;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.tx{font:500 14px 'IBM Plex Sans',sans-serif;fill:#111827}
+.tm{font:500 12px 'IBM Plex Sans',sans-serif;fill:#566574}
+@media (max-width:640px){.sheet-head .r1 b{font-size:30px}}
+@media print{
+  body{background:#fff;color:#000;padding:0}
+  html{background:#fff}
+  .btn,.noprint{display:none!important}
+  .wrap{padding:0;gap:12px;max-width:none}
+  .card,figure{break-inside:avoid}
+  .card{border-color:#999}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="sheet-head">
+    <div class="r1"><b>TECNOLOGIA</b><span>IES Comuneros de Castilla</span></div>
+    <div class="r2">
+      <strong>Práctica 3: “Dos puntos de luz” · Solucionario</strong>
+      <span style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span class="stamp">Solo profesorado</span><button class="btn" type="button" onclick="window.print()">Imprimir / guardar PDF</button></span>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2>Resumen de la práctica</h2>
+    <p class="lead">Instalar dos puntos de luz en el techo, uno a cierta distancia del otro, conectados en paralelo y gobernados desde un mismo interruptor junto a la puerta. El alumno entrega cuatro esquemas (unifilar, multifilar, topográfico y funcional), monta el circuito en el tablero de pruebas y responde cuatro cuestiones. Tiempo previsto: 15 minutos.</p>
+  </section>
+
+  <section class="card">
+    <h2>Esquemas resueltos</h2>
+    <div class="grid2">
+
+      <figure>
+        <div class="paper">
+          <svg viewBox="0 0 640 340" role="img" aria-label="Esquema unifilar resuelto">
+            <rect width="640" height="340" fill="#fff"/>
+            <line class="ln" x1="30" y1="100" x2="230" y2="100"/>
+            <polygon class="ln" points="230,100 270,78 310,100 270,122"/>
+            <path class="ln" d="M250 89 L290 111 M290 89 L250 111" style="stroke-width:1.5"/>
+            <line class="ln" x1="310" y1="100" x2="610" y2="100"/>
+            <path class="ln" d="M400 86 L428 114 M428 86 L400 114"/>
+            <path class="ln" d="M582 86 L610 114 M610 86 L582 114"/>
+            <path class="ln" d="M120 110 L140 90"/><text class="tx" x="143" y="88">3</text>
+            <path class="ln" d="M340 110 L360 90"/><text class="tx" x="363" y="88">6</text>
+            <path class="ln" d="M490 110 L510 90"/><text class="tx" x="513" y="88">3</text>
+            <line class="ln" x1="270" y1="122" x2="270" y2="250"/>
+            <path class="ln" d="M260 192 L280 172"/><text class="tx" x="284" y="178">2</text>
+            <circle class="ln" cx="270" cy="270" r="18" fill="#fff"/>
+            <path class="ln" d="M283 257 L304 236"/>
+            <text class="tm" x="30" y="130">Alimentación</text>
+            <text class="tm" x="322" y="62">Caja de derivación</text>
+            <text class="tm" x="378" y="134">Punto de luz 1</text>
+            <text class="tm" x="556" y="134">Punto de luz 2</text>
+            <text class="tm" x="302" y="296">Interruptor</text>
+            <text class="tm" x="30" y="326">6 = tres hilos para cada punto de luz · 3 = neutro, retorno y tierra · 2 = fase y retorno</text>
+          </svg>
+        </div>
+        <figcaption><b>Unifilar.</b> Hasta la primera lámpara llegan 6 hilos (los suyos y los de la segunda), entre las dos lámparas 3 y hasta el interruptor 2.</figcaption>
+      </figure>
+
+      <figure>
+        <div class="paper">
+          <svg viewBox="0 0 640 360" role="img" aria-label="Esquema multifilar resuelto">
+            <rect width="640" height="360" fill="#fff"/>
+            <circle class="ln" cx="60" cy="50" r="5"/><text class="tx" x="30" y="38">L1</text>
+            <circle class="ln" cx="60" cy="260" r="5"/><text class="tx" x="36" y="248">N</text>
+            <line class="ln" x1="65" y1="50" x2="540" y2="50"/>
+            <line class="ln" x1="65" y1="260" x2="540" y2="260"/>
+            <path class="ln" d="M70 150 q10 -14 20 0 t20 0"/>
+            <circle cx="400" cy="50" r="4.5" fill="#111827"/>
+            <line class="ln" x1="400" y1="50" x2="400" y2="92"/>
+            <circle class="ln" cx="400" cy="95" r="3" fill="#fff"/>
+            <path class="ln" d="M400 97 L414 124"/>
+            <circle class="ln" cx="400" cy="128" r="3" fill="#fff"/>
+            <line class="ln" x1="400" y1="131" x2="400" y2="174"/>
+            <path class="ln" d="M400 150 L520 150 L520 174"/>
+            <circle cx="400" cy="150" r="4.5" fill="#111827"/>
+            <circle class="ln" cx="400" cy="190" r="16" fill="#fff"/>
+            <path class="ln" d="M389 179 L411 201 M411 179 L389 201"/>
+            <circle class="ln" cx="520" cy="190" r="16" fill="#fff"/>
+            <path class="ln" d="M509 179 L531 201 M531 179 L509 201"/>
+            <line class="ln" x1="400" y1="206" x2="400" y2="260"/>
+            <line class="ln" x1="520" y1="206" x2="520" y2="260"/>
+            <circle cx="400" cy="260" r="4.5" fill="#111827"/>
+            <circle cx="520" cy="260" r="4.5" fill="#111827"/>
+            <path class="ln" d="M384 190 L340 190 L340 300 L150 300 L150 312"/>
+            <path class="ln" d="M536 190 L560 190 L560 300 L340 300"/>
+            <circle cx="340" cy="300" r="4.5" fill="#111827"/>
+            <path class="ln" d="M132 312 L168 312 M139 320 L161 320 M146 328 L154 328"/>
+            <text class="tm" x="424" y="112">Interruptor</text>
+            <text class="tm" x="360" y="236" text-anchor="end">Lámpara 1</text>
+            <text class="tm" x="560" y="236">Lámpara 2</text>
+            <text class="tm" x="176" y="332">Tierra</text>
+            <text class="tm" x="40" y="352">Las dos lámparas reciben el retorno del interruptor y comparten el neutro</text>
+          </svg>
+        </div>
+        <figcaption><b>Multifilar.</b> Las lámparas van en paralelo: la salida del interruptor alimenta a las dos y las dos cierran el circuito en el neutro N. La tierra llega al chasis de ambas luminarias.</figcaption>
+      </figure>
+
+      <figure>
+        <div class="paper">
+          <svg viewBox="0 0 960 540" role="img" aria-label="Esquema topográfico resuelto">
+            <rect width="960" height="540" fill="#fff"/>
+            <polygon points="150,160 330,70 330,380 150,450" fill="#fbf6a6" stroke="#7a7440" stroke-width="2"/>
+            <rect x="330" y="70" width="400" height="310" fill="#fdf9b8" stroke="#7a7440" stroke-width="2"/>
+            <polygon points="150,450 330,380 730,380 550,450" fill="#f2d9a4" stroke="#7a5a2a" stroke-width="2"/>
+            <g stroke="#c8955a" stroke-width="1.2">
+              <line x1="380" y1="380" x2="200" y2="450"/><line x1="430" y1="380" x2="250" y2="450"/><line x1="480" y1="380" x2="300" y2="450"/>
+              <line x1="530" y1="380" x2="350" y2="450"/><line x1="580" y1="380" x2="400" y2="450"/><line x1="630" y1="380" x2="450" y2="450"/><line x1="680" y1="380" x2="500" y2="450"/>
+              <line x1="270" y1="403" x2="670" y2="403"/><line x1="210" y1="427" x2="610" y2="427"/>
+            </g>
+            <polygon points="190,180 250,150 250,260 190,290" fill="#bfe4f5" stroke="#4a7a8c" stroke-width="2"/>
+            <line x1="220" y1="165" x2="220" y2="275" stroke="#4a7a8c" stroke-width="1.5"/>
+            <rect x="620" y="150" width="80" height="230" fill="#f59a3a" stroke="#8a4a12" stroke-width="3"/>
+            <g fill="#fff" stroke="#8a4a12" stroke-width="1.5">
+              <rect x="634" y="164" width="24" height="22"/><rect x="664" y="164" width="24" height="22"/>
+              <rect x="634" y="192" width="24" height="22"/><rect x="664" y="192" width="24" height="22"/>
+              <rect x="634" y="220" width="24" height="22"/><rect x="664" y="220" width="24" height="22"/>
+            </g>
+            <rect x="655" y="84" width="36" height="16" fill="#fff" stroke="#555" stroke-width="2"/>
+            <g class="ln">
+              <path d="M655 92 L392 179"/>
+              <path d="M590 92 L590 240"/>
+              <path d="M410 172 L436 198 M436 172 L410 198" />
+              <path d="M510 122 L536 148 M536 122 L510 148"/>
+              <path d="M612 88 L628 100" style="stroke-width:2"/>
+              <path d="M468 143 L480 155" style="stroke-width:2"/>
+              <path d="M583 172 L597 158" style="stroke-width:2"/>
+              <circle cx="590" cy="252" r="10" fill="#fff"/>
+              <path d="M597 245 L611 231"/>
+            </g>
+            <text class="tx" x="624" y="80">6</text>
+            <text class="tx" x="574" y="124">6</text>
+            <text class="tx" x="470" y="146">3</text>
+            <text class="tx" x="604" y="170">2</text>
+            <text class="tm" x="458" y="62">Caja de derivación</text>
+            <text class="tm" x="352" y="222">Punto de luz 2</text>
+            <text class="tm" x="480" y="112">Punto de luz 1</text>
+            <text class="tm" x="530" y="282">Interruptor</text>
+          </svg>
+        </div>
+        <figcaption><b>Topográfico.</b> De la caja de derivación sale por el techo un tubo con 6 hilos hasta la primera lámpara; de ella parten 3 hasta la segunda. Otro tubo con 2 hilos baja por la pared hasta el interruptor, junto a la puerta.</figcaption>
+      </figure>
+
+      <figure>
+        <div class="paper">
+          <svg viewBox="0 0 960 540" role="img" aria-label="Esquema funcional del tablero resuelto">
+            <rect width="960" height="540" fill="#fff"/>
+            <rect x="40" y="30" width="880" height="480" fill="#dcc08f" stroke="#a07a45" stroke-width="3"/>
+            <text class="tm" x="54" y="52" style="fill:#4b3a22">Tablero de pruebas</text>
+            <rect x="250" y="60" width="170" height="130" fill="#eef1f4" stroke="#7d8995" stroke-width="2"/>
+            <rect x="560" y="60" width="170" height="130" fill="#eef1f4" stroke="#7d8995" stroke-width="2"/>
+            <text class="tm" x="258" y="182">Caja de derivación 1</text>
+            <text class="tm" x="568" y="182">Caja de derivación 2</text>
+            <g stroke="#222" stroke-width="26" fill="none">
+              <line x1="420" y1="118" x2="560" y2="118"/><line x1="645" y1="190" x2="645" y2="330"/><line x1="730" y1="118" x2="775" y2="118"/>
+              <path d="M730 165 L752 165 L752 375 L775 375"/>
+            </g>
+            <g stroke="#666" stroke-width="26" stroke-dasharray="2 5" fill="none">
+              <line x1="420" y1="118" x2="560" y2="118"/><line x1="645" y1="190" x2="645" y2="330"/><line x1="730" y1="118" x2="775" y2="118"/>
+              <path d="M730 165 L752 165 L752 375 L775 375"/>
+            </g>
+            <g fill="#cfd6dd" stroke="#7d8995" stroke-width="1.5"><rect x="322" y="98" width="26" height="40"/><rect x="775" y="98" width="26" height="40"/><rect x="775" y="355" width="26" height="40"/></g>
+            <g fill="#7b8794">
+              <circle cx="335" cy="108" r="3.5"/><circle cx="335" cy="118" r="3.5"/><circle cx="335" cy="128" r="3.5"/>
+              <circle cx="788" cy="108" r="3.5"/><circle cx="788" cy="118" r="3.5"/><circle cx="788" cy="128" r="3.5"/>
+              <circle cx="788" cy="365" r="3.5"/><circle cx="788" cy="375" r="3.5"/><circle cx="788" cy="385" r="3.5"/>
+            </g>
+            <rect x="70" y="88" width="60" height="54" fill="#f7f1e1" stroke="#6b6454" stroke-width="2"/>
+            <g fill="#6b6454"><circle cx="91" cy="115" r="4"/><circle cx="109" cy="115" r="4"/></g>
+            <text class="tm" x="66" y="158" style="fill:#4b3a22">Alimentación</text>
+            <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M130 108 L788 108 M744 108 L744 365 L788 365" stroke="#2e8b3d"/>
+              <path d="M130 108 L788 108 M744 108 L744 365 L788 365" stroke="#f2d21b" stroke-dasharray="6 6"/>
+              <path d="M130 128 L788 128 L810 128 L810 135 L850 135 M760 128 L760 385 L788 385 L810 385 L810 395 L850 395" stroke="#1f5fd0"/>
+              <path d="M130 118 L640 118 L640 392 L636 404" stroke="#8a4b1f"/>
+              <path d="M654 404 L650 392 L650 118 L810 118 L810 95 L850 95 M752 118 L752 375 L810 375 L810 355 L850 355" stroke="#8a4b1f"/>
+            </g>
+            <rect x="628" y="395" width="34" height="52" rx="4" fill="#f3f3f3" stroke="#6b6b6b" stroke-width="2"/>
+            <rect x="636" y="412" width="18" height="28" fill="#fff" stroke="#6b6b6b" stroke-width="1.5"/>
+            <g fill="#6b6b6b"><circle cx="636" cy="404" r="2.5"/><circle cx="654" cy="404" r="2.5"/></g>
+            <text class="tm" x="672" y="428" style="fill:#4b3a22">Interruptor</text>
+            <g fill="#f6f6f2" stroke="#8a8a80" stroke-width="2"><circle cx="850" cy="115" r="30"/><circle cx="850" cy="115" r="12" fill="none"/><circle cx="850" cy="375" r="30"/><circle cx="850" cy="375" r="12" fill="none"/></g>
+            <circle cx="850" cy="95" r="3.5" fill="#b5651d"/><circle cx="850" cy="135" r="3.5" fill="#1f5fd0"/>
+            <circle cx="850" cy="355" r="3.5" fill="#b5651d"/><circle cx="850" cy="395" r="3.5" fill="#1f5fd0"/>
+            <text class="tm" x="818" y="160" style="fill:#4b3a22">Lámpara 1</text>
+            <text class="tm" x="818" y="420" style="fill:#4b3a22">Lámpara 2</text>
+            <g class="tm" style="fill:#4b3a22">
+              <line x1="70" y1="480" x2="100" y2="480" stroke="#8a4b1f" stroke-width="4"/><text x="106" y="484">Fase y retorno</text>
+              <line x1="210" y1="480" x2="240" y2="480" stroke="#1f5fd0" stroke-width="4"/><text x="246" y="484">Neutro</text>
+              <line x1="310" y1="480" x2="340" y2="480" stroke="#2e8b3d" stroke-width="4"/><line x1="310" y1="480" x2="340" y2="480" stroke="#f2d21b" stroke-width="4" stroke-dasharray="6 6"/><text x="346" y="484">Tierra (se deja preparada)</text>
+            </g>
+          </svg>
+        </div>
+        <figcaption><b>Funcional del tablero.</b> Hasta la regleta de la primera lámpara llegan 6 hilos. De esa regleta salen otros 3 (retorno, neutro y tierra) por el segundo tubo hasta la regleta de la segunda lámpara.</figcaption>
+      </figure>
+
+    </div>
+    <p class="lead" style="margin-top:12px">Los esquemas parten de los modelos del PDF original de la práctica. Son una referencia: el alumno puede colocar los elementos de otro modo si las dos lámparas se encienden y se apagan juntas con un solo interruptor que corta la fase.</p>
+  </section>
+
+  <section class="card">
+    <h2>Respuestas a las cuestiones</h2>
+
+    <div class="ans">
+      <div class="q">1ª ¿Por qué se indican que llegan seis hilos hasta la primera bombilla?</div>
+      <span class="key">Respuesta</span>
+      <p class="a">Porque por ese tubo viajan los conductores de las <strong>dos</strong> bombillas, y cada una necesita tres: neutro, retorno (la fase que viene del interruptor) y protección. Tres son para la primera bombilla y los otros tres siguen hasta la segunda, por eso 3 + 3 = 6.</p>
+    </div>
+
+    <div class="ans">
+      <div class="q">2ª ¿Qué indica que hay tres hilos desde la primera bombilla hasta la segunda?</div>
+      <span class="key">Respuesta</span>
+      <p class="a">Que a partir de la primera bombilla ya solo queda alimentar a la segunda, que necesita sus tres hilos: neutro, retorno y protección. Los otros tres se han quedado en la primera bombilla. Esto es una conexión en <strong>paralelo</strong>, porque las dos reciben el retorno y el neutro de los mismos conductores.</p>
+    </div>
+
+    <div class="ans">
+      <div class="q">3ª ¿Qué debemos variar en el esquema unifilar para que se ajuste al montaje del tablero?</div>
+      <span class="key">Respuesta</span>
+      <p class="a">En el tablero cada bombilla tiene su propia regleta y, según el enunciado, deberían existir <strong>dos tubos corrugados</strong>, uno hasta cada bombilla (no están puestos para ver mejor el cableado). Por tanto, el unifilar debería salir de la caja de derivación con <strong>dos ramales de 3 hilos</strong>, uno a cada bombilla, en lugar de un tramo de 6 hilos hasta la primera y otro de 3 hasta la segunda.</p>
+      <div class="warnbox">Interpretación mía a partir de las fotos y del enunciado: el PDF no incluye la solución escrita de las cuestiones 3 y 4. Revísala y, si tu criterio es otro, ajusta la corrección.</div>
+    </div>
+
+    <div class="ans">
+      <div class="q">4ª Modifica el montaje del tablero para que se ajuste al esquema unifilar.</div>
+      <span class="key">Respuesta</span>
+      <p class="a">Hay que llevar un único tubo con <strong>6 hilos</strong> (tres para cada bombilla) desde la caja de derivación hasta la regleta de la primera bombilla y, desde esa regleta, un segundo tubo con <strong>3 hilos</strong> (retorno, neutro y tierra) hasta la regleta de la segunda. Así los hilos de la segunda bombilla pasan por la primera, como en el unifilar. Es lo que muestra el esquema funcional de arriba.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Qué comprobar en el montaje</h2>
+    <div class="grid2">
+      <div>
+        <h3>Conexionado</h3>
+        <ul class="cl">
+          <li><span class="swatch" style="background:#8a4b1f"></span>Fase y retorno en marrón, <span class="swatch" style="background:#1f5fd0"></span>neutro en azul y <span class="swatch" style="background:linear-gradient(135deg,#2e8b3d 50%,#f2d21b 50%)"></span>tierra en verde-amarillo.</li>
+          <li>El interruptor corta la fase, nunca el neutro.</li>
+          <li>Las dos lámparas reciben el mismo retorno y el mismo neutro (paralelo).</li>
+          <li>El hilo de protección llega a los portalámparas aunque no se conecte.</li>
+          <li>Ningún hilo suelto ni punta de cobre al aire.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Prueba de funcionamiento</h3>
+        <ul class="cl">
+          <li>Revisión visual antes de dar tensión.</li>
+          <li>Dos bombillas en los portalámparas y tablero unido a la red con la manguera.</li>
+          <li>En reposo las dos bombillas están apagadas; al pulsar se encienden las dos a la vez.</li>
+          <li>Si solo enciende una, revisar la regleta de la segunda lámpara (retorno y neutro).</li>
+        </ul>
+      </div>
+    </div>
+    <h3 style="margin-top:14px">Errores frecuentes</h3>
+    <ul class="cl">
+      <li>Conectar las lámparas en serie en lugar de en paralelo, con lo que ninguna ilumina bien.</li>
+      <li>Poner el interruptor en el neutro.</li>
+      <li>Dibujar un único hilo de neutro o de retorno hacia la segunda lámpara en el multifilar.</li>
+      <li>Poner 3 hilos en el tramo de la caja a la primera lámpara en el unifilar, en lugar de 6.</li>
+    </ul>
+  </section>
+
+  <section class="card noprint">
+    <h3>Fuentes</h3>
+    <p class="src">Conductor de protección en puntos de luz: <a href="https://normatia.com/es/normativa/rebt/2025/itc-bt-25-instalaciones-interiores-en-viviendas-numero-de-circuitos-y-caracteristicas/">ITC-BT-25, Instalaciones interiores en viviendas (Normatia)</a>. El resto parte del PDF de la práctica.</p>
+  </section>
+</main>
+</body>
+</html>
