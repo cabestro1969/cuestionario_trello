@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Educativo: Análisis de Factura Eléctrica Real</title>
+    <style>
+        :root {
+            --primary: #0284c7;
+            --secondary: #0f172a;
+            --accent: #16a34a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        h1 {
+            color: var(--secondary);
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+        .meta-info {
+            display: flex;
+            justify-content: space-between;
+            background: #f1f5f9;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        .invoice-box {
+            border: 2px dashed #cbd5e1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            background: #fafafa;
+        }
+        .invoice-section {
+            background: white;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            border-left: 5px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .invoice-section:hover {
+            transform: translateX(4px);
+            background: #f0f9ff;
+            border-color: #bae6fd;
+        }
+        .section-title {
+            font-weight: bold;
+            color: var(--secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .price {
+            color: var(--primary);
+            font-weight: bold;
+        }
+        .details-small {
+            font-size: 0.85em;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .total-box {
+            text-align: right;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-top: 20px;
+            color: var(--secondary);
+            border-top: 2px solid var(--border);
+            padding-top: 15px;
+        }
+        #explanation-panel {
+            background: #e0f2fe;
+            border: 1px solid #bae6fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        #explanation-panel h3 {
+            margin-top: 0;
+            color: #0369a1;
+        }
+        .quiz-container {
+            margin-top: 40px;
+            border-top: 2px solid var(--border);
+            padding-top: 25px;
+        }
+        .quiz-question {
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: var(--secondary);
+        }
+        .quiz-options button {
+            background: #e2e8f0;
+            border: none;
+            padding: 10px 16px;
+            margin: 5px 8px 5px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-weight: 500;
+        }
+        .quiz-options button:hover {
+            background: #cbd5e1;
+        }
+        #quiz-result {
+            margin-top: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Laboratorio Educativo: Diseccionando una Factura de Luz Real</h1>
+    <p class="subtitle">Haz clic en cada componente de la factura para ver su explicación técnica detallada.</p>
+
+    <div class="meta-info">
+        <span><strong>Tarifa:</strong> 2.0TD (Mercado Libre)</span>
+        <span><strong>Periodo:</strong> 32 días (30/09 - 01/11)</span>
+        <span><strong>Potencia:</strong> 3,45 kW</span>
+        <span><strong>Consumo Total:</strong> 42 kWh</span>
+    </div>
+
+    <div class="invoice-box">
+        <h3>📄 Detalle de Facturación</h3>
+        
+        <div class="invoice-section" onclick="showInfo('potencia')">
+            <div class="section-title">
+                <span>1. Término de Potencia (Punta y Valle)</span>
+                <span class="price">19,81 €</span>
+            </div>
+            <div class="details-small">Coste fijo por disponer de 3,45 kW contratados durante 32 días.</div>
+        </div>
+
+        <div class="invoice-section" onclick="showInfo('energia')">
+            <div class="section-title">
+                <span>2. Energía Consumida y Descuentos</span>
+                <span class="price">3,59 €</span>
+            </div>
+            <div class="details-small">42 kWh consumidos (4,50 €) menos descuentos comerciales aplicados (-0,91 €).</div>
+        </div>
+
+        <div class="invoice-section" onclick="showInfo('cargos')">
+            <div class="section-title">
+                <span>3. Cargos Normativos y Tributos Específicos</span>
+                <span class="price">2,03 €</span>
+            </div>
+            <div class="details-small">Incluye Bono Social fijo (0,79 €) e Impuesto sobre Electricidad (1,24 €).</div>
+        </div>
+
+        <div class="invoice-section" onclick="showInfo('servicios')">
+            <div class="section-title">
+                <span>4. Servicios y Alquileres</span>
+                <span class="price">9,04 €</span>
+            </div>
+            <div class="details-small">Alquiler de contador inteligente (0,85 €) + Pack de mantenimiento opcional (8,19 €).</div>
+        </div>
+
+        <div class="invoice-section" onclick="showInfo('iva')">
+            <div class="section-title">
+                <span>5. Impuesto sobre el Valor Añadido (IVA)</span>
+                <span class="price">7,24 €</span>
+            </div>
+            <div class="details-small">21% de IVA aplicado sobre la base imponible total (34,47 €).</div>
+        </div>
+
+        <div class="total-box">
+            Importe Total a Pagar: 41,71 €
+        </div>
+    </div>
+
+    <div id="explanation-panel">
+        <h3>💡 Selecciona un bloque superior</h3>
+        <p>Haz clic en cualquiera de las secciones de la factura simulada para aprender cómo se calcula cada importe y qué normativa o implicación técnica tiene.</p>
+    </div>
+
+    <div class="quiz-container">
+        <h3>🧠 Autoevaluación para Alumnos</h3>
+        <div class="quiz-question">Si el consumo en esta factura ha sido excepcionalmente bajo (42 kWh), ¿por qué el importe total asciende a 41,71 €?</div>
+        <div class="quiz-options">
+            <button onclick="checkAnswer(false)">Porque el IVA de la luz es del 50% y encarece todo el recibo.</button>
+            <button onclick="checkAnswer(true)">Porque existen costes fijos obligatorios (potencia contratada, alquiler, bono social) y servicios opcionales que se pagan independientemente de que consumas poca energía.</button>
+            <button onclick="checkAnswer(false)">Porque el precio del kWh en el mercado libre es abusivo y supera los 2 € por kilovatio.</button>
+        </div>
+        <div id="quiz-result"></div>
+    </div>
+</div>
+
+<script>
+    const explanations = {
+        potencia: {
+            title: "1. Término de Potencia (El alquiler de la capacidad eléctrica)",
+            text: "Se calcula multiplicando los kW contratados por los días del periodo y el precio diario fijado por la comercializadora. En la tarifa 2.0TD se divide en periodo Punta y Valle. Tener 3,45 kW permite conectar varios electrodomésticos a la vez sin que salte el interruptor general (ICP)."
+        },
+        energia: {
+            title: "2. Energía Consumida y Descuentos Comerciales",
+            text: "Representa los kWh reales medidos por el contador inteligente. En esta factura se refleja un consumo muy eficiente de solo 42 kWh (un promedio diario menor a 1,5 kWh). Al estar en mercado libre, se aplican descuentos promocionales (del 15% y 5% sobre el coste de la energía)."
+        },
+        cargos: {
+            title: "3. Cargos Normativos y Tributos Específicos",
+            text: "Son costes regulados por el Gobierno. Incluyen la financiación del Bono Social (ayuda a colectivos vulnerables repartida entre todos los consumidores) y el Impuesto Especial sobre la Electricidad, que grava tanto la potencia como la energía antes de aplicar el IVA."
+        },
+        servicios: {
+            title: "4. Alquiler de Equipos y Servicios Adicionales",
+            text: "El alquiler del contador inteligente a la empresa distribuidora es obligatorio y está regulado (0,85 €). Sin embargo, el 'Pack Iberdrola' (8,19 €) es un servicio comercial de mantenimiento adicional contratado voluntariamente que incrementa de forma notable el importe de esta factura pequeña."
+        },
+        iva: {
+            title: "5. IVA (Impuesto sobre el Valor Añadido)",
+            text: "Se aplica sobre la base imponible total (la suma de potencia, energía, cargos y servicios, que asciende a 34,47 €). Un tipo general del 21% aporta 7,24 € al total de la factura."
+        }
+    };
+
+    function showInfo(key) {
+        const panel = document.getElementById('explanation-panel');
+        const data = explanations[key];
+        panel.innerHTML = `<h3>${data.title}</h3><p>${data.text}</p>`;
+    }
+
+    function checkAnswer(isCorrect) {
+        const resultDiv = document.getElementById('quiz-result');
+        if (isCorrect) {
+            resultDiv.style.color = "var(--accent)";
+            resultDiv.innerHTML = "¡Excelente respuesta! Demuestra que entiendes perfectamente que la factura eléctrica tiene un fuerte componente fijo (potencia, alquiler, impuestos fijos) y servicios adicionales contratados que impiden que la factura sea cero aunque no haya consumo.";
+        } else {
+            resultDiv.style.color = "#dc2626";
+            resultDiv.innerHTML = "Incorrecto. Recuerda que incluso gastando muy poca energía (42 kWh), los costes fijos de potencia contratada, alquiler de contador y servicios contratados siguen acumulando la mayor parte de la factura.";
+        }
+    }
+</script>
+
+</body>
+</html>
