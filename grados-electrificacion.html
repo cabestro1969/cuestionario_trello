@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grados de electrificación en viviendas</title>
+<style>
+:root{
+  --bg:#f4f6fa;--card:#ffffff;--ink:#1c2433;--muted:#5b6579;--line:#d9dfea;
+  --primary:#1e5aa8;--primary-ink:#ffffff;--accent:#f2a900;
+  --basic:#1f8a4c;--basic-bg:#e3f4EA;--high:#c2410c;--high-bg:#fdebdc;
+  --ok:#1f8a4c;--ko:#c0392b;--soft:#eef2f9;
+  --shadow:0 2px 10px rgba(20,35,70,.08);
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#10151f;--card:#18202e;--ink:#e8edf6;--muted:#9aa6bd;--line:#2b3649;
+  --primary:#5b9bf0;--primary-ink:#0b1220;--basic:#4cc27c;--basic-bg:#15301f;--high:#ff9a5c;--high-bg:#3a2314;
+  --ok:#4cc27c;--ko:#ff7b6b;--soft:#1f2a3c;--shadow:none}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:linear-gradient(135deg,#143d73,#1e5aa8 60%,#2f7bd6);color:#fff;padding:28px 16px 22px}
+header .in{max-width:1080px;margin:auto}
+header h1{margin:0 0 6px;font-size:clamp(1.5rem,4vw,2.2rem)}
+header p{margin:0;opacity:.9;max-width:760px}
+nav{position:sticky;top:0;z-index:10;background:var(--card);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
+nav .in{max-width:1080px;margin:auto;display:flex;gap:4px;overflow-x:auto;padding:6px 10px}
+nav button{flex:0 0 auto;border:0;background:transparent;color:var(--muted);font:600 .95rem inherit;font-family:inherit;padding:10px 14px;border-radius:8px;cursor:pointer;white-space:nowrap}
+nav button:hover{background:var(--soft)}
+nav button.on{background:var(--primary);color:var(--primary-ink)}
+main{max-width:1080px;margin:auto;padding:18px 14px 60px}
+.panel{display:none}.panel.on{display:block}
+h2{margin:6px 0 12px;font-size:1.5rem}
+h3{margin:18px 0 8px;font-size:1.15rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow);margin:14px 0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.grado{border-radius:14px;padding:16px 18px;border:2px solid}
+.grado.b{background:var(--basic-bg);border-color:var(--basic)}
+.grado.e{background:var(--high-bg);border-color:var(--high)}
+.grado h3{margin-top:0}
+.big{font-size:2rem;font-weight:800;line-height:1.1}
+.b .big{color:var(--basic)}.e .big{color:var(--high)}
+.tag{display:inline-block;font-size:.78rem;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--soft);color:var(--ink);margin:2px 4px 2px 0}
+.tag.b{background:var(--basic-bg);color:var(--basic)}.tag.e{background:var(--high-bg);color:var(--high)}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--soft)}
+.tw{overflow-x:auto}
+.note{border-left:4px solid var(--accent);background:var(--soft);padding:10px 14px;border-radius:0 10px 10px 0;margin:12px 0;font-size:.93rem}
+label{font-size:.9rem;font-weight:600;display:block;margin-bottom:3px}
+input[type=number],select,input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.chk{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);cursor:pointer;font-weight:500;font-size:.92rem;margin:0}
+.chk input{width:18px;height:18px;accent-color:var(--primary)}
+.btn{border:0;background:var(--primary);color:var(--primary-ink);font:700 .95rem inherit;font-family:inherit;padding:9px 16px;border-radius:9px;cursor:pointer}
+.btn:hover{filter:brightness(1.1)}
+.btn.sec{background:var(--soft);color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:5px 11px;font-size:.85rem}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.row>*{flex:1 1 150px}
+details.ex{border:1px solid var(--line);border-radius:12px;background:var(--card);margin:12px 0;box-shadow:var(--shadow)}
+details.ex>summary{cursor:pointer;padding:14px 16px;font-weight:700;list-style:none;display:flex;gap:10px;align-items:center}
+details.ex>summary::-webkit-details-marker{display:none}
+details.ex>summary::before{content:"▸";color:var(--primary);transition:transform .15s}
+details.ex[open]>summary::before{transform:rotate(90deg)}
+details.ex .body{padding:0 18px 16px}
+.sol{background:var(--basic-bg);border-radius:10px;padding:10px 14px;margin-top:10px}
+.sub{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
+.sub button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:99px;font:600 .9rem inherit;font-family:inherit;cursor:pointer}
+.sub button.on{background:var(--accent);border-color:var(--accent);color:#1b1500}
+.subp{display:none}.subp.on{display:block}
+/* cuadro general */
+.cuadro{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;padding:12px;background:var(--soft);border-radius:12px;border:1px dashed var(--line)}
+.grp{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px}
+.grp .gl{font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em}
+.grp .devs{display:flex;gap:6px;flex-wrap:wrap}
+.dev{width:78px;border-radius:8px;border:2px solid var(--line);text-align:center;padding:6px 3px;font-size:.72rem;background:var(--bg);line-height:1.25}
+.dev b{display:block;font-size:.95rem}
+.dev.icp{border-color:#7a5af8}.dev.ig{border-color:#c0392b}.dev.id{border-color:var(--primary);background:var(--soft)}
+.dev.pia{border-color:var(--basic)}
+.dev.pia.hi{border-color:var(--high)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.kpi{background:var(--soft);border-radius:10px;padding:10px 12px}
+.kpi span{display:block;font-size:.78rem;color:var(--muted);font-weight:600}
+.kpi b{font-size:1.35rem}
+.fb{padding:8px 12px;border-radius:9px;margin:6px 0;font-size:.92rem}
+.fb.ok{background:var(--basic-bg);border-left:4px solid var(--ok)}
+.fb.ko{background:var(--high-bg);border-left:4px solid var(--ko)}
+.q{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;background:var(--card)}
+.q p{margin:0 0 8px;font-weight:700}
+.q label.o{display:flex;gap:8px;align-items:center;font-weight:500;padding:6px 8px;border-radius:8px;cursor:pointer;margin:0}
+.q label.o:hover{background:var(--soft)}
+.q label.o.good{background:var(--basic-bg)}.q label.o.bad{background:var(--high-bg)}
+.score{font-size:1.1rem;font-weight:800}
+.mini{font-size:.85rem;color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:.82rem;padding:20px}
+@media print{nav,.btn{display:none}.panel{display:block!important}}
+</style>
+</head>
+<body>
+<header><div class="in">
+  <h1>⚡ Grados de electrificación en viviendas</h1>
+  <p>Unidad didáctica de Tecnología · 4º ESO. Aprende qué grado necesita una vivienda, qué circuitos lleva su cuadro general y comprueba lo aprendido con el simulador.</p>
+</div></header>
+
+<nav><div class="in" id="tabs">
+  <button data-tab="grados" class="on">1 · Grados</button>
+  <button data-tab="circuitos">2 · Circuitos y cuadro</button>
+  <button data-tab="ejemplos">3 · Ejemplos prácticos</button>
+  <button data-tab="sim">4 · Simulador</button>
+</div></nav>
+
+<main>
+<!-- ================= TEORÍA: GRADOS ================= -->
+<section class="panel on" id="tab-grados">
+  <h2>¿Qué es el grado de electrificación?</h2>
+  <div class="card">
+    <p>La <b>carga</b> de una instalación es la suma de las potencias (en vatios) de todos los receptores que pueden funcionar a la vez. Como no se puede conocer de antemano qué aparatos tendrá cada familia, el <b>Reglamento Electrotécnico de Baja Tensión (REBT)</b> fija dos grados de electrificación que determinan la potencia mínima y los circuitos que debe tener la vivienda.</p>
+    <p class="mini">Datos de la red: 230 V entre fase y neutro, 400 V entre fases (trifásica de 4 conductores), frecuencia 50 Hz. Corriente: <b>I = P / V</b>.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="grado b">
+      <h3>Electrificación BÁSICA</h3>
+      <div class="big">≥ 5.750 W</div>
+      <p>a 230 V (25 A). Cubre las necesidades primarias de utilización sin necesidad de obras posteriores, independientemente de la potencia que contrate el usuario.</p>
+      <span class="tag b">C1 Iluminación</span><span class="tag b">C2 Tomas generales</span><span class="tag b">C3 Cocina y horno</span><span class="tag b">C4 Lavadora, lavavajillas, termo</span><span class="tag b">C5 Baño y cuarto de cocina</span>
+      <p class="mini" style="margin-top:8px">Cuadro: ICP + IG de 25 A + diferencial (ID) de 25 A + 5 automáticos.</p>
+    </div>
+    <div class="grado e">
+      <h3>Electrificación ELEVADA</h3>
+      <div class="big">≥ 9.200 W</div>
+      <p>a 230 V (40 A). Cubre la electrificación básica y además calefacción eléctrica, aire acondicionado, automatización, secadora o viviendas grandes.</p>
+      <span class="tag e">Básica (C1–C5)</span><span class="tag e">+ C6 a C12 según necesidades</span>
+      <p class="mini" style="margin-top:8px">Cuadro: ICP + IG de 40 A + varios diferenciales de 40 A (uno cada 5 circuitos) + automáticos.</p>
+    </div>
+  </div>
+
+  <h3>¿Cuándo es obligatoria la electrificación elevada?</h3>
+  <div class="card">
+    <ul style="margin:0;padding-left:20px">
+      <li>La vivienda tiene <b>calefacción eléctrica</b> (circuito C8).</li>
+      <li>Se prevé <b>aire acondicionado</b> (circuito C9).</li>
+      <li>La superficie útil es <b>superior a 160 m²</b> (obliga a un circuito C7 adicional).</li>
+      <li>Hay <b>secadora independiente</b> (C10) o <b>sistema de automatización / domótica</b> (C11).</li>
+      <li>Hace falta algún circuito adicional: más de 30 puntos de luz (C6), más de 20 tomas generales (C7), o circuitos extra de cocina, lavadora o baño (C12).</li>
+    </ul>
+    <div class="note">Una vivienda corriente (por ejemplo 90 m² con lavadora y termo eléctrico) <b>sigue siendo básica</b>: lavadora y termo se alimentan con el circuito C4, que ya forma parte de la electrificación básica.</div>
+  </div>
+
+  <h3>Comparativa rápida</h3>
+  <div class="card tw"><table>
+    <tr><th></th><th>Básica</th><th>Elevada</th></tr>
+    <tr><td>Potencia mínima prevista</td><td>5.750 W</td><td>9.200 W</td></tr>
+    <tr><td>Intensidad (a 230 V)</td><td>25 A</td><td>40 A</td></tr>
+    <tr><td>Interruptor general (IG)</td><td>25 A</td><td>40 A</td></tr>
+    <tr><td>Circuitos</td><td>C1 a C5 (5)</td><td>C1 a C5 + C6 a C12 según necesidades</td></tr>
+    <tr><td>Diferenciales (30 mA)</td><td>1 (hasta 5 circuitos)</td><td>1 por cada 5 circuitos o fracción: 2, 3…</td></tr>
+  </table></div>
+
+  <h3>Pruébalo: ¿qué grado necesita mi vivienda?</h3>
+  <div class="card">
+    <div class="grid3">
+      <label class="chk"><input type="checkbox" class="qc" data-k="grande"> Más de 160 m²</label>
+      <label class="chk"><input type="checkbox" class="qc" data-k="calef"> Calefacción eléctrica</label>
+      <label class="chk"><input type="checkbox" class="qc" data-k="aire"> Aire acondicionado</label>
+      <label class="chk"><input type="checkbox" class="qc" data-k="secad"> Secadora independiente</label>
+      <label class="chk"><input type="checkbox" class="qc" data-k="domot"> Domótica / automatización</label>
+      <label class="chk"><input type="checkbox" class="qc" data-k="luz"> Más de 30 puntos de luz</label>
+      <label class="chk"><input type="checkbox" class="qc" data-k="lav"> Lavadora y termo eléctrico</label>
+      <label class="chk"><input type="checkbox" class="qc" data-k="tv"> Televisión, ordenador, nevera…</label>
+    </div>
+    <div id="quickRes" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<!-- ================= TEORÍA: CIRCUITOS ================= -->
+<section class="panel" id="tab-circuitos">
+  <h2>Circuitos y cuadro general de la vivienda</h2>
+  <div class="card">
+    <p>Cada tipo de uso tiene su propio circuito independiente, protegido por un <b>interruptor automático (PIA)</b> de corte omnipolar con protección contra sobrecargas y cortocircuitos.</p>
+  </div>
+  <div class="card tw"><table id="tblCirc"></table></div>
+  <div class="note">Nota: en la tabla de características del tema la calefacción aparece como «C6», pero en la definición de circuitos la calefacción es <b>C8</b> y C6 es el circuito de iluminación adicional. Aquí usamos la numeración de la definición.</div>
+
+  <h3>Elementos del cuadro general</h3>
+  <div class="grid2">
+    <div class="card"><h3 style="margin-top:0">ICP · Interruptor de Control de Potencia</h3><p>Lo instala la <b>empresa suministradora</b> en un compartimento precintable, justo antes del resto de dispositivos. Limita el consumo del abonado según la potencia contratada (P = 230 V × I).</p>
+      <div class="tw"><table><tr><th>Potencia contratada</th><th>ICP</th></tr><tr><td>2.300 W</td><td>10 A</td></tr><tr><td>3.450 W</td><td>15 A</td></tr><tr><td>4.600 W</td><td>20 A</td></tr><tr><td>5.750 W</td><td>25 A</td></tr></table></div></div>
+    <div class="card"><h3 style="margin-top:0">IG · Interruptor General Automático</h3><p>Corte omnipolar con accionamiento manual, intensidad nominal mínima de <b>25 A</b> y poder de corte de al menos <b>4.500 A</b>. Con electrificación elevada se usa de 40 A.</p></div>
+    <div class="card"><h3 style="margin-top:0">ID · Interruptor Diferencial</h3><p>Protege a las personas contra <b>contactos indirectos</b>. Sensibilidad máxima <b>30 mA</b> e intensidad asignada ≥ la del IG. Como mínimo <b>uno por cada cinco circuitos</b>.</p></div>
+    <div class="card"><h3 style="margin-top:0">PIA · Automáticos de circuito</h3><p>Uno por cada circuito (C1…C12), con la intensidad que corresponde a su aplicación (10, 16, 20 ó 25 A).</p></div>
+  </div>
+
+  <h3>Más normas que conviene recordar</h3>
+  <div class="grid2">
+    <div class="card"><b>Ubicación del cuadro</b><ul><li>Cerca de la entrada de la derivación individual y junto a la puerta de entrada.</li><li>Altura del suelo entre 1,4 m y 2 m.</li><li>Nunca en dormitorios, baños o aseos.</li></ul></div>
+    <div class="card"><b>Colores de los conductores</b><ul><li><span class="tag" style="background:#2c7be5;color:#fff">Azul</span> neutro</li><li><span class="tag" style="background:linear-gradient(90deg,#f2c500 50%,#2e9e4a 50%);color:#111">Verde-amarillo</span> protección (tierra)</li><li><span class="tag" style="background:#7b4a2d;color:#fff">Marrón</span><span class="tag" style="background:#222;color:#fff">Negro</span><span class="tag" style="background:#888;color:#fff">Gris</span> fases</li></ul></div>
+    <div class="card"><b>Alturas de mecanismos</b><ul><li>Tomas de uso general: 30 cm del suelo.</li><li>Interruptores: entre 80 y 120 cm (70 cm en cabeceras de cama).</li><li>Pulsador del timbre: 120–180 cm, en el exterior.</li><li>Cocina: tomas sobre encimera a 110 cm y a ≥ 50 cm del fregadero y de la cocina.</li></ul></div>
+    <div class="card"><b>Caída de tensión</b><ul><li>Máxima en circuitos interiores: <b>3 %</b>.</li><li>Usuario único sin LGA: DI 1,5 % (total 4,5 %).</li><li>Contadores centralizados: LGA 0,5 % + DI 1 %.</li></ul></div>
+  </div>
+  <div class="card"><b>Intensidad prevista de un circuito:</b> <code>I = n · Iₐ · Fs · Fu</code><br>n = número de tomas o receptores · Iₐ = intensidad prevista por toma · Fs = factor de simultaneidad · Fu = factor de utilización.</div>
+</section>
+
+<!-- ================= EJEMPLOS ================= -->
+<section class="panel" id="tab-ejemplos">
+  <h2>Ejemplos prácticos</h2>
+  <p class="mini">Despliega cada ejemplo, intenta resolverlo y después comprueba la solución. Los botones «Ver en el simulador» cargan los datos en el laboratorio.</p>
+
+  <details class="ex" open>
+    <summary>Ejemplo 1 · Piso de 90 m² con lavadora y termo eléctrico</summary>
+    <div class="body">
+      <p>¿Qué grado de electrificación hay que elegir en una vivienda usual de 90 m², con lavadora y termo eléctrico?</p>
+      <details><summary class="btn sm sec" style="display:inline-block">Ver solución</summary>
+      <div class="sol"><b>Electrificación básica.</b> Mide menos de 160 m², no tiene calefacción ni aire acondicionado, y la lavadora y el termo se alimentan con el circuito C4, que ya es de la electrificación básica.<br>Circuitos: C1, C2, C3, C4, C5 → 5 circuitos → 1 diferencial. IG de 25 A.</div></details>
+      <p><button class="btn sm" data-preset="p1">Ver en el simulador</button></p>
+    </div>
+  </details>
+
+  <details class="ex">
+    <summary>Ejemplo 2 · Sumar la potencia instalada (vivienda de 100 m²)</summary>
+    <div class="body">
+      <p>Receptores por habitación: comedor 685 W · pasillo 200 W · cocina 4.560 W · dormitorio principal 460 W · dormitorio del niño 452 W · estudio 185 W · baño 1.135 W. ¿Potencia total, corriente y grado?</p>
+      <details><summary class="btn sm sec" style="display:inline-block">Ver solución</summary>
+      <div class="sol">P = 685 + 200 + 4.560 + 460 + 452 + 185 + 1.135 = <b>7.677 W</b><br>I = P / V = 7.677 / 230 = <b>33,38 A</b><br>No tiene calefacción ni aire, mide menos de 160 m² → <b>electrificación básica</b> (el reglamento fija el grado, sin esperar a saber qué se enchufará).</div></details>
+      <h3>Calculadora de potencia instalada</h3>
+      <div class="tw"><table id="potTbl"><thead><tr><th>Receptor / habitación</th><th style="width:110px">Potencia (W)</th><th style="width:80px">Uds.</th><th style="width:50px"></th></tr></thead><tbody></tbody></table></div>
+      <p class="row" style="margin-top:8px"><span><button class="btn sm sec" id="potAdd">+ Añadir fila</button> <button class="btn sm sec" id="potEj">Cargar datos del ejemplo</button> <button class="btn sm sec" id="potClr">Vaciar</button></span></p>
+      <div class="res" id="potRes"></div>
+    </div>
+  </details>
+
+  <details class="ex">
+    <summary>Ejemplo 3 · Vivienda con 2 aires acondicionados</summary>
+    <div class="body">
+      <p>Una vivienda lleva 20 puntos de luz, 25 tomas de corriente, lavadora, televisión, cocina eléctrica y 2 aparatos de aire acondicionado. ¿Circuitos y composición del cuadro?</p>
+      <details><summary class="btn sm sec" style="display:inline-block">Ver solución</summary>
+      <div class="sol"><b>Elevada</b> (aire acondicionado). Circuitos: C1 (20 luces), C2 (20 tomas), C3 (cocina), C4 (lavadora), C5 (baño), C7 (5 tomas + TV, porque C2 admite solo 20) y C9 (aire acondicionado) → <b>7 circuitos</b> → 2 diferenciales (7/5 = 1,4 → 2).<br>IG 40 A, ID 40 A (×2), PIAs: 10, 16, 25, 20, 16, 16 y 25 A.<br>Con 4.600 W contratados el ICP sería de 20 A (ejemplo del tema).</div></details>
+      <p><button class="btn sm" data-preset="p3">Ver en el simulador</button></p>
+    </div>
+  </details>
+
+  <details class="ex">
+    <summary>Ejemplo 4 · Chalet domótico de 200 m²</summary>
+    <div class="body">
+      <p>Chalet de 200 m² con 35 puntos de luz, 40 tomas de uso general, calefacción eléctrica, aire acondicionado, secadora independiente y sistema de automatización. ¿Cuántos circuitos y diferenciales?</p>
+      <details><summary class="btn sm sec" style="display:inline-block">Ver solución</summary>
+      <div class="sol">Elevada por varios motivos (superficie, calefacción, aire, secadora, domótica). Circuitos: C1 + <b>C6</b> (35 luces &gt; 30) · C2 + <b>C7</b> (40 tomas y &gt; 160 m²) · C3 · C4 · C5 · <b>C8</b> · <b>C9</b> · <b>C10</b> · <b>C11</b> → <b>11 circuitos</b> → 3 diferenciales (agrupados: C1–C5, C6–C10, C11), igual que el cuadro del tema.<br>IG 40 A.</div></details>
+      <p><button class="btn sm" data-preset="p4">Ver en el simulador</button></p>
+    </div>
+  </details>
+
+  <details class="ex">
+    <summary>Ejemplo 5 · Intensidad prevista en un circuito de tomas</summary>
+    <div class="body">
+      <p>En un circuito de tomas de uso general (C2) se conectan 4 receptores de 3,2 A, 2 de 1,3 A y 1 de 5,6 A. Calcula la intensidad prevista.</p>
+      <details><summary class="btn sm sec" style="display:inline-block">Ver solución</summary>
+      <div class="sol">C2: Fs = 0,2 y Fu = 0,25.<br>I = (4·3,2 + 2·1,3 + 1·5,6) · 0,2 · 0,25 = 21 · 0,05 = <b>1,05 A</b>. Es mucho menor que 16 A: basta con la sección mínima del reglamento (2,5 mm²).</div></details>
+      <h3>Calculadora de intensidad prevista</h3>
+      <div class="row">
+        <div><label for="iCirc">Circuito</label><select id="iCirc"></select></div>
+        <div class="mini" id="iFs" style="flex:2"></div>
+      </div>
+      <div class="tw"><table id="iTbl"><thead><tr><th>Nº de receptores (n)</th><th>Intensidad por receptor Iₐ (A)</th></tr></thead><tbody></tbody></table></div>
+      <p><button class="btn sm sec" id="iAdd">+ Añadir grupo</button></p>
+      <div class="res" id="iRes"></div>
+    </div>
+  </details>
+
+  <details class="ex">
+    <summary>Ejemplo 6 · Sección mínima por caída de tensión</summary>
+    <div class="body">
+      <p>La línea de cobre desde el interruptor automático al receptor más alejado mide 30 m y transporta 10 A. ¿Qué sección mínima necesita?</p>
+      <details><summary class="btn sm sec" style="display:inline-block">Ver solución</summary>
+      <div class="sol">Caída máxima: 3 % de 230 V = 6,9 V → R = 6,9 / 10 = 0,69 Ω. Son dos conductores (fase y neutro): L total = 60 m.<br>S = ρ·L/R = 0,0172 · 60 / 0,69 = <b>1,495 mm²</b>. El reglamento exige 1,5 mm² en C1, así que no hay que aumentarla.</div></details>
+      <h3>Calculadora de sección</h3>
+      <div class="row">
+        <div><label for="sL">Longitud de la línea (m, ida)</label><input type="number" id="sL" value="30" min="1" step="1"></div>
+        <div><label for="sI">Intensidad (A)</label><input type="number" id="sI" value="10" min="0.1" step="0.1"></div>
+        <div><label for="sD">Caída máx. (%)</label><input type="number" id="sD" value="3" min="0.5" max="5" step="0.1"></div>
+        <div><label for="sC">Circuito</label><select id="sC"></select></div>
+      </div>
+      <div class="res" id="sRes"></div>
+    </div>
+  </details>
+</section>
+
+<!-- ================= SIMULADOR ================= -->
+<section class="panel" id="tab-sim">
+  <h2>Simulador</h2>
+  <div class="sub" id="subTabs">
+    <button data-sub="lab" class="on">🔧 Laboratorio: diseña tu vivienda</button>
+    <button data-sub="reto">🎯 Reto: comprueba lo aprendido</button>
+    <button data-sub="test">📝 Test de autoevaluación</button>
+  </div>
+
+  <!-- LABORATORIO -->
+  <div class="subp on" id="sub-lab">
+    <div class="card">
+      <p style="margin-top:0">Introduce las características de la vivienda y el simulador calcula el <b>grado de electrificación</b>, los <b>circuitos</b> y dibuja el <b>cuadro general</b>.</p>
+      <div class="grid3">
+        <div><label for="L_sup">Superficie útil (m²)</label><input type="number" id="L_sup" value="90" min="20" max="400"></div>
+        <div><label for="L_luz">Puntos de luz</label><input type="number" id="L_luz" value="20" min="1" max="120"></div>
+        <div><label for="L_tomas">Tomas de uso general</label><input type="number" id="L_tomas" value="15" min="1" max="120"></div>
+        <div><label for="L_tb">Tomas en baños y cuarto de cocina</label><input type="number" id="L_tb" value="4" min="1" max="30"></div>
+        <div><label for="L_coc">Cocinas/hornos adicionales (circuito propio)</label><select id="L_coc"><option>0</option><option>1</option><option>2</option></select></div>
+        <div><label for="L_lav">Lavadoras/termos adicionales (circuito propio)</label><select id="L_lav"><option>0</option><option>1</option><option>2</option></select></div>
+        <div><label for="L_pot">Potencia contratada</label>
+          <select id="L_pot"><option value="auto">Automática (mínima prevista)</option><option value="2300">2.300 W</option><option value="3450">3.450 W</option><option value="4600">4.600 W</option><option value="5750">5.750 W</option><option value="6900">6.900 W</option><option value="8050">8.050 W</option><option value="9200">9.200 W</option></select></div>
+      </div>
+      <div class="grid3" style="margin-top:10px">
+        <label class="chk"><input type="checkbox" id="L_calef"> Calefacción eléctrica</label>
+        <label class="chk"><input type="checkbox" id="L_aire"> Aire acondicionado</label>
+        <label class="chk"><input type="checkbox" id="L_secad"> Secadora independiente</label>
+        <label class="chk"><input type="checkbox" id="L_domot"> Domótica / automatización</label>
+      </div>
+      <p style="margin-bottom:0"><button class="btn sec sm" data-preset="p1">Ejemplo 1</button> <button class="btn sec sm" data-preset="p3">Ejemplo 3</button> <button class="btn sec sm" data-preset="p4">Ejemplo 4</button></p>
+    </div>
+    <div id="labOut"></div>
+  </div>
+
+  <!-- RETO -->
+  <div class="subp" id="sub-reto">
+    <div class="card">
+      <div class="row">
+        <div><label for="R_niv">Nivel de dificultad</label><select id="R_niv"><option value="1">Fácil</option><option value="2" selected>Medio</option><option value="3">Difícil</option></select></div>
+        <div><button class="btn" id="R_new">🎲 Nuevo reto</button></div>
+        <div class="score" id="R_score">Puntos: 0 / 0</div>
+      </div>
+    </div>
+    <div class="card" id="R_card"></div>
+  </div>
+
+  <!-- TEST -->
+  <div class="subp" id="sub-test">
+    <div class="card">
+      <div class="row"><div><button class="btn" id="T_new">🔄 Generar test nuevo (10 preguntas)</button></div><div class="score" id="T_score"></div></div>
+    </div>
+    <div id="T_box"></div>
+    <p><button class="btn" id="T_check">Corregir test</button></p>
+  </div>
+</section>
+</main>
+<footer>Material basado en la unidad didáctica «Instalaciones eléctricas en viviendas» de Antonio Bueno Juan. Herramienta de aprendizaje: para instalaciones reales rige siempre el REBT vigente (ITC-BT-25) y la validación de un instalador autorizado.</footer>
+
+<script>
+/*CORE*/
+const CT={
+ C1:{n:'Iluminación',a:10,s:1.5,t:16,pts:'30 puntos de luz',toma:'Punto de luz'},
+ C2:{n:'Tomas de uso general y frigorífico',a:16,s:2.5,t:20,pts:'20 tomas',toma:'Base 16 A 2p+T'},
+ C3:{n:'Cocina y horno',a:25,s:6,t:25,pts:'2 tomas',toma:'Base 25 A 2p+T'},
+ C4:{n:'Lavadora, lavavajillas y termo eléctrico',a:20,s:4,t:20,pts:'3 tomas',toma:'Base 16 A 2p+T'},
+ C5:{n:'Baño y cuarto de cocina',a:16,s:2.5,t:20,pts:'6 tomas',toma:'Base 16 A 2p+T'},
+ C6:{n:'Iluminación adicional (tipo C1)',a:10,s:1.5,t:16,pts:'30 puntos de luz',toma:'Punto de luz'},
+ C7:{n:'Tomas generales adicionales (tipo C2)',a:16,s:2.5,t:20,pts:'20 tomas',toma:'Base 16 A 2p+T'},
+ C8:{n:'Calefacción eléctrica',a:25,s:6,t:25,pts:'—',toma:'—'},
+ C9:{n:'Aire acondicionado',a:25,s:6,t:25,pts:'—',toma:'—'},
+ C10:{n:'Secadora independiente',a:16,s:2.5,t:20,pts:'1 toma',toma:'Base 16 A 2p+T'},
+ C11:{n:'Automatización, gestión de energía y seguridad',a:10,s:1.5,t:16,pts:'—',toma:'—'},
+ C12:{n:'Circuito adicional (tipo C3, C4 o C5)',a:0,s:0,t:0,pts:'—',toma:'—'}
+};
+const FSFU={C1:[.75,.5],C2:[.2,.25],C3:[.5,.75],C4:[.66,.75],C5:[.4,.5],C10:[1,.75]};
+function compute(c){
+  const reasons=[],ids=['C1','C2','C3','C4','C5'];
+  const out=[];
+  const luzN=Math.max(1,Math.ceil(c.luz/30));
+  const tomN=Math.max(Math.ceil(c.tomas/20),c.sup>160?2:1);
+  const hi=[];
+  if(c.sup>160)hi.push('Superficie útil superior a 160 m²');
+  if(c.calef)hi.push('Calefacción eléctrica (C8)');
+  if(c.aire)hi.push('Aire acondicionado (C9)');
+  if(c.secad)hi.push('Secadora independiente (C10)');
+  if(c.domot)hi.push('Automatización / domótica (C11)');
+  if(luzN>1)hi.push('Más de 30 puntos de luz: circuito C6 adicional');
+  if(tomN>1)hi.push(c.tomas>20?'Más de 20 tomas generales: circuito C7 adicional':'Superficie > 160 m²: circuito C7 adicional');
+  const c12=[];
+  for(let i=0;i<(c.coc||0);i++)c12.push('C3');
+  for(let i=0;i<(c.lav||0);i++)c12.push('C4');
+  const tbN=Math.max(1,Math.ceil(c.tb/6));
+  for(let i=1;i<tbN;i++)c12.push('C5');
+  if(c12.length)hi.push('Circuitos adicionales C12 ('+c12.join(', ')+')');
+  const elev=hi.length>0;
+  // lista ordenada
+  const push=(id,sub)=>{const b=CT[id];let o={id,n:b.n,a:b.a,s:b.s,t:b.t,toma:b.toma};
+    if(id==='C12'){const r=CT[sub];o={id,sub,n:'Adicional tipo '+sub+' · '+r.n,a:r.a,s:r.s,t:r.t,toma:r.toma}}out.push(o)};
+  ['C1','C2','C3','C4','C5'].forEach(i=>push(i));
+  if(luzN>1)push('C6');
+  if(tomN>1)push('C7');
+  if(c.calef)push('C8');
+  if(c.aire)push('C9');
+  if(c.secad)push('C10');
+  if(c.domot)push('C11');
+  c12.forEach(s=>push('C12',s));
+  const N=out.length;
+  const nID=Math.ceil(N/5);
+  const ig=elev?40:25;
+  const potMin=elev?9200:5750;
+  const cont=(!c.pot||c.pot==='auto')?potMin:Number(c.pot);
+  const icp=Math.round(cont/230);
+  const groups=[];
+  for(let i=0;i<out.length;i+=5)groups.push(out.slice(i,i+5));
+  return{elev,hi,circuits:out,N,nID,ig,potMin,cont,icp,groups,luzN,tomN};
+}
+/*ENDCORE*/
+
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const fmt=n=>n.toLocaleString('es-ES');
+const num=(id)=>Number($('#'+id).value)||0;
+
+/* ---------- pestañas ---------- */
+function showTab(id){
+  $$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===id));
+  $$('main>.panel').forEach(p=>p.classList.toggle('on',p.id==='tab-'+id));
+  window.scrollTo({top:0});
+}
+$$('#tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+function showSub(id){
+  $$('#subTabs button').forEach(b=>b.classList.toggle('on',b.dataset.sub===id));
+  $$('.subp').forEach(p=>p.classList.toggle('on',p.id==='sub-'+id));
+}
+$$('#subTabs button').forEach(b=>b.onclick=()=>showSub(b.dataset.sub));
+
+/* ---------- test rápido ---------- */
+function quick(){
+  const f={};$$('.qc').forEach(c=>f[c.dataset.k]=c.checked);
+  const hi=[];
+  if(f.grande)hi.push('supera los 160 m²');
+  if(f.calef)hi.push('tiene calefacción eléctrica');
+  if(f.aire)hi.push('tiene aire acondicionado');
+  if(f.secad)hi.push('lleva secadora independiente (C10)');
+  if(f.domot)hi.push('tiene automatización (C11)');
+  if(f.luz)hi.push('necesita más de 30 puntos de luz (C6)');
+  const box=$('#quickRes');
+  if(hi.length)box.innerHTML='<div class="fb ko"><b>Electrificación ELEVADA</b> (≥ 9.200 W, IG 40 A): la vivienda '+hi.join('; ')+'.</div>';
+  else box.innerHTML='<div class="fb ok"><b>Electrificación BÁSICA</b> (≥ 5.750 W, IG 25 A).'+(f.lav?' La lavadora y el termo usan el circuito C4, ya incluido en la básica.':'')+'</div>';
+}
+$$('.qc').forEach(c=>c.onchange=quick);quick();
+
+/* ---------- tabla de circuitos ---------- */
+(function(){
+  let h='<tr><th>Circuito</th><th>Uso</th><th>PIA (A)</th><th>Sección mín. (mm²)</th><th>Tubo (mm)</th><th>Máx. puntos</th><th>Grado</th></tr>';
+  Object.keys(CT).forEach(k=>{const c=CT[k];const b=['C1','C2','C3','C4','C5'].includes(k);
+    if(k==='C12')h+=`<tr><td><b>C12</b></td><td>${c.n}</td><td colspan="4">Igual que el circuito del tipo que duplica. C5 adicional cuando hay más de 6 tomas en baño y cocina.</td><td><span class="tag e">Elevada</span></td></tr>`;
+    else h+=`<tr><td><b>${k}</b></td><td>${c.n}</td><td>${c.a}</td><td>${c.s}</td><td>${c.t}</td><td>${c.pts}</td><td><span class="tag ${b?'b':'e'}">${b?'Básica':'Elevada'}</span></td></tr>`;});
+  $('#tblCirc').innerHTML=h;
+})();
+
+/* ---------- cuadro general (dibujo) ---------- */
+function dev(cls,l,s){return `<div class="dev ${cls}"><b>${l}</b>${s}</div>`}
+function panelHTML(r){
+  let h='<div class="cuadro">';
+  h+=`<div class="grp"><div class="gl">Compañía</div><div class="devs">${dev('icp','ICP',r.icp+' A<br>'+fmt(r.cont)+' W')}</div></div>`;
+  h+=`<div class="grp"><div class="gl">Cabecera</div><div class="devs">${dev('ig','IG',r.ig+' A')}</div></div>`;
+  r.groups.forEach((g,i)=>{
+    h+=`<div class="grp"><div class="gl">Diferencial ${i+1}</div><div class="devs">${dev('id','ID'+(i+1),r.ig+' A<br>30 mA')}`;
+    g.forEach(c=>{h+=dev('pia'+(r.elev&&!['C1','C2','C3','C4','C5'].includes(c.id)?' hi':''),c.id+(c.sub?'·'+c.sub:''),c.a+' A<br>'+c.s+' mm²')});
+    h+='</div></div>';});
+  return h+'</div>';
+}
+function labRender(){
+  const c={sup:num('L_sup'),luz:num('L_luz'),tomas:num('L_tomas'),tb:num('L_tb'),coc:num('L_coc'),lav:num('L_lav'),
+    calef:$('#L_calef').checked,aire:$('#L_aire').checked,secad:$('#L_secad').checked,domot:$('#L_domot').checked,pot:$('#L_pot').value};
+  const r=compute(c);
+  let h=`<div class="card"><div class="res">
+    <div class="kpi"><span>Grado de electrificación</span><b style="color:var(${r.elev?'--high':'--basic'})">${r.elev?'ELEVADA':'BÁSICA'}</b></div>
+    <div class="kpi"><span>Potencia mínima prevista</span><b>${fmt(r.potMin)} W</b></div>
+    <div class="kpi"><span>Nº de circuitos</span><b>${r.N}</b></div>
+    <div class="kpi"><span>Diferenciales (1 cada 5 circuitos)</span><b>${r.nID}</b></div>
+    <div class="kpi"><span>Interruptor general (IG)</span><b>${r.ig} A</b></div>
+    <div class="kpi"><span>ICP (potencia contratada)</span><b>${r.icp} A</b></div></div>`;
+  if(r.elev)h+='<div class="fb ko"><b>Motivos de la electrificación elevada:</b><ul style="margin:4px 0 0;padding-left:20px">'+r.hi.map(x=>'<li>'+x+'</li>').join('')+'</ul></div>';
+  else h+='<div class="fb ok"><b>Electrificación básica:</b> no hay calefacción, aire acondicionado, secadora, domótica ni circuitos adicionales, y la superficie no supera 160 m².</div>';
+  if(r.cont<r.potMin)h+=`<div class="note">La potencia contratada (${fmt(r.cont)} W) es inferior a la mínima prevista (${fmt(r.potMin)} W). Es posible contratar menos: la instalación se dimensiona para la potencia prevista, y el ICP limita el consumo real.</div>`;
+  h+='<h3>Cuadro general de la vivienda</h3>'+panelHTML(r);
+  h+='<h3>Circuitos de la vivienda</h3><div class="tw"><table><tr><th>Circuito</th><th>Uso</th><th>PIA</th><th>Sección</th><th>Tubo</th><th>Tipo de toma</th></tr>'+
+    r.circuits.map(x=>`<tr><td><b>${x.id}</b></td><td>${x.n}</td><td>${x.a} A</td><td>${x.s} mm²</td><td>${x.t} mm</td><td>${x.toma}</td></tr>`).join('')+'</table></div></div>';
+  $('#labOut').innerHTML=h;
+}
+$$('#sub-lab input,#sub-lab select').forEach(e=>e.addEventListener('input',labRender));
+const PRESETS={
+ p1:{sup:90,luz:20,tomas:15,tb:4,coc:0,lav:0,calef:0,aire:0,secad:0,domot:0,pot:'auto'},
+ p3:{sup:100,luz:20,tomas:25,tb:4,coc:0,lav:0,calef:0,aire:2,secad:0,domot:0,pot:'4600'},
+ p4:{sup:200,luz:35,tomas:40,tb:5,coc:0,lav:0,calef:1,aire:1,secad:1,domot:1,pot:'auto'}
+};
+function loadPreset(k){
+  const p=PRESETS[k];
+  $('#L_sup').value=p.sup;$('#L_luz').value=p.luz;$('#L_tomas').value=p.tomas;$('#L_tb').value=p.tb;
+  $('#L_coc').value=p.coc;$('#L_lav').value=p.lav;$('#L_pot').value=p.pot;
+  $('#L_calef').checked=!!p.calef;$('#L_aire').checked=!!p.aire;$('#L_secad').checked=!!p.secad;$('#L_domot').checked=!!p.domot;
+  labRender();showTab('sim');showSub('lab');
+}
+$$('[data-preset]').forEach(b=>b.onclick=()=>loadPreset(b.dataset.preset));
+labRender();
+
+/* ---------- calculadora de potencia ---------- */
+function potRow(n='',w='',u=1){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input type="text" value="${n}" placeholder="Ej.: Comedor"></td><td><input type="number" min="0" value="${w}"></td><td><input type="number" min="1" value="${u}"></td><td><button class="btn sm sec" title="Eliminar">✕</button></td>`;
+  tr.querySelector('button').onclick=()=>{tr.remove();potCalc()};
+  tr.querySelectorAll('input').forEach(i=>i.oninput=potCalc);
+  $('#potTbl tbody').appendChild(tr);
+}
+function potCalc(){
+  let p=0;$$('#potTbl tbody tr').forEach(tr=>{const i=tr.querySelectorAll('input');p+=(Number(i[1].value)||0)*(Number(i[2].value)||1)});
+  const I=p/230;
+  const g=p>9200?'Supera 9.200 W: elevada':'Compatible con básica si no hay C8–C11 ni más de 160 m²';
+  $('#potRes').innerHTML=`<div class="kpi"><span>Potencia total instalada</span><b>${fmt(p)} W</b></div><div class="kpi"><span>Corriente a 230 V (I = P/V)</span><b>${I.toFixed(2).replace('.',',')} A</b></div><div class="kpi"><span>Referencia</span><b style="font-size:.95rem">${g}</b></div>`;
+}
+$('#potAdd').onclick=()=>{potRow();};
+$('#potClr').onclick=()=>{$('#potTbl tbody').innerHTML='';potCalc()};
+$('#potEj').onclick=()=>{$('#potTbl tbody').innerHTML='';
+  [['Comedor',685],['Pasillo',200],['Cocina',4560],['Dormitorio de matrimonio',460],['Dormitorio del niño',452],['Estudio',185],['Baño',1135]].forEach(x=>potRow(x[0],x[1]));potCalc()};
+$('#potEj').click();
+
+/* ---------- calculadora de intensidad ---------- */
+Object.keys(FSFU).forEach(k=>{
+  const o=document.createElement('option');o.value=k;o.textContent=k+' · '+CT[k].n;$('#iCirc').appendChild(o);
+});
+$('#iCirc').value='C2';
+function iRow(n='',a=''){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input type="number" min="0" value="${n}"></td><td><input type="number" min="0" step="0.1" value="${a}"></td>`;
+  tr.querySelectorAll('input').forEach(i=>i.oninput=iCalc);$('#iTbl tbody').appendChild(tr);
+}
+function iCalc(){
+  const k=$('#iCirc').value,[fs,fu]=FSFU[k];let s=0;
+  $$('#iTbl tbody tr').forEach(tr=>{const i=tr.querySelectorAll('input');s+=(Number(i[0].value)||0)*(Number(i[1].value)||0)});
+  const I=s*fs*fu;
+  $('#iFs').innerHTML=`Fs = <b>${fs}</b> · Fu = <b>${fu}</b> · PIA del circuito: <b>${CT[k].a} A</b>`;
+  $('#iRes').innerHTML=`<div class="kpi"><span>Σ n·Iₐ</span><b>${s.toFixed(2).replace('.',',')} A</b></div><div class="kpi"><span>Intensidad prevista I = n·Iₐ·Fs·Fu</span><b>${I.toFixed(2).replace('.',',')} A</b></div><div class="kpi"><span>Comparación con el PIA</span><b style="font-size:.95rem;color:var(${I<=CT[k].a?'--ok':'--ko'})">${I<=CT[k].a?'Dentro del límite: sección mínima suficiente':'Supera el PIA: hay que repartir en más circuitos'}</b></div>`;
+}
+$('#iCirc').onchange=iCalc;$('#iAdd').onclick=()=>iRow();
+iRow(4,3.2);iRow(2,1.3);iRow(1,5.6);iCalc();
+
+/* ---------- calculadora de sección ---------- */
+Object.keys(CT).filter(k=>k!=='C12').forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k+' · '+CT[k].n;$('#sC').appendChild(o)});
+function sCalc(){
+  const L=num('sL'),I=num('sI'),d=num('sD'),k=$('#sC').value;
+  if(!L||!I||!d){$('#sRes').innerHTML='';return}
+  const dv=230*d/100,R=dv/I,S=0.0172*(2*L)/R;
+  const std=[1.5,2.5,4,6,10,16,25,35],min=CT[k].s;
+  const need=Math.max(S,min),com=std.find(x=>x>=need)||'>35';
+  $('#sRes').innerHTML=`<div class="kpi"><span>Caída de tensión permitida</span><b>${dv.toFixed(2).replace('.',',')} V</b></div><div class="kpi"><span>Resistencia máxima (2 conductores)</span><b>${R.toFixed(2).replace('.',',')} Ω</b></div><div class="kpi"><span>Sección calculada</span><b>${S.toFixed(3).replace('.',',')} mm²</b></div><div class="kpi"><span>Mínima REBT en ${k}</span><b>${min} mm²</b></div><div class="kpi"><span>Sección comercial a instalar</span><b style="color:var(--ok)">${com} mm²</b></div>`;
+}
+$$('#sL,#sI,#sD,#sC').forEach(e=>e.oninput=sCalc);sCalc();
+
+/* ---------- RETO ---------- */
+let reto=null,sc={p:0,t:0};
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,coin=p=>Math.random()<p;
+function genReto(){
+  const lv=Number($('#R_niv').value);let c;
+  if(lv===1){
+    const elev=coin(.5);
+    c={sup:rnd(60,120),luz:rnd(8,25),tomas:rnd(8,20),tb:rnd(2,5),coc:0,lav:0,calef:0,aire:0,secad:0,domot:0};
+    if(elev){if(coin(.5))c.aire=1;else c.calef=1}
+  }else if(lv===2){
+    c={sup:rnd(60,200),luz:rnd(10,38),tomas:rnd(10,30),tb:rnd(2,6),coc:0,lav:0,calef:+coin(.3),aire:+coin(.35),secad:+coin(.2),domot:+coin(.2)};
+  }else{
+    c={sup:rnd(70,230),luz:rnd(10,70),tomas:rnd(10,45),tb:rnd(3,13),coc:rnd(0,1),lav:rnd(0,1),calef:+coin(.4),aire:+coin(.45),secad:+coin(.35),domot:+coin(.35)};
+  }
+  const r=compute(c);
+  const s=[`superficie útil de <b>${c.sup} m²</b>`,`<b>${c.luz}</b> puntos de luz`,`<b>${c.tomas}</b> tomas de uso general`,`<b>${c.tb}</b> tomas entre baños y cuarto de cocina`,'cocina eléctrica con horno','lavadora, lavavajillas y termo eléctrico'];
+  if(c.coc)s.push('un horno/cocina adicional con circuito propio');
+  if(c.lav)s.push('una lavadora/termo adicional con circuito propio');
+  if(c.calef)s.push('calefacción eléctrica');if(c.aire)s.push('aire acondicionado');
+  if(c.secad)s.push('secadora independiente');if(c.domot)s.push('sistema de automatización y seguridad');
+  reto={c,r,story:s,done:false};
+  renderReto();
+}
+function renderReto(){
+  const chk=['C1','C2','C3','C4','C5','C6','C7','C8','C9','C10','C11','C12'].map(k=>`<label class="chk"><input type="checkbox" class="rc" value="${k}"> <span><b>${k}</b> <span class="mini">${CT[k].n.replace(/ \(tipo.*\)/,'')}</span></span></label>`).join('');
+  $('#R_card').innerHTML=`<h3 style="margin-top:0">Situación</h3><p>Una vivienda tiene: ${reto.story.join(', ')}.</p>
+  <div class="grid2">
+   <div><label for="R_g">1) Grado de electrificación</label><select id="R_g"><option value="">— elige —</option><option value="b">Básica</option><option value="e">Elevada</option></select></div>
+   <div><label for="R_p">2) Potencia mínima prevista</label><select id="R_p"><option value="">— elige —</option><option>5750</option><option>9200</option></select></div>
+   <div><label for="R_ig">3) Interruptor general (IG)</label><select id="R_ig"><option value="">— elige —</option><option>25</option><option>40</option></select></div>
+   <div><label for="R_n">4) Nº total de circuitos</label><input type="number" id="R_n" min="1" max="30"></div>
+   <div><label for="R_d">5) Nº mínimo de diferenciales</label><input type="number" id="R_d" min="1" max="10"></div>
+  </div>
+  <label style="margin-top:12px">6) Marca los circuitos que necesita (C12 = circuito adicional de cocina, lavadora o baño)</label>
+  <div class="grid3">${chk}</div>
+  <p><button class="btn" id="R_ok">✔ Comprobar</button></p><div id="R_fb"></div>`;
+  $('#R_ok').onclick=checkReto;
+}
+function checkReto(){
+  if(reto.done)return;
+  const r=reto.r,fb=[];let pts=0;
+  const add=(ok,txt,exp)=>{if(ok)pts++;fb.push(`<div class="fb ${ok?'ok':'ko'}">${ok?'✔':'✘'} ${txt}${ok?'':' <br><span class="mini">'+exp+'</span>'}</div>`)};
+  add($('#R_g').value===(r.elev?'e':'b'),'Grado de electrificación',`Correcto: <b>${r.elev?'elevada':'básica'}</b>. ${r.elev?r.hi.join('; ')+'.':'No hay motivo para la elevada.'}`);
+  add(Number($('#R_p').value)===r.potMin,'Potencia mínima prevista',`Correcto: ${fmt(r.potMin)} W (${r.elev?'elevada':'básica'}).`);
+  add(Number($('#R_ig').value)===r.ig,'Interruptor general',`Correcto: ${r.ig} A.`);
+  add(Number($('#R_n').value)===r.N,'Número total de circuitos',`Correcto: ${r.N} (${r.circuits.map(x=>x.id+(x.sub?'·'+x.sub:'')).join(', ')}).`);
+  add(Number($('#R_d').value)===r.nID,'Número de diferenciales',`Correcto: ${r.nID} (un diferencial por cada 5 circuitos o fracción: ${r.N}/5 → ${r.nID}).`);
+  const want=[...new Set(r.circuits.map(x=>x.id))].sort(),got=$$('.rc:checked').map(x=>x.value).sort();
+  add(want.join()===got.join(),'Circuitos necesarios',`Correcto: ${want.join(', ')}. ${r.luzN>1?'C6 porque hay más de 30 puntos de luz. ':''}${r.tomN>1?'C7 porque hay más de 20 tomas o más de 160 m². ':''}`);
+  reto.done=true;sc.p+=pts;sc.t+=6;
+  $('#R_score').textContent=`Puntos: ${sc.p} / ${sc.t}`;
+  $('#R_fb').innerHTML=`<h3>Resultado: ${pts} / 6</h3>`+fb.join('')+'<h3>Cuadro correcto</h3>'+panelHTML(r)+'<p><button class="btn" id="R_next">Siguiente reto →</button></p>';
+  $('#R_next').onclick=genReto;$('#R_ok').disabled=true;
+}
+$('#R_new').onclick=genReto;genReto();
+
+/* ---------- TEST ---------- */
+const QS=[
+ ['¿Cuál es la tensión nominal entre fase y neutro en una red trifásica de 4 conductores?',['110 V','230 V','400 V','380 V'],1,'230 V entre fase y neutro; 400 V entre fases.'],
+ ['¿Qué frecuencia tiene la red eléctrica?',['25 Hz','50 Hz','60 Hz','100 Hz'],1,'El REBT establece 50 Hz.'],
+ ['Potencia mínima prevista en electrificación BÁSICA:',['3.450 W','5.750 W','7.360 W','9.200 W'],1,'5.750 W a 230 V (25 A).'],
+ ['Potencia mínima prevista en electrificación ELEVADA:',['5.750 W','6.900 W','9.200 W','11.500 W'],2,'9.200 W a 230 V (40 A).'],
+ ['¿Cuál de estos casos obliga a electrificación elevada?',['Vivienda de 90 m² con lavadora','Vivienda con aire acondicionado','Vivienda con tres dormitorios','Vivienda con televisión y ordenador'],1,'El aire acondicionado (C9) obliga a la elevada.'],
+ ['Una vivienda de 180 m² sin calefacción ni aire acondicionado es de electrificación…',['Básica','Elevada','Depende de la compañía','No se puede instalar'],1,'Más de 160 m² implica electrificación elevada (y un circuito C7).'],
+ ['¿Qué circuito alimenta la cocina y el horno?',['C2','C3','C4','C5'],1,'C3, con PIA de 25 A y 6 mm².'],
+ ['Sección mínima del circuito de iluminación C1:',['1 mm²','1,5 mm²','2,5 mm²','4 mm²'],1,'1,5 mm² con PIA de 10 A.'],
+ ['La lavadora, el lavavajillas y el termo eléctrico se alimentan con el circuito…',['C2','C3','C4','C10'],2,'C4: PIA de 20 A y 4 mm².'],
+ ['Como mínimo, ¿cuántos diferenciales hay que colocar?',['Uno por cada circuito','Uno por cada 5 circuitos','Uno por cada 10 circuitos','Solo uno por vivienda'],1,'Uno por cada cinco circuitos instalados.'],
+ ['Sensibilidad máxima de un diferencial de vivienda:',['10 mA','30 mA','300 mA','1 A'],1,'30 mA: protege contra contactos indirectos.'],
+ ['¿De qué color es el conductor de protección (tierra)?',['Azul','Marrón','Verde-amarillo','Rojo'],2,'Verde-amarillo. El neutro es azul y las fases marrón, negro o gris.'],
+ ['¿Quién instala el ICP?',['El propietario','La empresa suministradora','El electricista del edificio','El fabricante del contador'],1,'Lo instala la empresa suministradora, en caja precintable.'],
+ ['Intensidad nominal mínima del interruptor general automático:',['10 A','16 A','25 A','63 A'],2,'25 A como mínimo, con poder de corte de 4.500 A.'],
+ ['¿A qué altura se coloca el cuadro general?',['Entre 0,5 y 1 m','Entre 1,4 y 2 m','Entre 2 y 2,5 m','Da igual'],1,'Entre 1,4 y 2 m y nunca en dormitorios, baños o aseos.'],
+ ['Altura habitual de las tomas de corriente de uso general:',['30 cm del suelo','1,10 m','1,70 m','2 m'],0,'30 cm del suelo.'],
+ ['Caída de tensión máxima en los circuitos interiores de la vivienda:',['1 %','3 %','5 %','10 %'],1,'Máximo 3 %.'],
+ ['¿Cuántas tomas como máximo lleva un circuito C2?',['6','10','20','30'],2,'20 tomas. A partir de ahí se añade un circuito C7.'],
+ ['El circuito C8 alimenta…',['La calefacción eléctrica','El aire acondicionado','La secadora','La iluminación adicional'],0,'C8 calefacción, C9 aire, C10 secadora, C6 iluminación adicional.'],
+ ['¿Cuántos puntos de luz admite un circuito C1?',['10','20','30','50'],2,'30. Por cada 30 puntos adicionales se añade un C6.'],
+ ['En la cocina, las tomas sobre la encimera deben estar separadas de la cocina y del fregadero al menos…',['10 cm','25 cm','50 cm','1 m'],2,'50 cm.'],
+ ['El volumen 0 de un baño es…',['El espacio de 2,4 m alrededor de la bañera','El interior de la bañera o ducha','El techo','El espacio bajo el lavabo'],1,'Volumen 0: interior de la bañera o ducha (IPX7, sin mecanismos).'],
+ ['¿Cuál es la fórmula de la intensidad prevista en un circuito?',['I = n·Iₐ·Fs·Fu','I = P·V','I = R/V','I = n + Iₐ'],0,'n = nº de receptores, Iₐ = intensidad por receptor, Fs = simultaneidad, Fu = utilización.'],
+ ['Vivienda con 7 circuitos. ¿Cuántos diferenciales necesita como mínimo?',['1','2','3','7'],1,'7/5 = 1,4 → 2 diferenciales.']
+];
+let test=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(0,i);[a[i],a[j]]=[a[j],a[i]]}return a}
+function genTest(){
+  test=shuffle(QS).slice(0,10).map(q=>({q:q[0],exp:q[3],opts:shuffle(q[1].map((t,i)=>({t,ok:i===q[2]})))}));
+  $('#T_score').textContent='';
+  $('#T_box').innerHTML=test.map((q,i)=>`<div class="q"><p>${i+1}. ${q.q}</p>${q.opts.map((o,j)=>`<label class="o"><input type="radio" name="t${i}" value="${j}"> ${o.t}</label>`).join('')}<div class="mini" id="te${i}"></div></div>`).join('');
+  $('#T_check').disabled=false;
+}
+$('#T_new').onclick=genTest;
+$('#T_check').onclick=()=>{
+  let ok=0;
+  test.forEach((q,i)=>{
+    const sel=$(`input[name=t${i}]:checked`),labs=$$(`input[name=t${i}]`).map(x=>x.parentElement);
+    q.opts.forEach((o,j)=>{if(o.ok)labs[j].classList.add('good')});
+    if(sel){const j=Number(sel.value);if(q.opts[j].ok)ok++;else labs[j].classList.add('bad')}
+    $('#te'+i).textContent=(sel&&q.opts[Number(sel.value)].ok?'✔ ':'✘ ')+q.exp;
+    $$(`input[name=t${i}]`).forEach(x=>x.disabled=true);
+  });
+  const m=ok>=9?'¡Excelente!':ok>=7?'¡Muy bien!':ok>=5?'Aprobado: repasa los fallos.':'Repasa la teoría y vuelve a intentarlo.';
+  $('#T_score').textContent=`Resultado: ${ok} / 10 · ${m}`;
+  $('#T_check').disabled=true;
+};
+genTest();
+</script>
+</body>
+</html>
