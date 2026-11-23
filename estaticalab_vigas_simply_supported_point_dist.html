@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EstáticaLab — Aplicación Autónoma de Vigas (2º Bachillerato)</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --ink: #0f172a;
+      --muted: #475569;
+      --blue: #0284c7;
+      --red: #dc2626;
+      --amber: #d97706;
+      --emerald: #059669;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-variant-numeric: tabular-nums; }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .brand { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+    .toolbar-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    button {
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink);
+      transition: background 0.15s;
+    }
+    button:hover { background: #f1f5f9; }
+    button.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+    button.primary:hover { background: #0369a1; }
+    main {
+      max-width: 1360px;
+      margin: 20px auto;
+      padding: 0 20px 40px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 980px) {
+      main { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .card h2, .card h3 { margin: 0 0 10px; font-size: 15px; }
+    .sub { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .kpi {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .kpi-label { font-size: 11px; color: var(--muted); }
+    .kpi-val { font-size: 16px; font-weight: 700; margin-top: 2px; }
+    .chart-wrap { position: relative; height: 220px; width: 100%; }
+    label.field { display: block; font-size: 12px; font-weight: 600; color: #334155; margin-bottom: 10px; }
+    input, select {
+      width: 100%;
+      margin-top: 4px;
+      padding: 7px 9px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 13px;
+      background: #f8fafc;
+    }
+    .load-item {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .step-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      font-size: 12.5px;
+    }
+    .exercise-banner {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      main { grid-template-columns: 1fr; margin: 0; padding: 0; }
+      .card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">EstáticaLab · Vigas 2º Bachillerato (HTML Autónomo)</div>
+    <div class="toolbar-actions no-print">
+      <button type="button" id="btnGenExercise">Proponer ejercicio EBAU</button>
+      <button type="button" id="btnToggleInvert">Invertir eje M(x)</button>
+      <button type="button" class="primary" onclick="window.print()">Exportar / Imprimir PDF</button>
+    </div>
+  </header>
+
+  <main>
+    <div>
+      <div id="exerciseBanner" class="exercise-banner" style="display:none;"></div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+          <h2 style="margin:0;">Esquema Estructural y Diagrama de Cuerpo Libre</h2>
+          <span id="probeReadout" class="mono" style="font-size:12px;color:#334155;"></span>
+        </div>
+        <svg id="beamSvg" viewBox="0 0 900 250" style="width:100%;height:auto;display:block;"></svg>
+        <div class="no-print" style="margin-top:10px;display:flex;align-items:center;gap:12px;">
+          <span style="font-size:12px;color:#475569;white-space:nowrap;">Sección de corte x:</span>
+          <input type="range" id="probeSlider" min="0" max="6" step="0.1" value="3" style="margin:0;" />
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Diagrama de Esfuerzo Cortante V(x)</h2>
+        <div class="chart-wrap"><canvas id="shearChart"></canvas></div>
+      </div>
+
+      <div class="card">
+        <h2>Diagrama de Momento Flector M(x)</h2>
+        <div class="chart-wrap"><canvas id="momentChart"></canvas></div>
+      </div>
+
+      <div class="card">
+        <h2>Solución Analítica Paso a Paso</h2>
+        <div id="stepsContainer"></div>
+      </div>
+    </div>
+
+    <aside class="no-print">
+      <div class="card">
+        <h3>Resultados Principales</h3>
+        <div class="kpis" id="kpiGrid"></div>
+      </div>
+
+      <div class="card">
+        <h3>Configuración de la Viga</h3>
+        <label class="field">
+          Tipo de viga
+          <select id="archetypeSelect">
+            <option value="simply_supported_point_dist">Biapoyada: puntual + repartida</option>
+            <option value="simply_supported_multi_point">Biapoyada: varias puntuales</option>
+            <option value="overhang_beam">Viga con voladizo</option>
+            <option value="cantilever_beam">Ménsula empotrada</option>
+            <option value="simply_supported_moment">Biapoyada con momento puntual</option>
+          </select>
+        </label>
+        <div class="row-2">
+          <label class="field">Longitud L (m)
+            <input type="number" id="inputL" min="1" max="20" step="0.5" />
+          </label>
+          <label class="field">Unidades
+            <select id="inputUnit">
+              <option value="kN">kN, m</option>
+              <option value="N">N, m</option>
+            </select>
+          </label>
+        </div>
+        <label class="field" id="xbField">Posición apoyo B (m)
+          <input type="number" id="inputXB" min="1" max="20" step="0.5" />
+        </label>
+
+        <div style="margin-top:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <strong style="font-size:12px;">Cargas puntuales</strong>
+            <button type="button" id="btnAddPoint" style="padding:4px 8px;font-size:11px;">+ Añadir</button>
+          </div>
+          <div id="pointLoadsList"></div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <strong style="font-size:12px;">Cargas repartidas</strong>
+            <button type="button" id="btnAddDist" style="padding:4px 8px;font-size:11px;">+ Añadir</button>
+          </div>
+          <div id="distLoadsList"></div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <strong style="font-size:12px;">Momentos puntuales</strong>
+            <button type="button" id="btnAddMoment" style="padding:4px 8px;font-size:11px;">+ Añadir</button>
+          </div>
+          <div id="momentsList"></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    (function() {
+      const EPS = 1e-7;
+      let state = {"archetype":"simply_supported_point_dist","length":6,"supportType":"simply_supported","xA":0,"xB":6,"forceUnit":"kN","pointLoads":[{"id":"F1","label":"F₁","magnitude":12,"x":4}],"distributedLoads":[{"id":"q1","label":"q","q":4,"a":0,"b":3}],"pointMoments":[],"sectionModulusCm3":220};
+      let probeX = state.length / 2;
+      let invertMoment = false;
+      let shearChart = null;
+      let momentChart = null;
+
+      const fmt = (n, d = 2) => (Math.abs(n) < 1e-6 ? 0 : n).toFixed(d);
+
+      function solve(cfg) {
+        const L = Math.max(0.5, cfg.length);
+        const xA = cfg.supportType === 'cantilever' ? 0 : Math.max(0, Math.min(L - 0.5, cfg.xA || 0));
+        const xB = cfg.supportType === 'cantilever' ? L : Math.max(xA + 0.5, Math.min(L, cfg.xB || L));
+        const pts = (cfg.pointLoads || []).filter(p => Math.abs(p.magnitude) > EPS).map(p => ({...p, x: Math.max(0, Math.min(L, p.x))}));
+        const dists = (cfg.distributedLoads || []).map(d => ({...d, a: Math.max(0, Math.min(L, d.a)), b: Math.max(0, Math.min(L, d.b))})).filter(d => d.b - d.a > EPS && Math.abs(d.q) > EPS);
+        const moms = (cfg.pointMoments || []).filter(m => Math.abs(m.magnitude) > EPS).map(m => ({...m, x: Math.max(0, Math.min(L, m.x))}));
+
+        const eqs = dists.map((d, i) => ({
+          label: d.label || ('q' + (i + 1)),
+          q: d.q, a: d.a, b: d.b,
+          F: d.q * (d.b - d.a),
+          xc: (d.a + d.b) / 2
+        }));
+
+        const totalF = pts.reduce((s, p) => s + p.magnitude, 0) + eqs.reduce((s, e) => s + e.F, 0);
+        let rA = 0, rB = 0, mA = 0;
+
+        if (cfg.supportType === 'cantilever') {
+          rA = totalF;
+          mA = pts.reduce((s, p) => s + p.magnitude * p.x, 0) + eqs.reduce((s, e) => s + e.F * e.xc, 0) + moms.reduce((s, m) => s + m.magnitude, 0);
+        } else {
+          const sumM = pts.reduce((s, p) => s + p.magnitude * (p.x - xA), 0) + eqs.reduce((s, e) => s + e.F * (e.xc - xA), 0) + moms.reduce((s, m) => s + m.magnitude, 0);
+          rB = sumM / (xB - xA);
+          rA = totalF - rB;
+        }
+
+        const breaks = Array.from(new Set([0, L, xA, xB, ...pts.map(p => p.x), ...dists.flatMap(d => [d.a, d.b]), ...moms.map(m => m.x)]))
+          .sort((a, b) => a - b)
+          .filter((v, i, a) => i === 0 || v - a[i - 1] > 1e-4);
+
+        const tramos = [];
+        for (let i = 0; i < breaks.length - 1; i++) {
+          const xs = breaks[i], xe = breaks[i + 1], xm = (xs + xe) / 2;
+          let v1 = 0, v0 = 0, m2 = 0, m1 = 0, m0 = 0;
+          if (cfg.supportType === 'cantilever') {
+            v0 += rA; m1 += rA; m0 -= mA;
+          } else {
+            if (xA < xm) { v0 += rA; m1 += rA; m0 -= rA * xA; }
+            if (xB < xm) { v0 += rB; m1 += rB; m0 -= rB * xB; }
+          }
+          pts.forEach(p => { if (p.x < xm) { v0 -= p.magnitude; m1 -= p.magnitude; m0 += p.magnitude * p.x; } });
+          dists.forEach(d => {
+            if (d.a < xm && d.b >= xe - EPS) {
+              v1 -= d.q; v0 += d.q * d.a;
+              m2 -= 0.5 * d.q; m1 += d.q * d.a; m0 -= 0.5 * d.q * d.a * d.a;
+            } else if (d.b <= xs + EPS) {
+              const P = d.q * (d.b - d.a), xc = (d.a + d.b) / 2;
+              v0 -= P; m1 -= P; m0 += P * xc;
+            }
+          });
+          moms.forEach(m => { if (m.x < xm) { m0 += m.magnitude; } });
+          let zeroX = null, mZero = null;
+          if (Math.abs(v1) > EPS) {
+            const r = -v0 / v1;
+            if (r > xs + 1e-4 && r < xe - 1e-4) {
+              zeroX = r;
+              mZero = m2 * r * r + m1 * r + m0;
+            }
+          }
+          tramos.push({ index: i + 1, xs, xe, v1, v0, m2, m1, m0, zeroX, mZero });
+        }
+
+        const samples = [];
+        tramos.forEach(t => {
+          for (let s = 0; s <= 28; s++) {
+            const x = t.xs + (t.xe - t.xs) * (s / 28);
+            samples.push({ x, V: t.v1 * x + t.v0, M: t.m2 * x * x + t.m1 * x + t.m0 });
+          }
+        });
+
+        let maxV = { val: 0, x: 0 }, maxM = { val: 0, signed: 0, x: 0 };
+        samples.forEach(pt => {
+          if (Math.abs(pt.V) > maxV.val) maxV = { val: Math.abs(pt.V), x: pt.x };
+          if (Math.abs(pt.M) > maxM.val) maxM = { val: Math.abs(pt.M), signed: pt.M, x: pt.x };
+        });
+        tramos.forEach(t => {
+          if (t.zeroX !== null && Math.abs(t.mZero) > maxM.val) maxM = { val: Math.abs(t.mZero), signed: t.mZero, x: t.zeroX };
+        });
+
+        return { L, xA, xB, pts, dists, moms, eqs, rA, rB, mA, tramos, samples, maxV, maxM };
+      }
+
+      function renderSvg(sol) {
+        const svg = document.getElementById('beamSvg');
+        const W = 900, H = 250, pL = 70, pR = 60, uW = W - pL - pR, bY = 140;
+        const toX = m => pL + (m / sol.L) * uW;
+        const uF = state.forceUnit;
+        let out = '<defs><marker id="arR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 1 L10 5 L0 9 z" fill="#dc2626"/></marker><marker id="arB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 1 L10 5 L0 9 z" fill="#0284c7"/></marker></defs>';
+        out += '<rect x="0" y="0" width="900" height="250" fill="#ffffff"/>';
+
+        sol.dists.forEach(d => {
+          const x1 = toX(d.a), x2 = toX(d.b);
+          out += `<rect x="${x1}" y="${bY - 46}" width="${x2 - x1}" height="38" fill="rgba(220,38,38,0.1)" stroke="#dc2626"/>`;
+          out += `<text x="${(x1+x2)/2}" y="${bY - 52}" text-anchor="middle" font-size="11" font-weight="700" fill="#b91c1c">q=${fmt(d.q,1)} ${uF}/m</text>`;
+        });
+
+        sol.pts.forEach(p => {
+          const px = toX(p.x);
+          out += `<line x1="${px}" y1="${bY - 80}" x2="${px}" y2="${bY - 12}" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arR)"/>`;
+          out += `<text x="${px}" y="${bY - 86}" text-anchor="middle" font-size="11" font-weight="700" fill="#b91c1c">${p.label}=${fmt(p.magnitude,1)} ${uF}</text>`;
+        });
+
+        sol.moms.forEach(m => {
+          const mx = toX(m.x);
+          out += `<circle cx="${mx}" cy="${bY}" r="5" fill="#d97706"/>`;
+          out += `<text x="${mx}" y="${bY - 26}" text-anchor="middle" font-size="11" font-weight="700" fill="#b45309">${m.label}=${fmt(m.magnitude,1)} ${uF}·m</text>`;
+        });
+
+        out += `<rect x="${toX(0)}" y="${bY - 7}" width="${uW}" height="14" rx="2" fill="#1e293b"/>`;
+
+        if (state.supportType === 'cantilever') {
+          out += `<rect x="${toX(0) - 16}" y="${bY - 36}" width="16" height="72" fill="#94a3b8" stroke="#0f172a" stroke-width="1.5"/>`;
+          out += `<text x="${toX(0) + 12}" y="${bY + 46}" font-size="12" font-weight="700" fill="#0369a1">R_A=${fmt(sol.rA)} ${uF} | M_A=${fmt(sol.mA)} ${uF}·m</text>`;
+        } else {
+          const ax = toX(sol.xA), bx = toX(sol.xB);
+          out += `<polygon points="${ax},${bY+7} ${ax-12},${bY+26} ${ax+12},${bY+26}" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.5"/>`;
+          out += `<polygon points="${bx},${bY+7} ${bx-12},${bY+26} ${bx+12},${bY+26}" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.5"/>`;
+          out += `<line x1="${ax}" y1="${bY+72}" x2="${ax}" y2="${bY+30}" stroke="#0284c7" stroke-width="2.5" marker-end="url(#arB)"/>`;
+          out += `<text x="${ax}" y="${bY+88}" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0369a1">R_A=${fmt(sol.rA)} ${uF}</text>`;
+          out += `<line x1="${bx}" y1="${bY+72}" x2="${bx}" y2="${bY+30}" stroke="#0284c7" stroke-width="2.5" marker-end="url(#arB)"/>`;
+          out += `<text x="${bx}" y="${bY+88}" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0369a1">R_B=${fmt(sol.rB)} ${uF}</text>`;
+        }
+
+        const prX = toX(probeX);
+        out += `<line x1="${prX}" y1="14" x2="${prX}" y2="218" stroke="#0f172a" stroke-dasharray="4 4" stroke-width="1.5"/>`;
+        out += `<line x1="${toX(0)}" y1="230" x2="${toX(sol.L)}" y2="230" stroke="#64748b"/>`;
+        out += `<text x="${toX(0)}" y="244" text-anchor="middle" font-size="11" fill="#475569">0 m</text>`;
+        out += `<text x="${toX(sol.L)}" y="244" text-anchor="middle" font-size="11" fill="#475569">${fmt(sol.L,1)} m</text>`;
+        svg.innerHTML = out;
+      }
+
+      function renderCharts(sol) {
+        const uF = state.forceUnit, uM = uF + '·m';
+        if (shearChart) shearChart.destroy();
+        if (momentChart) momentChart.destroy();
+
+        shearChart = new Chart(document.getElementById('shearChart'), {
+          type: 'line',
+          data: { datasets: [{ label: 'V(x) ' + uF, data: sol.samples.map(s => ({x: s.x, y: s.V})), borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.14)', borderWidth: 2.4, fill: 'origin', pointRadius: 0 }] },
+          options: { responsive: true, maintainAspectRatio: false, animation: false, scales: { x: { type: 'linear', min: 0, max: sol.L }, y: { title: { display: true, text: 'V (' + uF + ')' } } }, plugins: { legend: { display: false } } }
+        });
+
+        momentChart = new Chart(document.getElementById('momentChart'), {
+          type: 'line',
+          data: { datasets: [{ label: 'M(x) ' + uM, data: sol.samples.map(s => ({x: s.x, y: s.M})), borderColor: '#0284c7', backgroundColor: 'rgba(2,132,199,0.14)', borderWidth: 2.4, fill: 'origin', pointRadius: 0 }] },
+          options: { responsive: true, maintainAspectRatio: false, animation: false, scales: { x: { type: 'linear', min: 0, max: sol.L }, y: { reverse: invertMoment, title: { display: true, text: 'M (' + uM + ')' } } }, plugins: { legend: { display: false } } }
+        });
+      }
+
+      function renderAll() {
+        const sol = solve(state);
+        const uF = state.forceUnit, uM = uF + '·m';
+        const slider = document.getElementById('probeSlider');
+        slider.max = sol.L;
+        if (probeX > sol.L) probeX = sol.L;
+        slider.value = probeX;
+
+        // Evaluate at probeX
+        let activeTramo = sol.tramos[0];
+        for (const t of sol.tramos) { if (probeX >= t.xs - 1e-6 && probeX <= t.xe + 1e-6) { activeTramo = t; break; } }
+        const vVal = activeTramo ? activeTramo.v1 * probeX + activeTramo.v0 : 0;
+        const mVal = activeTramo ? activeTramo.m2 * probeX * probeX + activeTramo.m1 * probeX + activeTramo.m0 : 0;
+        document.getElementById('probeReadout').textContent = `x=${fmt(probeX)}m · V=${fmt(vVal)} ${uF} · M=${fmt(mVal)} ${uM}`;
+
+        renderSvg(sol);
+        renderCharts(sol);
+
+        document.getElementById('kpiGrid').innerHTML = `
+          <div class="kpi"><div class="kpi-label">Reacción R_A</div><div class="kpi-val mono" style="color:#0369a1;">${fmt(sol.rA)} ${uF}</div></div>
+          <div class="kpi"><div class="kpi-label">${state.supportType === 'cantilever' ? 'Momento M_A' : 'Reacción R_B'}</div><div class="kpi-val mono" style="color:#0369a1;">${state.supportType === 'cantilever' ? fmt(sol.mA) + ' ' + uM : fmt(sol.rB) + ' ' + uF}</div></div>
+          <div class="kpi"><div class="kpi-label">|V| máximo</div><div class="kpi-val mono" style="color:#b91c1c;">${fmt(sol.maxV.val)} ${uF}</div></div>
+          <div class="kpi"><div class="kpi-label">|M| máximo</div><div class="kpi-val mono">${fmt(sol.maxM.val)} ${uM}</div></div>
+        `;
+
+        let stepsHtml = '';
+        if (sol.eqs.length) {
+          stepsHtml += '<div class="step-box"><strong>01. Cargas equivalentes:</strong><br>' + sol.eqs.map((e, i) => `<span class="mono">P_q${i+1} = ${fmt(e.q)}·(${fmt(e.b)}-${fmt(e.a)}) = ${fmt(e.F)} ${uF} en x_c = ${fmt(e.xc)} m</span>`).join('<br>') + '</div>';
+        }
+        stepsHtml += `<div class="step-box"><strong>02. Reacciones en apoyos:</strong><br><span class="mono">R_A = ${fmt(sol.rA)} ${uF} · ${state.supportType === 'cantilever' ? 'M_A = ' + fmt(sol.mA) + ' ' + uM : 'R_B = ' + fmt(sol.rB) + ' ' + uF}</span></div>`;
+        stepsHtml += '<div class="step-box"><strong>03. Ecuaciones por tramos:</strong><br>' + sol.tramos.map(t => {
+          let line = `<div style="margin-top:6px;"><em>Tramo ${t.index} [${fmt(t.xs)}, ${fmt(t.xe)}] m:</em> <span class="mono">V(x) = ${fmt(t.v0)} ${t.v1 >= 0 ? '+' : '-'} ${fmt(Math.abs(t.v1))}x | M(x) = ${fmt(t.m0)} ${t.m1 >= 0 ? '+' : '-'} ${fmt(Math.abs(t.m1))}x ${t.m2 >= 0 ? '+' : '-'} ${fmt(Math.abs(t.m2))}x²</span></div>`;
+          if (t.zeroX !== null) line += `<div class="mono" style="color:#b45309;">→ Corte nulo V=0 en x*=${fmt(t.zeroX)} m ⇒ M(x*)=${fmt(t.mZero)} ${uM}</div>`;
+          return line;
+        }).join('') + '</div>';
+        document.getElementById('stepsContainer').innerHTML = stepsHtml;
+        renderInputs();
+      }
+
+      function renderInputs() {
+        document.getElementById('archetypeSelect').value = state.archetype;
+        document.getElementById('inputL').value = state.length;
+        document.getElementById('inputUnit').value = state.forceUnit;
+        document.getElementById('xbField').style.display = state.supportType === 'cantilever' ? 'none' : 'block';
+        document.getElementById('inputXB').value = state.xB;
+
+        const pList = document.getElementById('pointLoadsList');
+        pList.innerHTML = state.pointLoads.map((p, idx) => `
+          <div class="load-item">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <strong>${p.label}</strong>
+              <button type="button" onclick="window._rmPoint(${idx})" style="padding:2px 6px;font-size:11px;">Quitar</button>
+            </div>
+            <div class="row-2">
+              <label>F (${state.forceUnit})<input type="number" value="${p.magnitude}" onchange="window._updPoint(${idx}, 'magnitude', +this.value)"/></label>
+              <label>x (m)<input type="number" step="0.25" min="0" max="${state.length}" value="${p.x}" onchange="window._updPoint(${idx}, 'x', +this.value)"/></label>
+            </div>
+          </div>
+        `).join('');
+
+        const dList = document.getElementById('distLoadsList');
+        dList.innerHTML = state.distributedLoads.map((d, idx) => `
+          <div class="load-item">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <strong>${d.label}</strong>
+              <button type="button" onclick="window._rmDist(${idx})" style="padding:2px 6px;font-size:11px;">Quitar</button>
+            </div>
+            <div class="row-2">
+              <label>q (${state.forceUnit}/m)<input type="number" step="0.5" value="${d.q}" onchange="window._updDist(${idx}, 'q', +this.value)"/></label>
+              <label>Inicio a (m)<input type="number" step="0.5" value="${d.a}" onchange="window._updDist(${idx}, 'a', +this.value)"/></label>
+            </div>
+            <label style="display:block;margin-top:4px;">Fin b (m)<input type="number" step="0.5" value="${d.b}" onchange="window._updDist(${idx}, 'b', +this.value)"/></label>
+          </div>
+        `).join('');
+
+        const mList = document.getElementById('momentsList');
+        mList.innerHTML = state.pointMoments.map((m, idx) => `
+          <div class="load-item">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <strong>${m.label}</strong>
+              <button type="button" onclick="window._rmMom(${idx})" style="padding:2px 6px;font-size:11px;">Quitar</button>
+            </div>
+            <div class="row-2">
+              <label>M₀ (${state.forceUnit}·m)<input type="number" step="2" value="${m.magnitude}" onchange="window._updMom(${idx}, 'magnitude', +this.value)"/></label>
+              <label>x (m)<input type="number" step="0.25" value="${m.x}" onchange="window._updMom(${idx}, 'x', +this.value)"/></label>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      window._updPoint = (i, k, v) => { state.pointLoads[i][k] = v; renderAll(); };
+      window._rmPoint = i => { state.pointLoads.splice(i, 1); renderAll(); };
+      window._updDist = (i, k, v) => { state.distributedLoads[i][k] = v; renderAll(); };
+      window._rmDist = i => { state.distributedLoads.splice(i, 1); renderAll(); };
+      window._updMom = (i, k, v) => { state.pointMoments[i][k] = v; renderAll(); };
+      window._rmMom = i => { state.pointMoments.splice(i, 1); renderAll(); };
+
+      document.getElementById('probeSlider').addEventListener('input', e => { probeX = +e.target.value; renderAll(); });
+      document.getElementById('inputL').addEventListener('change', e => { state.length = Math.max(1, +e.target.value); if (state.xB > state.length) state.xB = state.length; renderAll(); });
+      document.getElementById('inputUnit').addEventListener('change', e => { state.forceUnit = e.target.value; renderAll(); });
+      document.getElementById('inputXB').addEventListener('change', e => { state.xB = Math.max(1, Math.min(state.length, +e.target.value)); renderAll(); });
+      document.getElementById('btnToggleInvert').addEventListener('click', () => { invertMoment = !invertMoment; renderAll(); });
+      document.getElementById('btnAddPoint').addEventListener('click', () => { state.pointLoads.push({ id: 'F' + Date.now(), label: 'F' + (state.pointLoads.length + 1), magnitude: 10, x: state.length / 2 }); renderAll(); });
+      document.getElementById('btnAddDist').addEventListener('click', () => { state.distributedLoads.push({ id: 'q' + Date.now(), label: 'q', q: 4, a: 0, b: state.length / 2 }); renderAll(); });
+      document.getElementById('btnAddMoment').addEventListener('click', () => { state.pointMoments.push({ id: 'M' + Date.now(), label: 'M₀', magnitude: 15, x: state.length / 2 }); renderAll(); });
+
+      document.getElementById('archetypeSelect').addEventListener('change', e => {
+        const arch = e.target.value;
+        state.archetype = arch;
+        if (arch === 'cantilever_beam') {
+          state.supportType = 'cantilever'; state.length = 4; state.xA = 0; state.xB = 4;
+          state.pointLoads = [{ id: 'F1', label: 'F₁', magnitude: 10, x: 4 }];
+          state.distributedLoads = [{ id: 'q1', label: 'q', q: 5, a: 0, b: 2.5 }];
+          state.pointMoments = [];
+        } else if (arch === 'overhang_beam') {
+          state.supportType = 'simply_supported'; state.length = 7; state.xA = 0; state.xB = 5;
+          state.pointLoads = [{ id: 'F1', label: 'F₁', magnitude: 15, x: 2.5 }, { id: 'F2', label: 'F₂', magnitude: 8, x: 7 }];
+          state.distributedLoads = [{ id: 'q1', label: 'q', q: 3, a: 5, b: 7 }];
+          state.pointMoments = [];
+        } else if (arch === 'simply_supported_multi_point') {
+          state.supportType = 'simply_supported'; state.length = 8; state.xA = 0; state.xB = 8;
+          state.pointLoads = [{ id: 'F1', label: 'F₁', magnitude: 10, x: 2 }, { id: 'F2', label: 'F₂', magnitude: 16, x: 5 }];
+          state.distributedLoads = []; state.pointMoments = [];
+        } else if (arch === 'simply_supported_moment') {
+          state.supportType = 'simply_supported'; state.length = 6; state.xA = 0; state.xB = 6;
+          state.pointLoads = [{ id: 'F1', label: 'F₁', magnitude: 10, x: 4.5 }];
+          state.distributedLoads = [{ id: 'q1', label: 'q', q: 2, a: 0, b: 6 }];
+          state.pointMoments = [{ id: 'M0', label: 'M₀', magnitude: 18, x: 2 }];
+        } else {
+          state.supportType = 'simply_supported'; state.length = 6; state.xA = 0; state.xB = 6;
+          state.pointLoads = [{ id: 'F1', label: 'F₁', magnitude: 12, x: 4 }];
+          state.distributedLoads = [{ id: 'q1', label: 'q', q: 4, a: 0, b: 3 }];
+          state.pointMoments = [];
+        }
+        probeX = state.length / 2;
+        renderAll();
+      });
+
+      document.getElementById('btnGenExercise').addEventListener('click', () => {
+        const L = [5, 6, 7, 8][Math.floor(Math.random() * 4)];
+        const q = [2, 3, 4, 5][Math.floor(Math.random() * 4)];
+        const b = Math.min(L - 1, 2 + Math.floor(Math.random() * 3));
+        const F = [8, 10, 12, 15, 18][Math.floor(Math.random() * 5)];
+        const xF = Math.max(1, Math.min(L - 1, Math.round(L * 0.65)));
+        state = {
+          archetype: 'simply_supported_point_dist',
+          length: L, supportType: 'simply_supported', xA: 0, xB: L, forceUnit: 'kN',
+          pointLoads: [{ id: 'F1', label: 'F₁', magnitude: F, x: xF }],
+          distributedLoads: [{ id: 'q1', label: 'q', q, a: 0, b }],
+          pointMoments: []
+        };
+        const banner = document.getElementById('exerciseBanner');
+        banner.style.display = 'block';
+        banner.innerHTML = `<strong>Ejercicio propuesto:</strong> Viga biapoyada de L = ${L} m con carga repartida q = ${q} kN/m en [0, ${b}] m y carga puntual F₁ = ${F} kN en x = ${xF} m.`;
+        probeX = L / 2;
+        renderAll();
+      });
+
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
