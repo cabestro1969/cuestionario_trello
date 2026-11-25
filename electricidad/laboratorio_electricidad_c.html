@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laboratorio virtual de electricidad · IES Comuneros de Castilla</title>
+<style>
+:root{--bg:#eef2f7;--card:#fff;--ink:#142133;--muted:#58687c;--brand:#0b5cad;--brand2:#0a3f78;--accent:#f2a900;--ok:#16794c;--bad:#c0392b;--line:#d6dee8;--r:14px}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+header.top{background:linear-gradient(135deg,#0a2f5c,#0b5cad);color:#fff;padding:14px 22px;display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .logo{width:42px;height:42px;border-radius:12px;background:var(--accent);display:grid;place-items:center}
+.brand h1{margin:0;font-size:18px;line-height:1.2}
+.brand small{opacity:.85;font-size:12.5px}
+nav.tabs{display:flex;flex-wrap:wrap;gap:8px}
+nav.tabs button{border:0;border-radius:999px;padding:8px 16px;font:600 14px inherit;font-family:inherit;color:#e5f0fc;background:rgba(255,255,255,.14);cursor:pointer}
+nav.tabs button.on{background:#fff;color:var(--brand2)}
+nav.tabs button:hover{background:rgba(255,255,255,.28)}nav.tabs button.on:hover{background:#fff}
+main{max-width:1500px;margin:0 auto;padding:18px}
+.view{display:none}.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(20,33,51,.05)}
+.card h2,.card h3{margin:0 0 8px}
+h2{font-size:19px;color:var(--brand2)}h3{font-size:16px}
+h4{margin:14px 0 6px;font-size:14px;color:var(--brand2);text-transform:uppercase;letter-spacing:.04em}
+.pgrid{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:1100px){.pgrid{grid-template-columns:minmax(0,1.55fr) minmax(340px,1fr)}}
+.muted{color:var(--muted)}.small{font-size:13px}
+table.comp{width:100%;border-collapse:collapse;font-size:13.5px}
+table.comp th,table.comp td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+table.comp th{background:#f1f6fb}
+ol.steps{margin:6px 0 0;padding-left:20px}ol.steps li{margin:4px 0}
+button,.btn{font:600 13.5px inherit;font-family:inherit;border:1px solid var(--line);background:#fff;color:var(--ink);padding:7px 12px;border-radius:9px;cursor:pointer}
+button:hover{border-color:var(--brand);color:var(--brand)}
+button.primary{background:var(--brand);color:#fff;border-color:var(--brand)}button.primary:hover{background:var(--brand2);color:#fff}
+button.big{font-size:16px;padding:12px 20px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.bench-h{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.badge{font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;background:#e8eef6;color:var(--muted)}
+.badge.on{background:#dff3e8;color:var(--ok)}.badge.bad{background:#fbe1dd;color:var(--bad)}
+.palette{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.pal{display:flex;flex-direction:column;align-items:center;gap:0;padding:4px 8px 6px;min-width:96px;position:relative}
+.pal svg{width:70px;height:36px;stroke-linecap:round}
+.pal span{font-size:12px;font-weight:600}.pal em{font-weight:400;color:var(--muted)}
+.pal .cnt{position:absolute;top:2px;right:5px;font-size:11px;color:var(--brand)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.svgwrap{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+svg.board{width:100%;height:auto;display:block;touch-action:none;user-select:none;-webkit-user-select:none}
+.wire{fill:none;stroke:#1d2b3a;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.wire.sel{stroke:#e08a00;stroke-width:4.5}
+.wirehit{fill:none;stroke:transparent;stroke-width:16;cursor:pointer}
+.hit{fill:transparent;cursor:grab}
+.selbox{fill:rgba(11,92,173,.07);stroke:#0b5cad;stroke-dasharray:5 4;stroke-width:1.5;pointer-events:none}
+.termhit{fill:transparent;cursor:crosshair}
+.termdot{fill:#fff;stroke:#e08a00;stroke-width:2.5;pointer-events:none}
+.termdot.con{fill:#1d2b3a;stroke:#1d2b3a}.termdot.act{fill:#e08a00}
+.lbl{font:600 13px system-ui,sans-serif;fill:#142133;pointer-events:none}
+.ra{fill:#0b5cad;font-weight:800;font-size:16px}.rv{fill:#b3541e;font-weight:800;font-size:16px}
+.prev{stroke:#e08a00;stroke-dasharray:6 5;fill:none;stroke-width:3;pointer-events:none}
+.props{min-height:46px;margin-top:8px;padding:8px 10px;border:1px dashed var(--line);border-radius:10px;font-size:14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.props input[type=number]{width:96px;padding:5px 7px;border:1px solid var(--line);border-radius:8px;font:inherit}
+.verify{margin-top:8px;font-size:14px;border-radius:10px;padding:0}
+.verify.ok,.verify.bad{padding:9px 12px}
+.verify.ok{background:#e3f5ec;color:#0f5a38}.verify.bad{background:#fdecea;color:#8c2a1f}
+.verify ul{margin:4px 0 0;padding-left:18px}
+details.schem{margin-top:10px}details.schem summary{cursor:pointer;font-weight:600;color:var(--brand)}
+.tabs2{display:flex;gap:8px;margin-bottom:10px}
+.tabs2 button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.arow{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;padding:6px 0;border-bottom:1px solid #edf1f6}
+.arow label{font-size:14px}
+.ain{display:flex;align-items:center;gap:6px}
+.ain input{width:100px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font:inherit;text-align:right}
+.ain .u{width:22px;color:var(--muted)}
+.mark{font-size:12.5px;font-weight:700;min-width:62px}
+.mark.ok{color:var(--ok)}.mark.bad{color:var(--bad)}.mark.empty{color:#9aa7b6}.mark.text{color:var(--brand)}
+textarea,input.txt,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:9px;font:inherit;background:#fff}
+select.inl{width:auto;display:inline-block;padding:4px 8px;margin:0 3px}
+.q{margin:8px 0}.q label{display:block;font-weight:600;font-size:14px;margin-bottom:4px}
+.fb-box{min-height:44px;border:2px dashed #b9c7d8;border-radius:10px;padding:6px 8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:18px;background:#fbfdff}
+.fb-pal{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chip{border-radius:8px;padding:5px 11px;font-size:16px;background:#eaf2fb;border:1px solid #b9d1ec}
+.chip.ghost{background:#fff;font-size:13px}
+.tok{background:#0b5cad;color:#fff;border-radius:7px;padding:1px 9px;font-weight:600}
+.tok.op{background:#f2a900;color:#142133}
+.fb-t{font-weight:600;font-size:14px}
+.sumline{margin-top:10px;font-weight:600}
+.grid2{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.field label{display:block;font-weight:600;font-size:14px;margin-bottom:4px}
+.pend li{margin:2px 0}
+.ok-t{color:var(--ok);font-weight:700}.bad-t{color:var(--bad);font-weight:700}
+table.res{width:100%;border-collapse:collapse;font-size:14px}
+table.res td,table.res th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+footer{text-align:center;color:var(--muted);font-size:12.5px;padding:10px 0 26px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="logo"><svg width="26" height="26" viewBox="0 0 24 24" fill="#142133"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></div>
+    <div><h1>Laboratorio virtual de electricidad</h1><small>IES Comuneros de Castilla · Departamento de Tecnología · 3º ESO</small></div>
+  </div>
+  <nav class="tabs" id="nav">
+    <button data-go="datos">1 · Datos</button>
+    <button data-go="p1">2 · Práctica 1</button>
+    <button data-go="p2">3 · Práctica 2</button>
+    <button data-go="fin">4 · Entrega (PDF)</button>
+  </nav>
+</header>
+<main>
+  <section class="view" id="v-datos"></section>
+  <section class="view" id="v-p1"></section>
+  <section class="view" id="v-p2"></section>
+  <section class="view" id="v-fin"></section>
+</main>
+<footer>IES Comuneros de Castilla · Departamento de Tecnología · Los datos se guardan solo en este navegador.</footer>
+
+<script>
+'use strict';
+/*PURE-START*/
+const INK='#1d2b3a',VBW=840,VBH=460,SNAP=20;
+const TYPES={
+  pila:{name:'Pila',unit:'V',def:9,edit:true},
+  resistencia:{name:'Resistencia fija',unit:'Ω',def:100,edit:true},
+  interruptor:{name:'Interruptor'},
+  pulsadorNA:{name:'Pulsador N.A.'},
+  pulsadorNC:{name:'Pulsador N.C.'},
+  amperimetro:{name:'Amperímetro'},
+  voltimetro:{name:'Voltímetro'},
+  lampara:{name:'Bombilla',unit:'Ω',def:10,edit:true}
+};
+const BOARDS={
+  p1:{title:'Práctica 1 · Circuito elemental',limits:{pila:1,resistencia:1,interruptor:1,pulsadorNA:1,pulsadorNC:1,amperimetro:1,voltimetro:1,lampara:2},expect:{pila:5,R:[50]}},
+  p2:{title:'Práctica 2 · Circuito serie',limits:{pila:1,resistencia:2,interruptor:1,amperimetro:1,voltimetro:1,lampara:2},expect:{pila:6,R:[12,8]}},
+  p2eq:{title:'Práctica 2 · Circuito equivalente',limits:{pila:1,resistencia:1,interruptor:1,amperimetro:1,voltimetro:1,lampara:2},expect:{pila:6,R:[20]}}
+};
+const NUM={
+  p1:[
+    {id:'p1_open',t:'Intensidad con el interruptor abierto',u:'A',exp:0},
+    {id:'p1_closed',t:'Intensidad con el interruptor cerrado',u:'A',exp:0.1}],
+  p2:[
+    {id:'req',t:'Resistencia equivalente (calculada en tu cuaderno)',u:'Ω',exp:20},
+    {id:'ipila',t:'Intensidad que sale de la pila (Ipila)',u:'A',exp:0.3},
+    {id:'i1in',t:'Intensidad que entra a la primera resistencia (I1)',u:'A',exp:0.3},
+    {id:'i1out',t:'Intensidad que sale de la primera resistencia (I1)',u:'A',exp:0.3},
+    {id:'i2in',t:'Intensidad que entra a la segunda resistencia (I2)',u:'A',exp:0.3},
+    {id:'i2out',t:'Intensidad que sale de la segunda resistencia (I2)',u:'A',exp:0.3},
+    {id:'vpila',t:'Diferencia de potencial de la pila (Vpila)',u:'V',exp:6},
+    {id:'v1',t:'Voltaje en los extremos de la primera resistencia (V1)',u:'V',exp:3.6},
+    {id:'v2',t:'Voltaje en los extremos de la segunda resistencia (V2)',u:'V',exp:2.4},
+    {id:'v12',t:'Tensión entre los extremos de las dos resistencias juntas',u:'V',exp:6},
+    {id:'ieq',t:'Intensidad que pasa por el circuito equivalente',u:'A',exp:0.3}]
+};
+const FILL=[
+  {id:'fb1',opts:['la misma','distinta','mayor en la primera resistencia','menor en la segunda resistencia'],ok:'la misma'},
+  {id:'fb2',opts:['suma','resta','media','división'],ok:'suma'},
+  {id:'fb3',opts:['pila','resistencia R1','interruptor','amperímetro'],ok:'pila'}];
+const TEXTS={
+  obs_sw:'Práctica 1 · Interruptor: describe lo que sucede al cerrarlo',
+  obs_na:'Práctica 1 · Pulsador N.A.: describe lo que sucede al accionarlo',
+  obs_nc:'Práctica 1 · Pulsador N.C.: describe lo que sucede al accionarlo',
+  why:'¿Por qué la diferencia de potencial entre las dos resistencias es igual a la de la pila?'};
+const FORMS={
+  fI:{t:'Fórmula de las intensidades',tok:['Ipila','I1','I2','=']},
+  fV:{t:'Fórmula de las diferencias de potencial',tok:['Vpila','V1','V2','=','+','−']},
+  fR:{t:'Fórmula de la resistencia equivalente (extra)',tok:['Req','R1','R2','=','+','−']}};
+
+const newBoard=()=>({comps:[],wires:[],nid:1});
+let S={names:{n1:'',n2:'',group:''},boards:{p1:newBoard(),p2:newBoard(),p2eq:newBoard()},ans:{fI:[],fV:[],fR:[]},checked:{p1:false,p2:false},view:'datos'};
+
+const fmtNum=v=>String(Math.round(+v*1000)/1000).replace('.',',');
+const fmtMeter=(v,u)=>((Math.abs(v)<0.0005?0:v).toFixed(3)).replace('.',',')+' '+u;
+const subHTML=s=>s.replace(/\b([IVR])(pila|eq|1|2)\b/g,'$1<sub>$2</sub>');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function parseNum(s){
+  const m=/^\s*(-?[\d.,]+)\s*(m?[AaVvΩ]?)\s*$/.exec(String(s||''));
+  if(!m)return NaN;
+  let v=parseFloat(m[1].replace(',','.'));
+  if(m[2]&&m[2][0]==='m'&&m[2].length>1)v/=1000;
+  return v;
+}
+function chkNum(f){
+  const raw=S.ans[f.id];if(!raw||!String(raw).trim())return 'empty';
+  const v=parseNum(raw);if(isNaN(v))return 'bad';
+  return Math.abs(v-f.exp)<=Math.max(0.006,Math.abs(f.exp)*0.02)?'ok':'bad';
+}
+function chkFill(f){const v=S.ans[f.id];if(!v)return 'empty';return v===f.ok?'ok':'bad';}
+function chkForm(id){
+  const t=S.ans[id];if(!t||!t.length)return 'empty';
+  const srt=a=>a.slice().sort().join();
+  if(id==='fI')return(t.length===5&&t[1]==='='&&t[3]==='='&&srt([t[0],t[2],t[4]])===srt(['Ipila','I1','I2']))?'ok':'bad';
+  const [T,A,B]=id==='fV'?['Vpila','V1','V2']:['Req','R1','R2'];
+  const sm=(a,b)=>srt([a,b])===srt([A,B]);
+  if(t.length===5){
+    if(t[0]===T&&t[1]==='='&&t[3]==='+'&&sm(t[2],t[4]))return 'ok';
+    if(t[4]===T&&t[3]==='='&&t[1]==='+'&&sm(t[0],t[2]))return 'ok';
+  }
+  return 'bad';
+}
+function statusOf(id){
+  let f=[].concat(NUM.p1,NUM.p2).find(x=>x.id===id);if(f)return chkNum(f);
+  f=FILL.find(x=>x.id===id);if(f)return chkFill(f);
+  if(FORMS[id])return chkForm(id);
+  if(TEXTS[id]){const v=(S.ans[id]||'').trim();return v.length>=8?'text':'empty';}
+  return 'empty';
+}
+
+/* ---------- modelo del circuito ---------- */
+const rotVec=(x,y,r)=>{switch(((r%360)+360)%360){case 90:return[-y,x];case 180:return[-x,-y];case 270:return[y,-x];default:return[x,y];}};
+const LT={a:[-40,0],b:[40,0]};
+function termPos(c,t){const v=rotVec(LT[t][0],LT[t][1],c.rot||0);return{x:c.x+v[0],y:c.y+v[1]};}
+function termDir(c,t){const v=rotVec(t==='a'?-1:1,0,c.rot||0);return{x:v[0],y:v[1]};}
+const parseKey=k=>{const p=k.split('.');return{id:+p[0],t:p[1]};};
+const getComp=(b,id)=>b.comps.find(c=>c.id===id);
+function wirePts(b,w){
+  const A=parseKey(w.a),B=parseKey(w.b),ca=getComp(b,A.id),cb=getComp(b,B.id);
+  if(!ca||!cb)return null;
+  const p=termPos(ca,A.t),q=termPos(cb,B.t),dp=termDir(ca,A.t),dq=termDir(cb,B.t),St=20;
+  const p1={x:p.x+dp.x*St,y:p.y+dp.y*St},q1={x:q.x+dq.x*St,y:q.y+dq.y*St};
+  const mid=dp.x!==0?{x:p1.x,y:q1.y}:{x:q1.x,y:p1.y};
+  return[p,p1,mid,q1,q];
+}
+function conducting(c){
+  if(c.type==='interruptor')return!!c.closed;
+  if(c.type==='pulsadorNA')return!!c.pressed;
+  if(c.type==='pulsadorNC')return!c.pressed;
+  return false;
+}
+function gauss(A,z){
+  const n=z.length;
+  for(let i=0;i<n;i++){
+    let p=i;for(let r=i+1;r<n;r++)if(Math.abs(A[r][i])>Math.abs(A[p][i]))p=r;
+    if(Math.abs(A[p][i])<1e-30)return null;
+    if(p!==i){[A[p],A[i]]=[A[i],A[p]];[z[p],z[i]]=[z[i],z[p]];}
+    for(let r=i+1;r<n;r++){const f=A[r][i]/A[i][i];if(f===0)continue;for(let c=i;c<n;c++)A[r][c]-=f*A[i][c];z[r]-=f*z[i];}
+  }
+  const x=new Float64Array(n);
+  for(let i=n-1;i>=0;i--){let s=z[i];for(let c=i+1;c<n;c++)s-=A[i][c]*x[c];x[i]=s/A[i][i];}
+  return x;
+}
+function simulate(b,mode){
+  const base=mode==='base',idx=new Map(),par=[];
+  const gi=k=>{if(!idx.has(k)){idx.set(k,par.length);par.push(par.length);}return idx.get(k);};
+  const find=i=>{while(par[i]!==i){par[i]=par[par[i]];i=par[i];}return i;};
+  const uni=(x,y)=>{x=find(x);y=find(y);if(x!==y)par[x]=y;};
+  b.comps.forEach(c=>{gi(c.id+'.a');gi(c.id+'.b');});
+  b.wires.forEach(w=>{if(idx.has(w.a)&&idx.has(w.b))uni(idx.get(w.a),idx.get(w.b));});
+  if(base)b.comps.forEach(c=>{if(c.type==='amperimetro')uni(idx.get(c.id+'.a'),idx.get(c.id+'.b'));});
+  const els=[];
+  b.comps.forEach(c=>{
+    let g=null,E=null;
+    switch(c.type){
+      case 'pila':g=1e4;E=+c.value;break;
+      case 'resistencia':case 'lampara':g=1/Math.max(+c.value,1e-6);break;
+      case 'interruptor':case 'pulsadorNA':case 'pulsadorNC':g=(base||conducting(c))?1e6:1e-12;break;
+      case 'amperimetro':g=1e6;break;
+      case 'voltimetro':if(base)return;g=1e-7;break;
+    }
+    els.push({c,a:idx.get(c.id+'.a'),b:idx.get(c.id+'.b'),g,E});
+  });
+  const pila=b.comps.find(c=>c.type==='pila');
+  const gnd=pila?find(idx.get(pila.id+'.b')):(par.length?find(0):-1);
+  const roots=new Map();let n=0;
+  for(let i=0;i<par.length;i++){const r=find(i);if(r!==gnd&&!roots.has(r))roots.set(r,n++);}
+  const row=i=>{const r=find(i);return r===gnd?-1:roots.get(r);};
+  const A=Array.from({length:n},()=>new Float64Array(n)),z=new Float64Array(n);
+  for(let i=0;i<n;i++)A[i][i]+=1e-9;
+  els.forEach(e=>{
+    const ra=row(e.a),rb=row(e.b);if(ra===rb)return;
+    if(ra>=0)A[ra][ra]+=e.g;if(rb>=0)A[rb][rb]+=e.g;
+    if(ra>=0&&rb>=0){A[ra][rb]-=e.g;A[rb][ra]-=e.g;}
+    if(e.E!==null){const I=e.E*e.g;if(ra>=0)z[ra]+=I;if(rb>=0)z[rb]-=I;}
+  });
+  const x=n?gauss(A,z):new Float64Array(0);
+  const res={cur:{},vd:{},short:false,ok:!!x,pila:pila?pila.id:null};
+  if(!x)return res;
+  const V=i=>{const r=row(i);return r<0?0:x[r];};
+  els.forEach(e=>{
+    const vd=V(e.a)-V(e.b);res.vd[e.c.id]=vd;
+    const I=e.E!==null?(e.E-vd)*e.g:vd*e.g;res.cur[e.c.id]=I;
+    if(e.E!==null&&Math.abs(I)>50)res.short=true;
+  });
+  return res;
+}
+function nameOf(key,b,c){
+  const i=b.comps.filter(x=>x.type===c.type).indexOf(c)+1;
+  switch(c.type){
+    case 'pila':return 'Pila';
+    case 'resistencia':return key==='p2eq'?'Req':'R'+i;
+    case 'interruptor':return 'Interruptor';
+    case 'pulsadorNA':return 'Pulsador N.A.';
+    case 'pulsadorNC':return 'Pulsador N.C.';
+    case 'amperimetro':return 'Amperímetro';
+    case 'voltimetro':return 'Voltímetro';
+    default:return 'Bombilla '+i;
+  }
+}
+function verify(key){
+  const cfg=BOARDS[key],b=S.boards[key],msgs=[];
+  const of=t=>b.comps.filter(c=>c.type===t);
+  const pilas=of('pila'),res=of('resistencia'),lamps=of('lampara');
+  const ctrl=b.comps.filter(c=>['interruptor','pulsadorNA','pulsadorNC'].includes(c.type));
+  const nR=cfg.expect.R.length;
+  if(pilas.length!==1)msgs.push(pilas.length?'Solo debe haber una pila.':'Falta la pila.');
+  if(res.length!==nR)msgs.push(nR===1?'Necesitas exactamente 1 resistencia fija.':'Necesitas exactamente '+nR+' resistencias fijas.');
+  if(lamps.length)msgs.push('Sobra la bombilla: no se usa en esta práctica.');
+  if(ctrl.length!==1)msgs.push(ctrl.length?'Debe haber un solo elemento de maniobra en el circuito.':'Falta el elemento de maniobra (interruptor).');
+  else if(key!=='p1'&&ctrl[0].type!=='interruptor')msgs.push('En esta práctica el elemento de maniobra es un interruptor.');
+  if(pilas[0]&&Math.abs(pilas[0].value-cfg.expect.pila)>1e-9)msgs.push('El valor de la pila debe ser '+cfg.expect.pila+' V (selecciónala y cámbialo).');
+  res.forEach((r,i)=>{if(cfg.expect.R[i]!==undefined&&Math.abs(r.value-cfg.expect.R[i])>1e-9)msgs.push(nameOf(key,b,r)+' debe valer '+cfg.expect.R[i]+' Ω.');});
+  if(!msgs.length){
+    const sim=simulate(b,'base'),exp=cfg.expect.pila/cfg.expect.R.reduce((a,c)=>a+c,0);
+    const I=sim.pila!=null&&sim.ok?sim.cur[sim.pila]:0;
+    if(sim.short)msgs.push('Hay un cortocircuito: algún cable une directamente los dos polos de la pila.');
+    else if(Math.abs(I)<1e-6)msgs.push('El circuito no forma un anillo completo: une con cables todos los terminales (pila → receptores → interruptor → pila).');
+    else{
+      const bad=res.some(r=>Math.abs(sim.cur[r.id]-I)>Math.abs(I)*0.01);
+      if(Math.abs(I-exp)>exp*0.01||bad)msgs.push('Las resistencias deben ir una a continuación de otra con la pila, sin saltarse ninguna (circuito en serie).');
+    }
+  }
+  return msgs.length?{ok:false,msgs}:{ok:true,msgs:['Montaje correcto: todos los componentes están en serie con los valores pedidos. ¡Ya puedes medir!']};
+}
+
+/* ---------- símbolos ---------- */
+function mixColor(c1,c2,t){
+  const p=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));
+  const a=p(c1),b=p(c2);return '#'+a.map((v,i)=>Math.round(v+(b[i]-v)*t).toString(16).padStart(2,'0')).join('');
+}
+function prims(c,res){
+  const P=[];
+  const L=(x1,y1,x2,y2,w)=>P.push({k:'l',x1,y1,x2,y2,w});
+  const T=(x,y,t,sz,bold)=>P.push({k:'t',x,y,t,sz,bold});
+  const C=(cx,cy,r,f)=>P.push({k:'c',cx,cy,r,f});
+  const G=(pts,f)=>P.push({k:'p',pts,f});
+  const sw=()=>{L(-40,0,-14,0);L(14,0,40,0);C(-14,0,3.5,'#fff');C(14,0,3.5,'#fff');};
+  switch(c.type){
+    case 'pila':L(-40,0,-6,0);L(-6,-16,-6,16,3.5);L(6,-9,6,9,3.5);L(6,0,40,0);T(-31,-8,'+',14,true);T(31,-8,'-',16,true);break;
+    case 'resistencia':L(-40,0,-22,0);L(22,0,40,0);G([[-22,-9],[22,-9],[22,9],[-22,9]],'#cdeeb4');break;
+    case 'interruptor':sw();c.closed?L(-14,0,14,0,3):L(-14,0,12,-15,3);break;
+    case 'pulsadorNA':case 'pulsadorNC':{
+      sw();const on=conducting(c);on?L(-14,0,14,0,3):L(-14,0,12,-11,3);
+      const d=c.pressed?5:0;L(-8,-24+d,8,-24+d,3.5);L(0,-24+d,0,on?-3:-7,2);break;}
+    case 'amperimetro':case 'voltimetro':
+      L(-40,0,-18,0);L(18,0,40,0);C(0,0,18,'#fff');T(0,6,c.type==='amperimetro'?'A':'V',18,true);T(-31,-8,'+',13,true);T(31,-8,'-',15,true);break;
+    case 'lampara':{
+      const I=res&&res.cur&&res.cur[c.id]||0,br=Math.min(1,I*I*c.value/1.5);
+      L(-40,0,-16,0);L(16,0,40,0);C(0,0,16,mixColor('#f1f3f5','#ffd21f',br));L(-11,-11,11,11);L(-11,11,11,-11);break;}
+  }
+  return P;
+}
+function labelLines(key,b,c,res){
+  const nm=nameOf(key,b,c),L=[];
+  switch(c.type){
+    case 'pila':L.push({t:nm+' · '+fmtNum(c.value)+' V'});break;
+    case 'resistencia':L.push({t:nm+' = '+fmtNum(c.value)+' Ω'});break;
+    case 'lampara':L.push({t:nm+' ('+fmtNum(c.value)+' Ω)'});break;
+    case 'interruptor':L.push({t:nm+(c.closed?' (cerrado)':' (abierto)')});break;
+    case 'pulsadorNA':case 'pulsadorNC':L.push({t:nm+(c.pressed?' (pulsado)':'')});break;
+    case 'amperimetro':L.push({t:nm});L.push({t:res.short?'¡ERROR!':fmtMeter(res.cur[c.id]||0,'A'),cls:'ra'});break;
+    case 'voltimetro':L.push({t:nm});L.push({t:res.short?'¡ERROR!':fmtMeter(res.vd[c.id]||0,'V'),cls:'rv'});break;
+  }
+  return L;
+}
+function labelPlace(c,L){
+  const h=((c.rot||0)%180)===0,n=L.length;
+  return L.map((l,i)=>h?Object.assign({},l,{x:c.x,y:c.y-32-(n-1-i)*17,a:'middle'}):Object.assign({},l,{x:c.x+30,y:c.y-((n-1)*17)/2+i*17+5,a:'start'}));
+}
+
+/* ---------- PDF propio (sin librerías) ---------- */
+const HW={' ':278,'!':278,'"':355,'#':556,'$':556,'%':889,'&':667,"'":191,'(':333,')':333,'*':389,'+':584,',':278,'-':333,'.':278,'/':278,':':278,';':278,'<':584,'=':584,'>':584,'?':556,'@':1015,A:667,B:667,C:722,D:722,E:667,F:611,G:778,H:722,I:278,J:500,K:667,L:556,M:833,N:722,O:778,P:667,Q:778,R:722,S:667,T:611,U:722,V:667,W:944,X:667,Y:667,Z:611,'[':278,'\\':278,']':278,'^':469,_:556,'`':333,a:556,b:556,c:500,d:556,e:556,f:278,g:556,h:556,i:222,j:222,k:500,l:222,m:833,n:556,o:556,p:556,q:556,r:333,s:500,t:278,u:556,v:500,w:722,x:500,y:500,z:500,'{':334,'|':260,'}':334,'~':584};
+function tw(s,size,bold){
+  let w=0;
+  for(const ch of String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'')){
+    w+=ch==='Ω'?1600:(/\d/.test(ch)?556:(HW[ch]||556));
+  }
+  return w*size/1000*(bold?1.06:1);
+}
+const WIN={0x2013:0x96,0x2014:0x97,0x2018:0x91,0x2019:0x92,0x201C:0x93,0x201D:0x94,0x2022:0x95,0x20AC:0x80,0x2026:0x85};
+function enc(s){
+  let o='';
+  for(const ch of String(s)){
+    let c=ch.codePointAt(0);
+    if(c===0x3A9||c===0x2126){o+='ohm';continue;}
+    if(c===0x2212){o+='-';continue;}
+    if(c===0x2192){o+='->';continue;}
+    if(WIN[c])c=WIN[c];else if(c>255||c<32)c=c===10||c===9?32:63;
+    const t=String.fromCharCode(c);
+    o+=(t==='('||t===')'||t==='\\')?'\\'+t:t;
+  }
+  return o;
+}
+class Doc{
+  constructor(){this.pages=[];this.W=595.28;this.H=841.89;this.M=40;this.hdr=null;this.newPage();}
+  newPage(){this.ops=['1 J 1 j'];this.pages.push(this.ops);this.y=this.pages.length>1?58:this.M;
+    if(this.pages.length>1&&this.hdr)this.text(this.M,32,this.hdr,{size:8.5,color:'#58687c'});}
+  col(h){const m=/^#?([0-9a-f]{6})$/i.exec(h||'#000000'),n=parseInt(m?m[1]:'000000',16);
+    return[(n>>16&255)/255,(n>>8&255)/255,(n&255)/255].map(v=>v.toFixed(3)).join(' ');}
+  f(n){return(+n).toFixed(2);}
+  text(x,y,s,o={}){
+    const size=o.size||10,w=tw(s,size,o.bold);let xx=x;
+    if(o.align==='center')xx=x-w/2;else if(o.align==='right')xx=x-w;
+    this.ops.push('BT /'+(o.bold?'F2':'F1')+' '+this.f(size)+' Tf '+this.col(o.color)+' rg '+this.f(xx)+' '+this.f(this.H-y)+' Td ('+enc(s)+') Tj ET');
+    return w;
+  }
+  line(x1,y1,x2,y2,o={}){
+    this.ops.push(this.col(o.color||INK)+' RG '+this.f(o.w||1)+' w '+this.f(x1)+' '+this.f(this.H-y1)+' m '+this.f(x2)+' '+this.f(this.H-y2)+' l S');
+  }
+  poly(pts,o={}){
+    let s=pts.map((p,i)=>this.f(p[0])+' '+this.f(this.H-p[1])+(i?' l':' m')).join(' ')+' h';
+    const st=[];if(o.fill)st.push(this.col(o.fill)+' rg');st.push(this.col(INK)+' RG '+this.f(o.lw||1)+' w');
+    this.ops.push(st.join(' ')+' '+s+(o.fill?' B':' S'));
+  }
+  rect(x,y,w,h,o={}){
+    const st=[];if(o.fill)st.push(this.col(o.fill)+' rg');if(o.stroke)st.push(this.col(o.stroke)+' RG '+this.f(o.lw||1)+' w');
+    this.ops.push(st.join(' ')+' '+this.f(x)+' '+this.f(this.H-y-h)+' '+this.f(w)+' '+this.f(h)+' re '+(o.fill&&o.stroke?'B':o.fill?'f':'S'));
+  }
+  circle(cx,cy,r,o={}){
+    const k=0.5523*r,X=cx,Y=this.H-cy,f=this.f.bind(this);
+    const st=[];if(o.fill)st.push(this.col(o.fill)+' rg');st.push(this.col(INK)+' RG '+f(o.lw||1)+' w');
+    this.ops.push(st.join(' ')+' '+f(X+r)+' '+f(Y)+' m '+f(X+r)+' '+f(Y+k)+' '+f(X+k)+' '+f(Y+r)+' '+f(X)+' '+f(Y+r)+' c '+
+      f(X-k)+' '+f(Y+r)+' '+f(X-r)+' '+f(Y+k)+' '+f(X-r)+' '+f(Y)+' c '+f(X-r)+' '+f(Y-k)+' '+f(X-k)+' '+f(Y-r)+' '+f(X)+' '+f(Y-r)+' c '+
+      f(X+k)+' '+f(Y-r)+' '+f(X+r)+' '+f(Y-k)+' '+f(X+r)+' '+f(Y)+' c h '+(o.fill?'B':'S'));
+  }
+  ensure(h){if(this.y+h>this.H-this.M-12)this.newPage();}
+  wrap(s,w,size,bold){
+    const out=[];
+    String(s).split('\n').forEach(par=>{
+      let line='';
+      par.split(/\s+/).forEach(wd=>{
+        while(tw(wd,size,bold)>w&&wd.length>1){ // palabra muy larga
+          let k=wd.length-1;while(k>1&&tw(wd.slice(0,k),size,bold)>w)k--;
+          if(line){out.push(line);line='';}
+          out.push(wd.slice(0,k));wd=wd.slice(k);
+        }
+        const t=line?line+' '+wd:wd;
+        if(!line||tw(t,size,bold)<=w)line=t;else{out.push(line);line=wd;}
+      });
+      out.push(line);
+    });
+    return out;
+  }
+  head(s){this.ensure(30);this.rect(this.M,this.y,this.W-2*this.M,20,{fill:'#e3eefa'});
+    this.text(this.M+8,this.y+14,s,{size:11,bold:true,color:'#0a3f78'});this.y+=28;}
+  row(lab,val,st){
+    const lines=this.wrap(lab,300,9.5),h=Math.max(lines.length*12,14)+8;this.ensure(h);
+    const y0=this.y;
+    lines.forEach((l,i)=>this.text(this.M+4,y0+11+i*12,l,{size:9.5}));
+    this.text(this.M+330,y0+11,val||'-',{size:10,bold:true});
+    const c={ok:'#16794c',bad:'#c0392b',empty:'#7a8796',text:'#0b5cad'}[st],t={ok:'Correcto',bad:'Revisar',empty:'Sin responder',text:'Para el profesor'}[st];
+    this.text(this.W-this.M-4,y0+11,t,{size:8.5,bold:true,color:c,align:'right'});
+    this.line(this.M,y0+h,this.W-this.M,y0+h,{color:'#d6dee8',w:0.6});this.y+=h;
+  }
+  block(lab,txt){
+    const lines=this.wrap(txt||'(sin responder)',this.W-2*this.M-16,10);
+    this.ensure(18+Math.min(lines.length,3)*12);
+    this.text(this.M+4,this.y+11,lab,{size:9.5,bold:true,color:'#0a3f78'});this.y+=16;
+    lines.forEach(l=>{this.ensure(14);this.text(this.M+12,this.y+10,l,{size:10,color:txt?'#000000':'#7a8796'});this.y+=12;});
+    this.y+=6;
+  }
+  board(key,b,w,h){
+    this.ensure(h+8);
+    const x=this.M,y=this.y;
+    this.rect(x,y,w,h,{stroke:'#c5d0dc',lw:0.8,fill:'#fbfcfe'});
+    if(!b.comps.length){this.text(x+w/2,y+h/2,'(montaje vacio)',{align:'center',color:'#888888',size:10});this.y+=h+8;return;}
+    const res=simulate(b,'real');
+    let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+    b.comps.forEach(c=>{x0=Math.min(x0,c.x-62);x1=Math.max(x1,c.x+150);y0=Math.min(y0,c.y-62);y1=Math.max(y1,c.y+62);});
+    const sc=Math.min((w-14)/(x1-x0),(h-10)/(y1-y0),0.9),ox=x+w/2-((x0+x1)/2)*sc,oy=y+h/2-((y0+y1)/2)*sc;
+    const X=v=>ox+v*sc,Y=v=>oy+v*sc;
+    b.wires.forEach(wi=>{const p=wirePts(b,wi);if(!p)return;for(let i=0;i<p.length-1;i++)this.line(X(p[i].x),Y(p[i].y),X(p[i+1].x),Y(p[i+1].y),{w:2*sc+0.4});});
+    b.comps.forEach(c=>{
+      const T=(px,py)=>{const v=rotVec(px,py,c.rot||0);return[X(c.x+v[0]),Y(c.y+v[1])];};
+      prims(c,res).forEach(p=>{
+        if(p.k==='l'){const a=T(p.x1,p.y1),d=T(p.x2,p.y2);this.line(a[0],a[1],d[0],d[1],{w:(p.w||2)*sc+0.3});}
+        else if(p.k==='p')this.poly(p.pts.map(q=>T(q[0],q[1])),{fill:p.f,lw:sc+0.3});
+        else if(p.k==='c'){const m=T(p.cx,p.cy);this.circle(m[0],m[1],p.r*sc,{fill:p.f,lw:sc+0.3});}
+        else if(p.k==='t'){const m=T(p.x,p.y);this.text(m[0],m[1]+p.sz*sc*0.3,p.t,{size:Math.max(6,p.sz*sc),bold:p.bold,align:'center'});}
+      });
+      labelPlace(c,labelLines(key,b,c,res)).forEach(l=>this.text(X(l.x),Y(l.y),l.t,{size:Math.max(6.5,12.5*sc),bold:!!l.cls||false,align:l.a==='middle'?'center':'left',color:l.cls==='ra'?'#0b5cad':l.cls==='rv'?'#b3541e':'#142133'}));
+    });
+    this.y+=h+8;
+  }
+  finish(title,footL){
+    const n=this.pages.length;
+    this.pages.forEach((ops,i)=>{
+      this.ops=ops;
+      this.line(this.M,this.H-30,this.W-this.M,this.H-30,{color:'#c5d0dc',w:0.6});
+      this.text(this.M,this.H-20,footL,{size:8,color:'#58687c'});
+      this.text(this.W-this.M,this.H-20,'Página '+(i+1)+' de '+n,{size:8,color:'#58687c',align:'right'});
+    });
+    const objs=[];const add=s=>{objs.push(s);return objs.length;};
+    add('<< /Type /Catalog /Pages 2 0 R >>');add('');
+    add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
+    add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+    add('<< /Title ('+enc(title)+') /Author (IES Comuneros de Castilla) /Producer (Laboratorio virtual de electricidad) >>');
+    const kids=[];
+    this.pages.forEach(ops=>{
+      const content=ops.join('\n');
+      const cid=add('<< /Length '+content.length+' >>\nstream\n'+content+'\nendstream');
+      const pid=add('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents '+cid+' 0 R >>');
+      kids.push(pid+' 0 R');
+    });
+    objs[1]='<< /Type /Pages /Kids ['+kids.join(' ')+'] /Count '+kids.length+' >>';
+    let out='%PDF-1.4\n%\u00e2\u00e3\u00cf\u00d3\n';const offs=[];
+    objs.forEach((o,i)=>{offs.push(out.length);out+=(i+1)+' 0 obj\n'+o+'\nendobj\n';});
+    const xr=out.length;
+    out+='xref\n0 '+(objs.length+1)+'\n0000000000 65535 f \n';
+    offs.forEach(o=>{out+=String(o).padStart(10,'0')+' 00000 n \n';});
+    out+='trailer\n<< /Size '+(objs.length+1)+' /Root 1 0 R /Info 5 0 R >>\nstartxref\n'+xr+'\n%%EOF';
+    const u=new Uint8Array(out.length);for(let i=0;i<out.length;i++)u[i]=out.charCodeAt(i)&255;
+    return u;
+  }
+}
+
+/* ---------- evaluación y PDF ---------- */
+function evaluate(){
+  const ans=(id)=>(S.ans[id]||'').toString().trim();
+  const num=f=>({lab:f.t,val:ans(f.id)?ans(f.id).replace(/\s*(m?[AaVv]|Ω)\s*$/,'')+' '+f.u:'',st:chkNum(f),auto:true});
+  const sections=[
+    {key:'p1',title:'PRÁCTICA 1: CIRCUITO ELEMENTAL. ELEMENTOS DE MANIOBRA',items:NUM.p1.map(num)},
+    {key:'p2',title:'PRÁCTICA 2: CIRCUITO SERIE',items:NUM.p2.map(num)
+      .concat(FILL.map((f,i)=>({lab:'Completa (hueco '+(i+1)+')',val:ans(f.id),st:chkFill(f),auto:true})))
+      .concat(Object.keys(FORMS).map(id=>({lab:FORMS[id].t,val:(S.ans[id]||[]).join(' '),st:chkForm(id),auto:true})))}];
+  let ok=0,total=0,pend=[];
+  sections.forEach(s=>s.items.forEach(i=>{total++;if(i.st==='ok')ok++;if(i.st==='empty')pend.push(i.lab);}));
+  Object.keys(TEXTS).forEach(id=>{if(statusOf(id)==='empty')pend.push(TEXTS[id]);});
+  const boards={};['p1','p2','p2eq'].forEach(k=>boards[k]=verify(k));
+  Object.keys(boards).forEach(k=>{if(!boards[k].ok)pend.push('Montaje verificado: '+BOARDS[k].title);});
+  return{sections,ok,total,pend,boards};
+}
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return(h>>>0).toString(16).toUpperCase().padStart(8,'0');}
+const slug=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+function pdfName(){
+  return ['hoja_respuestas_electricidad',slug(S.names.n1),slug(S.names.n2),slug(S.names.group)].filter(Boolean).join('_')+'.pdf';
+}
+function buildPDF(){
+  const ev=evaluate(),d=new Doc(),M=d.M,W=d.W-2*M,now=new Date();
+  const fecha=now.toLocaleDateString('es-ES')+' '+now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  const code=hash(JSON.stringify([S.names,S.ans,fecha]));
+  const alum=[S.names.n1,S.names.n2].filter(Boolean).join(' y ');
+  d.hdr='IES Comuneros de Castilla · Hoja de respuestas · '+alum+' · '+S.names.group;
+  d.rect(0,0,d.W,62,{fill:'#0a3f78'});
+  d.text(M,28,'IES Comuneros de Castilla',{size:16,bold:true,color:'#ffffff'});
+  d.text(M,46,'Departamento de Tecnología',{size:10,color:'#cfe2f7'});
+  d.text(d.W-M,28,'Prácticas de electricidad · 3º ESO',{size:10.5,bold:true,color:'#ffffff',align:'right'});
+  d.text(d.W-M,46,'Laboratorio virtual de circuitos',{size:9.5,color:'#cfe2f7',align:'right'});
+  d.y=90;
+  d.text(M,d.y,'HOJA DE RESPUESTAS 1',{size:17,bold:true,color:'#0a3f78'});d.y+=16;
+  d.text(M,d.y,'Práctica 1: circuito elemental · Práctica 2: circuito serie',{size:9.5,color:'#58687c'});d.y+=14;
+  d.rect(M,d.y,W,62,{fill:'#f4f8fc',stroke:'#c5d0dc',lw:0.8});
+  const kv=(x,y,k,v)=>{const w=d.text(x,y,k,{size:9.5,bold:true});d.text(x+w+6,y,v||'-',{size:10.5});};
+  kv(M+10,d.y+18,'Nombre 1:',S.names.n1);kv(M+300,d.y+18,'Grupo:',S.names.group);
+  kv(M+10,d.y+34,'Nombre 2:',S.names.n2);kv(M+300,d.y+34,'Fecha de entrega:',fecha);
+  kv(M+10,d.y+50,'Código de verificación:',code);
+  d.y+=78;
+  d.rect(M,d.y,W,34,{fill:ev.ok===ev.total?'#e3f5ec':'#fff6e0',stroke:'#c5d0dc',lw:0.8});
+  d.text(M+10,d.y+14,'Autocomprobación del simulador: '+ev.ok+' de '+ev.total+' apartados correctos',{size:10,bold:true});
+  d.text(M+10,d.y+27,'Montajes verificados:  Práctica 1: '+(ev.boards.p1.ok?'sí':'no')+'   ·   Práctica 2: '+(ev.boards.p2.ok?'sí':'no')+'   ·   Circuito equivalente: '+(ev.boards.p2eq.ok?'sí':'no'),{size:9,color:'#58687c'});
+  d.y+=48;
+
+  d.head(ev.sections[0].title);
+  ev.sections[0].items.forEach(i=>d.row(i.lab,i.val,i.st));
+  d.y+=6;
+  d.block('Interruptor: qué sucede al cerrarlo',S.ans.obs_sw);
+  d.block('Pulsador N.A.: qué sucede al accionarlo',S.ans.obs_na);
+  d.block('Pulsador N.C.: qué sucede al accionarlo',S.ans.obs_nc);
+  d.text(M,d.y+9,'Montaje del alumno en el simulador (último estado)',{size:9,color:'#58687c'});d.y+=14;
+  d.board('p1',S.boards.p1,W,165);
+
+  d.y+=6;d.head(ev.sections[1].title);
+  const it=ev.sections[1].items;
+  it.slice(0,NUM.p2.length).forEach(i=>d.row(i.lab,i.val,i.st));
+  d.y+=6;
+  d.block('¿Por qué la diferencia de potencial entre las dos resistencias es igual a la de la pila?',S.ans.why);
+  const fb=FILL.map(f=>S.ans[f.id]||'_____');
+  d.block('Completa',
+    'En un circuito serie, la intensidad que proporciona la pila y la que pasa por cada componente es '+fb[0]+'.\n'+
+    'La '+fb[1]+' de la diferencia de potencial en cada uno de los receptores debe darnos la diferencia de potencial de la '+fb[2]+'.');
+  d.head('CREA TUS PROPIAS FÓRMULAS');
+  Object.keys(FORMS).forEach(id=>{
+    const i=it.find(x=>x.lab===FORMS[id].t);d.row(FORMS[id].t,i.val,i.st);
+  });
+  d.y+=6;
+  d.text(M,d.y+9,'Circuito serie montado por el alumno (último estado)',{size:9,color:'#58687c'});d.y+=14;
+  d.board('p2',S.boards.p2,W,190);
+  d.ensure(30);d.text(M,d.y+9,'Circuito equivalente montado por el alumno (último estado)',{size:9,color:'#58687c'});d.y+=14;
+  d.board('p2eq',S.boards.p2eq,W,150);
+  return d.finish('Hoja de respuestas · '+alum+' · '+S.names.group,'IES Comuneros de Castilla · Dpto. de Tecnología · '+alum+' · '+S.names.group+' · '+code);
+}
+/*PURE-END*/
+
+/* ================= INTERFAZ ================= */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const UI={sel:{p1:null,p2:null,p2eq:null},selWire:{p1:null,p2:null,p2eq:null},wire:null,drag:null,mouse:{x:0,y:0},active:'p1'};
+const STORE='ies-comuneros-lab-electricidad-v1';
+let saveT=null;
+function persist(){
+  clearTimeout(saveT);
+  saveT=setTimeout(()=>{try{
+    const c=JSON.parse(JSON.stringify(S));
+    Object.values(c.boards).forEach(b=>b.comps.forEach(x=>delete x.pressed));
+    localStorage.setItem(STORE,JSON.stringify(c));}catch(e){}},250);
+}
+function load(){
+  try{
+    const o=JSON.parse(localStorage.getItem(STORE)||'null');
+    if(o&&o.boards){
+      S=Object.assign(S,o);S.ans=Object.assign({fI:[],fV:[],fR:[]},o.ans||{});
+      Object.values(S.boards).forEach(b=>b.comps.forEach(c=>{c.pressed=false;}));
+    }
+  }catch(e){}
+}
+function sanitizeBoard(o){
+  if(!o||!Array.isArray(o.comps)||!Array.isArray(o.wires))return null;
+  const comps=o.comps.filter(c=>TYPES[c.type]&&isFinite(c.x)&&isFinite(c.y)).map(c=>({id:+c.id,type:c.type,x:+c.x,y:+c.y,rot:+c.rot||0,value:isFinite(c.value)?+c.value:TYPES[c.type].def,closed:!!c.closed,pressed:false}));
+  const ids=new Set(comps.map(c=>c.id));
+  const wires=o.wires.filter(w=>w&&typeof w.a==='string'&&typeof w.b==='string'&&ids.has(parseKey(w.a).id)&&ids.has(parseKey(w.b).id)).map(w=>({a:w.a,b:w.b}));
+  return{comps,wires,nid:Math.max(0,...comps.map(c=>c.id))+1};
+}
+function download(name,data,mime){
+  const url=URL.createObjectURL(new Blob([data],{type:mime}));
+  const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},800);
+}
+
+/* --- dibujo SVG --- */
+function primSVG(p,rot){
+  const f=n=>Math.round(n*100)/100;
+  switch(p.k){
+    case 'l':return '<line x1="'+p.x1+'" y1="'+p.y1+'" x2="'+p.x2+'" y2="'+p.y2+'" stroke="'+INK+'" stroke-width="'+(p.w||2)+'" stroke-linecap="round"/>';
+    case 'p':return '<polygon points="'+p.pts.map(q=>q.join(',')).join(' ')+'" fill="'+(p.f||'none')+'" stroke="'+INK+'" stroke-width="2" stroke-linejoin="round"/>';
+    case 'c':return '<circle cx="'+p.cx+'" cy="'+p.cy+'" r="'+p.r+'" fill="'+(p.f||'none')+'" stroke="'+INK+'" stroke-width="2"/>';
+    case 't':return '<text x="'+p.x+'" y="'+p.y+'" font-size="'+p.sz+'" font-weight="'+(p.bold?700:400)+'" text-anchor="middle" fill="'+INK+'" font-family="system-ui,sans-serif" transform="rotate('+f(-rot)+' '+p.x+' '+p.y+')">'+esc(p.t)+'</text>';
+  }
+  return '';
+}
+function boardSVG(key,b,res,o){
+  o=o||{};
+  let s='<defs><pattern id="grid-'+key+'" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#cfd8e3"/></pattern></defs>';
+  if(!o.readonly)s+='<rect width="'+VBW+'" height="'+VBH+'" fill="url(#grid-'+key+')"/>';
+  const conn=new Set();
+  b.wires.forEach((w,i)=>{
+    const pts=wirePts(b,w);if(!pts)return;conn.add(w.a);conn.add(w.b);
+    const d=pts.map(p=>p.x+','+p.y).join(' ');
+    s+='<polyline class="wire'+(o.selWire===i?' sel':'')+'" points="'+d+'"/>';
+    if(!o.readonly)s+='<polyline class="wirehit" data-wire="'+i+'" points="'+d+'"/>';
+  });
+  b.comps.forEach(c=>{
+    const r=c.rot||0;
+    s+='<g transform="translate('+c.x+' '+c.y+') rotate('+r+')">'+prims(c,res).map(p=>primSVG(p,r)).join('');
+    if(!o.readonly)s+='<rect class="hit" data-comp="'+c.id+'" x="-28" y="-28" width="56" height="56"/>';
+    if(o.sel===c.id)s+='<rect class="selbox" x="-34" y="-32" width="68" height="64" rx="8"/>';
+    s+='</g>';
+    labelPlace(c,labelLines(key,b,c,res)).forEach(l=>{
+      s+='<text class="lbl'+(l.cls?' '+l.cls:'')+'" x="'+l.x+'" y="'+l.y+'" text-anchor="'+l.a+'">'+esc(l.t)+'</text>';
+    });
+  });
+  b.comps.forEach(c=>['a','b'].forEach(t=>{
+    const p=termPos(c,t),k=c.id+'.'+t;
+    s+='<circle class="termdot'+(conn.has(k)?' con':'')+(o.wire===k?' act':'')+'" cx="'+p.x+'" cy="'+p.y+'" r="'+(o.readonly?3.5:5.5)+'"/>';
+    if(!o.readonly)s+='<circle class="termhit" data-term="'+k+'" cx="'+p.x+'" cy="'+p.y+'" r="12"/>';
+  }));
+  if(o.wire){
+    const A=parseKey(o.wire),ca=getComp(b,A.id);
+    if(ca){const p=termPos(ca,A.t);s+='<line class="prev" x1="'+p.x+'" y1="'+p.y+'" x2="'+UI.mouse.x+'" y2="'+UI.mouse.y+'"/>';}
+  }
+  return s;
+}
+function iconSVG(t){
+  const c={type:t,x:0,y:0,rot:0,value:TYPES[t].def,closed:false};
+  return prims(c,null).map(p=>primSVG(p,0)).join('').replace(/stroke-width="([\d.]+)"/g,(m,w)=>'stroke-width="'+(+w*1.1)+'"');
+}
+function redraw(key){
+  const b=S.boards[key],svg=$('#svg-'+key);if(!svg)return;
+  const res=simulate(b,'real');
+  svg.innerHTML=boardSVG(key,b,res,{sel:UI.sel[key],selWire:UI.selWire[key],wire:UI.wire&&UI.wire.key===key?UI.wire.from:null});
+  const bd=$('#stat-'+key),pila=b.comps.find(c=>c.type==='pila');
+  let t='Sin pila',cl='badge';
+  if(pila){
+    if(res.short){t='¡Cortocircuito!';cl='badge bad';}
+    else if(res.ok&&Math.abs(res.cur[pila.id]||0)>1e-6){t='Circuito cerrado';cl='badge on';}
+    else t='Circuito abierto';
+  }
+  bd.textContent=t;bd.className=cl;
+  refreshPalette(key);
+}
+function refreshPalette(key){
+  const b=S.boards[key],lim=BOARDS[key].limits;
+  $$('#bench-'+key+' [data-add]').forEach(btn=>{
+    const t=btn.dataset.add,left=lim[t]-b.comps.filter(c=>c.type===t).length;
+    btn.disabled=left<=0;btn.querySelector('.cnt').textContent='×'+Math.max(left,0);
+  });
+}
+function props(key){
+  const b=S.boards[key],el=$('#props-'+key),id=UI.sel[key],w=UI.selWire[key];
+  if(w!=null&&b.wires[w]){el.innerHTML='<b>Cable seleccionado</b><button data-act="delwire">Eliminar cable</button>';return;}
+  const c=id?getComp(b,id):null;
+  if(!c){el.innerHTML='<span class="muted">Selecciona un componente para cambiar su valor, girarlo o eliminarlo. Pulsa en un círculo (terminal) y luego en otro para unirlos con un cable.</span>';return;}
+  const T=TYPES[c.type];let h='<b>'+esc(nameOf(key,b,c))+'</b>';
+  if(T.edit)h+='<label>Valor <input type="number" min="0" step="any" id="pv-'+key+'" value="'+c.value+'"> '+T.unit+'</label>';
+  if(c.type==='interruptor')h+='<button data-act="toggle">'+(c.closed?'Abrir':'Cerrar')+' interruptor</button>';
+  if(c.type==='pulsadorNA'||c.type==='pulsadorNC')h+='<span class="muted small">Mantén pulsado con el ratón sobre el pulsador.</span>';
+  if(c.type==='amperimetro')h+='<span class="muted small">Se conecta EN SERIE: la corriente debe pasar por él.</span>';
+  if(c.type==='voltimetro')h+='<span class="muted small">Se conecta EN PARALELO con el componente que quieres medir.</span>';
+  h+='<button data-act="rot">↻ Girar</button><button data-act="del">Eliminar</button>';
+  el.innerHTML=h;
+}
+function touch(key){persist();const v=$('#ver-'+key);if(v){v.className='verify';v.innerHTML='';}}
+function addComp(key,type){
+  const b=S.boards[key];
+  if(b.comps.filter(c=>c.type===type).length>=BOARDS[key].limits[type])return;
+  let spot=[300,240];
+  outer:for(const y of[140,260,380])for(const x of[140,300,460,620,740]){
+    if(!b.comps.some(c=>Math.hypot(c.x-x,c.y-y)<70)){spot=[x,y];break outer;}
+  }
+  const c={id:b.nid++,type,x:spot[0],y:spot[1],rot:0,value:TYPES[type].def,closed:false,pressed:false};
+  b.comps.push(c);UI.sel[key]=c.id;UI.selWire[key]=null;UI.wire=null;
+  props(key);redraw(key);touch(key);
+}
+function delComp(key){
+  const b=S.boards[key],id=UI.sel[key];if(!id)return;
+  b.comps=b.comps.filter(c=>c.id!==id);
+  b.wires=b.wires.filter(w=>parseKey(w.a).id!==id&&parseKey(w.b).id!==id);
+  UI.sel[key]=null;props(key);redraw(key);touch(key);
+}
+function rotComp(key){
+  const c=getComp(S.boards[key],UI.sel[key]);if(!c)return;
+  c.rot=((c.rot||0)+90)%360;redraw(key);touch(key);
+}
+function termClick(key,tk){
+  const b=S.boards[key];
+  if(!UI.wire||UI.wire.key!==key){UI.wire={key,from:tk};UI.sel[key]=null;UI.selWire[key]=null;props(key);redraw(key);return;}
+  const a=UI.wire.from;
+  if(a!==tk&&!b.wires.some(w=>(w.a===a&&w.b===tk)||(w.a===tk&&w.b===a)))b.wires.push({a,b:tk});
+  UI.wire=null;redraw(key);touch(key);
+}
+const svgPt=(svg,e)=>{const r=svg.getBoundingClientRect();return{x:(e.clientX-r.left)*VBW/r.width,y:(e.clientY-r.top)*VBH/r.height};};
+const snap=v=>Math.round(v/SNAP)*SNAP;
+function onDown(key,e){
+  UI.active=key;const svg=$('#svg-'+key),p=svgPt(svg,e),b=S.boards[key];
+  const t=e.target.closest('[data-term]');
+  if(t){e.preventDefault();termClick(key,t.dataset.term);return;}
+  const ce=e.target.closest('[data-comp]');
+  if(ce){
+    e.preventDefault();
+    const c=getComp(b,+ce.dataset.comp);
+    UI.sel[key]=c.id;UI.selWire[key]=null;UI.wire=null;
+    UI.drag={key,id:c.id,ox:c.x-p.x,oy:c.y-p.y,sx:p.x,sy:p.y,moved:false};
+    if(c.type==='pulsadorNA'||c.type==='pulsadorNC')c.pressed=true;
+    try{svg.setPointerCapture(e.pointerId);}catch(x){}
+    props(key);redraw(key);return;
+  }
+  const we=e.target.closest('[data-wire]');
+  UI.wire=null;
+  if(we){UI.selWire[key]=+we.dataset.wire;UI.sel[key]=null;}
+  else{UI.selWire[key]=null;UI.sel[key]=null;}
+  props(key);redraw(key);
+}
+function onMove(key,e){
+  const svg=$('#svg-'+key),p=svgPt(svg,e);
+  if(UI.drag&&UI.drag.key===key){
+    const d=UI.drag,c=getComp(S.boards[key],d.id);if(!c)return;
+    if(!d.moved&&Math.hypot(p.x-d.sx,p.y-d.sy)>6){d.moved=true;c.pressed=false;}
+    if(d.moved){
+      c.x=Math.max(60,Math.min(760,snap(p.x+d.ox)));c.y=Math.max(80,Math.min(400,snap(p.y+d.oy)));
+      redraw(key);
+    }
+    return;
+  }
+  if(UI.wire&&UI.wire.key===key){UI.mouse=p;redraw(key);}
+}
+function onUp(key){
+  const d=UI.drag;if(!d||d.key!==key)return;
+  const c=getComp(S.boards[key],d.id);UI.drag=null;
+  if(c){
+    if(!d.moved&&c.type==='interruptor')c.closed=!c.closed;
+    c.pressed=false;
+    props(key);redraw(key);touch(key);
+  }
+}
+function showVerify(key){
+  const v=verify(key),el=$('#ver-'+key);
+  el.className='verify '+(v.ok?'ok':'bad');
+  el.innerHTML=v.ok?'<b>✔ '+esc(v.msgs[0])+'</b>':'<b>Revisa el montaje:</b><ul>'+v.msgs.map(m=>'<li>'+esc(m)+'</li>').join('')+'</ul>';
+}
+function initBench(key){
+  const svg=$('#svg-'+key),root=$('#bench-'+key);
+  svg.addEventListener('pointerdown',e=>onDown(key,e));
+  svg.addEventListener('pointermove',e=>onMove(key,e));
+  svg.addEventListener('pointerup',()=>onUp(key));
+  svg.addEventListener('pointercancel',()=>onUp(key));
+  root.addEventListener('click',e=>{
+    UI.active=key;
+    const add=e.target.closest('[data-add]');if(add){addComp(key,add.dataset.add);return;}
+    const a=e.target.closest('[data-act]');if(!a)return;
+    const b=S.boards[key];
+    switch(a.dataset.act){
+      case 'rot':rotComp(key);break;
+      case 'del':delComp(key);break;
+      case 'delwire':b.wires.splice(UI.selWire[key],1);UI.selWire[key]=null;props(key);redraw(key);touch(key);break;
+      case 'toggle':{const c=getComp(b,UI.sel[key]);if(c){c.closed=!c.closed;props(key);redraw(key);touch(key);}break;}
+      case 'clear':if(b.comps.length&&!confirm('¿Vaciar todo el montaje?'))break;S.boards[key]=newBoard();UI.sel[key]=null;UI.selWire[key]=null;UI.wire=null;props(key);redraw(key);touch(key);break;
+      case 'verify':showVerify(key);break;
+      case 'save':{
+        const base=(key==='p1'?'practica1':'practica2'+(key==='p2eq'?'_equivalente':''))+'_'+(slug(S.names.n1)||'nombre1')+'_'+(slug(S.names.n2)||'nombre2')+'.json';
+        download(base,JSON.stringify({tipo:'montaje-ies-comuneros',key,board:b},null,1),'application/json');break;}
+      case 'open':$('#file-'+key).click();break;
+    }
+  });
+  root.addEventListener('input',e=>{
+    if(e.target.id!=='pv-'+key)return;
+    const c=getComp(S.boards[key],UI.sel[key]),v=parseFloat(e.target.value);
+    if(c&&isFinite(v)&&v>=0){c.value=v;redraw(key);touch(key);}
+  });
+  $('#file-'+key).addEventListener('change',e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=()=>{try{
+      const o=JSON.parse(r.result),nb=sanitizeBoard(o.board||o);
+      if(!nb)throw 0;S.boards[key]=nb;UI.sel[key]=null;UI.selWire[key]=null;props(key);redraw(key);touch(key);
+    }catch(x){alert('No se ha podido abrir ese archivo de montaje.');}};
+    r.readAsText(f);e.target.value='';
+  });
+  root.querySelector('details.schem').addEventListener('toggle',ev=>{
+    if(!ev.target.open)return;
+    const pb=presetBoard(key),pv=$('#prev-'+key);
+    pv.innerHTML=boardSVG('prev'+key,pb,simulate(pb,'real'),{readonly:true});
+  });
+  props(key);redraw(key);
+}
+function presetBoard(key){
+  const mk=(id,type,x,y,rot,value)=>({id,type,x,y,rot,value,closed:false,pressed:false});
+  const W=(a,b)=>({a,b});
+  if(key==='p2')return{comps:[mk(1,'pila',140,240,90,6),mk(2,'resistencia',340,100,0,12),mk(3,'resistencia',520,100,0,8),mk(4,'interruptor',660,240,90)],wires:[W('1.a','2.a'),W('2.b','3.a'),W('3.b','4.a'),W('4.b','1.b')],nid:5};
+  const v=key==='p1'?[5,50]:[6,20];
+  return{comps:[mk(1,'pila',160,220,90,v[0]),mk(2,'resistencia',400,100,0,v[1]),mk(3,'interruptor',640,220,90)],wires:[W('1.a','2.a'),W('2.b','3.a'),W('3.b','1.b')],nid:4};
+}
+
+/* --- plantillas HTML --- */
+function benchHTML(key,label){
+  const pal=Object.keys(BOARDS[key].limits).map(t=>
+    '<button type="button" class="pal" data-add="'+t+'" title="Añadir '+TYPES[t].name+'"><svg viewBox="-44 -26 88 52" fill="none" aria-hidden="true">'+iconSVG(t)+'</svg><span>'+TYPES[t].name+(t==='lampara'?' <em>(extra)</em>':'')+'</span><b class="cnt"></b></button>').join('');
+  return '<div class="card bench" data-bench="'+key+'" id="bench-'+key+'">'+
+    '<div class="bench-h"><h3>'+label+'</h3><span class="badge" id="stat-'+key+'"></span></div>'+
+    '<h4>Biblioteca de componentes</h4><div class="palette">'+pal+'</div>'+
+    '<div class="tools"><button data-act="rot">↻ Girar (R)</button><button data-act="del">Eliminar (Supr)</button><button data-act="clear">Vaciar</button>'+
+    '<button data-act="verify" class="primary">✓ Comprobar montaje</button><button data-act="save">Guardar montaje</button><button data-act="open">Abrir montaje</button><input type="file" accept=".json" hidden id="file-'+key+'"></div>'+
+    '<div class="svgwrap"><svg class="board" id="svg-'+key+'" viewBox="0 0 '+VBW+' '+VBH+'"></svg></div>'+
+    '<div class="props" id="props-'+key+'"></div><div class="verify" id="ver-'+key+'" role="status"></div>'+
+    '<details class="schem"><summary>Ver esquema del circuito</summary><svg class="board" id="prev-'+key+'" viewBox="100 40 700 290"></svg></details></div>';
+}
+function numRow(f){
+  return '<div class="arow"><label for="a-'+f.id+'">'+subHTML(f.t)+'</label><div class="ain"><input id="a-'+f.id+'" data-ans="'+f.id+'" inputmode="decimal" autocomplete="off" placeholder="0,000"><span class="u">'+f.u+'</span><span class="mark" data-mark="'+f.id+'"></span></div></div>';
+}
+function textQ(id,rows){
+  return '<div class="q"><label for="a-'+id+'">'+TEXTS[id]+' <span class="mark" data-mark="'+id+'"></span></label><textarea id="a-'+id+'" data-ans="'+id+'" rows="'+(rows||3)+'" maxlength="600"></textarea></div>';
+}
+function formHTML(id){
+  const F=FORMS[id];
+  return '<div class="q" data-fb="'+id+'"><div class="fb-t">'+F.t+' <span class="mark" data-mark="'+id+'"></span></div><div class="fb-box" id="fb-'+id+'"></div><div class="fb-pal">'+
+    F.tok.map(t=>'<button type="button" class="chip" data-tok="'+t+'" data-f="'+id+'">'+tokHTML(t)+'</button>').join('')+
+    '<button type="button" class="chip ghost" data-fback="'+id+'">⌫ Borrar último</button><button type="button" class="chip ghost" data-fclear="'+id+'">Limpiar</button></div></div>';
+}
+const isOp=t=>['=','+','−'].includes(t);
+const tokHTML=t=>isOp(t)?t:t.replace(/^([IVR])(.+)$/,'$1<sub>$2</sub>');
+function renderForm(id){
+  const box=$('#fb-'+id);if(!box)return;
+  const t=S.ans[id]||[];
+  box.innerHTML=t.length?t.map(x=>'<span class="tok'+(isOp(x)?' op':'')+'">'+tokHTML(x)+'</span>').join(''):'<span class="muted small">Pulsa los símbolos de abajo para construir la fórmula…</span>';
+}
+function datosHTML(){
+  return '<div class="card"><h2>Bienvenido al laboratorio virtual</h2><p>Aquí construirás los circuitos de las <b>Prácticas 1 y 2</b>, medirás con el amperímetro y el voltímetro, contestarás a la hoja de respuestas y al terminar descargarás un <b>PDF</b> con tu nombre y grupo para entregar a tu profesor.</p>'+
+  '<div class="grid2"><div class="field"><label for="n1">Nombre y apellidos (alumno 1) *</label><input class="txt" id="n1" autocomplete="name"></div>'+
+  '<div class="field"><label for="n2">Nombre y apellidos (alumno 2)</label><input class="txt" id="n2"></div>'+
+  '<div class="field"><label for="grp">Grupo *</label><input class="txt" id="grp" placeholder="Ej.: 3º ESO A"></div></div>'+
+  '<p style="margin-top:14px"><button class="primary big" data-go="p1">Empezar la Práctica 1 →</button></p></div>'+
+  '<div class="card"><h3>Cómo se usa el simulador</h3><ol class="steps">'+
+  '<li><b>Añade componentes</b> pulsando en la biblioteca. Arrástralos para colocarlos (se ajustan a la cuadrícula).</li>'+
+  '<li><b>Conéctalos con cables</b>: pulsa en un círculo (terminal) y después en otro. Pulsa sobre un cable para seleccionarlo y bórralo con «Supr».</li>'+
+  '<li><b>Cambia los valores</b>: selecciona el componente y escribe el valor (pila, resistencias). Con la tecla <b>R</b> lo giras.</li>'+
+  '<li><b>Interruptor</b>: haz clic para abrirlo o cerrarlo. <b>Pulsadores</b>: mantén el botón del ratón pulsado sobre ellos.</li>'+
+  '<li><b>Amperímetro</b> en <u>serie</u> (la corriente pasa por él) y <b>voltímetro</b> en <u>paralelo</u> con el componente. Fíjate en los signos + y −: si los conectas al revés, la lectura sale negativa.</li>'+
+  '<li>Pulsa <b>Comprobar montaje</b> para saber si tu circuito está bien hecho. Puedes <b>guardar</b> el montaje en un archivo.</li>'+
+  '<li>Contesta en la hoja de respuestas (a la derecha) con lo que midas y pulsa <b>Comprobar respuestas</b>.</li>'+
+  '<li>En «Entrega» descarga el <b>PDF</b>.</li></ol>'+
+  '<p class="muted small">Tu trabajo se guarda automáticamente en este navegador, pero descarga el PDF antes de cerrar.</p></div>';
+}
+function theoryCard(sec){
+  if(sec==='p1')return '<div class="card"><h2>Práctica 1 · Circuito elemental. Elementos de maniobra</h2>'+
+  '<p>Los <b>elementos de maniobra o de control</b> son dispositivos que nos permiten controlar lo que sucede en un circuito: encender o apagar lámparas, resistencias, poner en marcha motores, etc. El <b>interruptor</b> mantiene su posición; el <b>pulsador N.A.</b> (normalmente abierto) solo deja pasar la corriente mientras se acciona; el <b>pulsador N.C.</b> (normalmente cerrado) la corta mientras se acciona.</p>'+
+  '<table class="comp"><tr><th>Generadores</th><th>Receptores</th><th>Elementos de maniobra</th><th>Aparatos de medida</th></tr><tr><td>Pila de 5 V</td><td>1 resistencia fija (50 Ω)</td><td>Interruptor, pulsador N.A., pulsador N.C.</td><td>1 amperímetro, 1 voltímetro</td></tr></table>'+
+  '<h4>Procedimiento</h4><ol class="steps"><li>Elige los componentes necesarios en la biblioteca y llévalos al área de trabajo.</li><li>Establece los valores: pila, 5 V; resistencia, 50 Ω.</li><li>Coloca el interruptor, completa el circuito con cables y pulsa «Comprobar montaje». Guarda el montaje (practica1_nombre1_nombre2).</li><li>Cierra el interruptor, ¿qué sucede? Mide con el amperímetro con el interruptor abierto y cerrado.</li><li>Sustituye el interruptor por el pulsador N.A. Acciónalo y describe lo que sucede.</li><li>Ídem para el pulsador N.C.</li><li>Cumplimenta la hoja de respuestas.</li></ol></div>';
+  return '<div class="card"><h2>Práctica 2 · Circuito serie</h2>'+
+  '<p>El <b>circuito serie</b> se caracteriza porque solo hay <b>un único camino</b> para que circule la intensidad: el recorrido que va del positivo de la pila al negativo atravesando todos los receptores, uno a continuación de otro. Su principal inconveniente: si uno de los componentes se estropea, el circuito completo deja de funcionar.</p>'+
+  '<table class="comp"><tr><th>Generadores</th><th>Receptores</th><th>Elementos de maniobra</th><th>Aparatos de medida</th></tr><tr><td>Una pila de 6 V</td><td>2 resistencias fijas: R<sub>1</sub> = 12 Ω, R<sub>2</sub> = 8 Ω</td><td>1 interruptor</td><td>1 amperímetro, 1 voltímetro</td></tr></table>'+
+  '<h4>Procedimiento</h4><ol class="steps"><li>Elige los componentes necesarios y llévalos al área de trabajo.</li><li>Establece los valores: 6 V para la pila, R<sub>1</sub> = 12 Ω, R<sub>2</sub> = 8 Ω.</li><li>Completa el montaje con el interruptor y los cables. Guárdalo (practica2_nombre1_nombre2).</li><li>Calcula el circuito equivalente en tu cuaderno.</li><li>Cierra el interruptor.</li><li>Mide la intensidad que sale de la pila, la que entra y sale de R<sub>1</sub> y la que entra y sale de R<sub>2</sub> (mueve el amperímetro).</li><li>Mide el voltaje en la pila, en R<sub>1</sub>, en R<sub>2</sub> y entre los extremos de las dos resistencias (mueve el voltímetro).</li><li>Monta el circuito equivalente (pestaña «Circuito equivalente») y mide la intensidad.</li></ol></div>';
+}
+function answersP1(){
+  return '<div class="card"><h2>Hoja de respuestas · Práctica 1</h2>'+NUM.p1.map(numRow).join('')+
+  '<h4>Observaciones</h4>'+textQ('obs_sw')+textQ('obs_na')+textQ('obs_nc')+
+  '<p class="muted small">Escribe las intensidades en amperios (A), con coma o punto decimal.</p>'+
+  '<p><button class="primary" data-check="p1">Comprobar respuestas</button> <button data-go="p2">Siguiente: Práctica 2 →</button></p><div class="sumline" id="sum-p1"></div></div>';
+}
+function answersP2(){
+  const f=id=>numRow(NUM.p2.find(x=>x.id===id));
+  const sel=(id)=>{const F=FILL.find(x=>x.id===id);return '<select class="inl" data-ans="'+id+'" aria-label="hueco"><option value="">— elige —</option>'+F.opts.map(o=>'<option>'+o+'</option>').join('')+'</select>';};
+  return '<div class="card"><h2>Hoja de respuestas · Práctica 2</h2>'+
+  '<h4>Cálculo previo</h4>'+f('req')+
+  '<h4>Intensidades</h4>'+['ipila','i1in','i1out','i2in','i2out'].map(f).join('')+
+  '<h4>Voltajes</h4>'+['vpila','v1','v2','v12'].map(f).join('')+
+  textQ('why')+
+  '<h4>Completa</h4><p>En un circuito serie, la intensidad que proporciona la pila y la que pasa por cada componente es '+sel('fb1')+' <span class="mark" data-mark="fb1"></span></p>'+
+  '<p>La '+sel('fb2')+' <span class="mark" data-mark="fb2"></span> de la diferencia de potencial en cada uno de los receptores debe darnos la diferencia de potencial de la '+sel('fb3')+' <span class="mark" data-mark="fb3"></span></p>'+
+  '<h4>Circuito equivalente</h4>'+f('ieq')+
+  '<h4>Crea tus propias fórmulas</h4><p class="muted small">Como resumen, crea fórmulas para recordar todo sobre el circuito serie.</p>'+formHTML('fI')+formHTML('fV')+formHTML('fR')+
+  '<p><button class="primary" data-check="p2">Comprobar respuestas</button> <button data-go="fin">Ir a la entrega →</button></p><div class="sumline" id="sum-p2"></div></div>';
+}
+function practiceHTML(sec){
+  if(sec==='p1')return '<div class="pgrid"><div>'+theoryCard('p1')+benchHTML('p1','Área de trabajo · Práctica 1')+'</div><div>'+answersP1()+'</div></div>';
+  return '<div class="pgrid"><div>'+theoryCard('p2')+'<div class="tabs2" id="tabs-p2"><button class="on" data-bt="p2">Circuito serie</button><button data-bt="p2eq">Circuito equivalente</button></div>'+
+    benchHTML('p2','Área de trabajo · Circuito serie')+'<div id="wrap-eq" style="display:none">'+benchHTML('p2eq','Área de trabajo · Circuito equivalente (R<sub>eq</sub>)')+'</div></div><div>'+answersP2()+'</div></div>';
+}
+function refreshMarks(sec){
+  const lab={ok:'✔ Correcto',bad:'✘ Revisa',empty:'· Falta',text:'✔ Anotado'};
+  $$('#v-'+sec+' [data-mark]').forEach(m=>{
+    if(!S.checked[sec]){m.textContent='';m.className='mark';return;}
+    const st=statusOf(m.dataset.mark);m.textContent=lab[st];m.className='mark '+st;
+  });
+  const ev=evaluate(),it=ev.sections.find(s=>s.key===sec).items,ok=it.filter(i=>i.st==='ok').length;
+  const el=$('#sum-'+sec);
+  if(S.checked[sec])el.innerHTML='Has acertado <span class="'+(ok===it.length?'ok-t':'bad-t')+'">'+ok+' de '+it.length+'</span> apartados comprobables. '+(ok<it.length?'Repasa las medidas marcadas con ✘ (¿dónde conectas el aparato?). ':'¡Muy bien! ')+'Los textos los revisará tu profesor.';
+  else el.textContent='';
+}
+function bindAnswers(){
+  $$('[data-ans]').forEach(el=>{
+    const id=el.dataset.ans;el.value=S.ans[id]||'';
+    el.addEventListener('input',()=>{S.ans[id]=el.value;persist();});
+    el.addEventListener('change',()=>{S.ans[id]=el.value;persist();});
+  });
+  Object.keys(FORMS).forEach(renderForm);
+}
+function renderFinal(){
+  const ev=evaluate(),okN=S.names.n1.trim()&&S.names.group.trim();
+  let h='<div class="card"><h2>Entrega · Hoja de respuestas en PDF</h2>';
+  h+='<p><b>Alumno/s:</b> '+esc([S.names.n1,S.names.n2].filter(Boolean).join(' y ')||'—')+' · <b>Grupo:</b> '+esc(S.names.group||'—')+' <button data-go="datos">Editar datos</button></p>';
+  if(!okN)h+='<p class="bad-t">Rellena al menos el nombre del alumno 1 y el grupo para poder descargar el PDF.</p>';
+  h+='<table class="res"><tr><th>Apartado</th><th>Estado</th></tr>';
+  [['p1','Montaje Práctica 1'],['p2','Montaje Práctica 2 (serie)'],['p2eq','Montaje circuito equivalente']].forEach(a=>{
+    h+='<tr><td>'+a[1]+'</td><td>'+(ev.boards[a[0]].ok?'<span class="ok-t">✔ Verificado</span>':'<span class="bad-t">Sin verificar</span>')+'</td></tr>';});
+  h+='<tr><td>Respuestas comprobables correctas</td><td><b>'+ev.ok+' / '+ev.total+'</b></td></tr></table>';
+  if(ev.pend.length)h+='<h4>Pendiente de completar</h4><ul class="pend">'+ev.pend.map(p=>'<li>'+esc(p)+'</li>').join('')+'</ul>';
+  else h+='<p class="ok-t">¡Todo completado!</p>';
+  h+='<p><button class="primary big" id="btn-pdf"'+(okN?'':' disabled')+'>Descargar PDF'+(ev.pend.length?' (incompleto)':'')+'</button></p>'+
+  '<p class="muted small">Archivo: '+esc(pdfName())+'</p></div>'+
+  '<div class="card"><h3>Copia de seguridad</h3><p class="muted small">Guarda todo tu trabajo en un archivo para continuar en otro ordenador.</p><button id="btn-sv">Guardar trabajo (.json)</button> <button id="btn-op">Abrir trabajo</button><input type="file" accept=".json" hidden id="file-all"></div>';
+  $('#v-fin').innerHTML=h;
+  $('#btn-pdf').onclick=()=>{try{download(pdfName(),buildPDF(),'application/pdf');}catch(e){alert('Error al crear el PDF: '+e.message);}};
+  $('#btn-sv').onclick=()=>download('trabajo_'+(slug(S.names.n1)||'alumno')+'.json',JSON.stringify(S),'application/json');
+  $('#btn-op').onclick=()=>$('#file-all').click();
+  $('#file-all').onchange=e=>{
+    const f=e.target.files[0];if(!f)return;const r=new FileReader();
+    r.onload=()=>{try{
+      const o=JSON.parse(r.result);if(!o.boards||!o.names)throw 0;
+      ['p1','p2','p2eq'].forEach(k=>{const nb=sanitizeBoard(o.boards[k]);if(nb)S.boards[k]=nb;});
+      S.names=Object.assign(S.names,o.names);S.ans=Object.assign({fI:[],fV:[],fR:[]},o.ans||{});persist();location.reload();
+    }catch(x){alert('Archivo no válido.');}};r.readAsText(f);
+  };
+}
+function go(v){
+  S.view=v;
+  $$('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  $$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.go===v));
+  if(v==='fin')renderFinal();
+  if(v==='p1')redraw('p1');
+  if(v==='p2'){redraw('p2');redraw('p2eq');}
+  window.scrollTo(0,0);persist();
+}
+function init(){
+  load();
+  $('#v-datos').innerHTML=datosHTML();
+  $('#v-p1').innerHTML=practiceHTML('p1');
+  $('#v-p2').innerHTML=practiceHTML('p2');
+  ['p1','p2','p2eq'].forEach(initBench);
+  bindAnswers();
+  [['n1','n1'],['n2','n2'],['grp','group']].forEach(a=>{
+    const el=$('#'+a[0]);el.value=S.names[a[1]]||'';
+    el.addEventListener('input',()=>{S.names[a[1]]=el.value;persist();});
+  });
+  document.addEventListener('click',e=>{
+    const g=e.target.closest('[data-go]');if(g){go(g.dataset.go);return;}
+    const c=e.target.closest('[data-check]');if(c){S.checked[c.dataset.check]=true;refreshMarks(c.dataset.check);persist();return;}
+    const bt=e.target.closest('[data-bt]');
+    if(bt){
+      const k=bt.dataset.bt;
+      $('#bench-p2').style.display=k==='p2'?'':'none';$('#wrap-eq').style.display=k==='p2eq'?'':'none';
+      $$('#tabs-p2 button').forEach(b=>b.classList.toggle('on',b===bt));redraw(k);UI.active=k;return;
+    }
+    const t=e.target.closest('[data-tok]');
+    if(t){const id=t.dataset.f;S.ans[id]=(S.ans[id]||[]).concat(t.dataset.tok);renderForm(id);persist();return;}
+    const bk=e.target.closest('[data-fback]');if(bk){const id=bk.dataset.fback;S.ans[id]=(S.ans[id]||[]).slice(0,-1);renderForm(id);persist();return;}
+    const cl=e.target.closest('[data-fclear]');if(cl){const id=cl.dataset.fclear;S.ans[id]=[];renderForm(id);persist();}
+  });
+  document.addEventListener('keydown',e=>{
+    if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+    const key=UI.active,bench=$('#bench-'+key);if(!bench||!bench.offsetParent)return;
+    if(e.key==='r'||e.key==='R')rotComp(key);
+    else if(e.key==='Delete'||e.key==='Backspace'){
+      e.preventDefault();
+      if(UI.selWire[key]!=null){S.boards[key].wires.splice(UI.selWire[key],1);UI.selWire[key]=null;props(key);redraw(key);touch(key);}
+      else delComp(key);
+    }else if(e.key==='Escape'){UI.wire=null;redraw(key);}
+  });
+  go(S.names.n1&&S.names.group?(S.view||'datos'):'datos');
+}
+init();
+</script>
+</body>
+</html>
