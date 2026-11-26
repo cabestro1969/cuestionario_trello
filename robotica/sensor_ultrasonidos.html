@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Robótica 3.º ESO · Sensor de Ultrasonidos HC-SR04 y Parking</title>
+  <style>
+    :root {
+      --arduino-teal: #00979D;
+      --arduino-dark: #005C5F;
+      --accent: #E47128;
+      --bg: #F3F6F9;
+      --surface: #FFFFFF;
+      --text: #1E293B;
+      --muted: #64748B;
+      --border: #CBD5E1;
+      --code-bg: #0F172A;
+      --code-text: #E2E8F0;
+      --success: #16A34A;
+      --warning: #CA8A04;
+      --danger: #DC2626;
+      --shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      padding-bottom: 50px;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, #0F172A 0%, var(--arduino-dark) 60%, var(--arduino-teal) 100%);
+      color: #fff;
+      padding: 22px 20px 18px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+    }
+
+    .header-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .badge {
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    header h1 {
+      font-size: 1.55rem;
+      font-weight: 700;
+    }
+
+    header p {
+      font-size: 0.94rem;
+      opacity: 0.9;
+      margin-top: 3px;
+    }
+
+    /* NAVIGATION TABS */
+    .nav-wrapper {
+      background: var(--surface);
+      border-bottom: 2px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .nav-tabs {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      overflow-x: auto;
+      gap: 6px;
+      padding: 10px 16px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      background: #F1F5F9;
+      color: var(--text);
+      font-size: 0.96rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      background: #E2E8F0;
+    }
+
+    .tab-btn.active {
+      background: #E6F7F7;
+      border-color: var(--arduino-teal);
+      color: var(--arduino-dark);
+    }
+
+    .tab-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--muted);
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .tab-btn.active .tab-num {
+      background: var(--arduino-teal);
+    }
+
+    /* MAIN CONTAINER */
+    main {
+      max-width: 1180px;
+      margin: 24px auto 0;
+      padding: 0 16px;
+    }
+
+    .section-panel {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .section-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* CARDS & GRIDS */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+
+    .card h2 {
+      font-size: 1.28rem;
+      color: var(--arduino-dark);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h3 {
+      font-size: 1.05rem;
+      color: var(--text);
+      margin: 14px 0 8px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    /* CALLOUTS */
+    .callout {
+      border-left: 5px solid var(--arduino-teal);
+      background: #F0FDFA;
+      padding: 14px 16px;
+      border-radius: 0 10px 10px 0;
+      margin: 12px 0;
+      font-size: 0.95rem;
+    }
+
+    .callout.warn {
+      border-left-color: var(--accent);
+      background: #FFF7ED;
+    }
+
+    .callout.tip {
+      border-left-color: var(--success);
+      background: #F0FDF4;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.2s, background 0.2s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--arduino-teal);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--arduino-dark); }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-accent:hover { background: #C85E1B; }
+
+    .btn-dark {
+      background: #1E293B;
+      color: #fff;
+    }
+    .btn-dark:hover { background: #334155; }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn-outline:hover { background: #F8FAFC; border-color: var(--arduino-teal); }
+
+    .btn-sm {
+      padding: 6px 11px;
+      font-size: 0.82rem;
+    }
+
+    /* FORMULA BOX */
+    .formula-box {
+      background: #0F172A;
+      color: #F8FAFC;
+      padding: 16px 20px;
+      border-radius: 12px;
+      text-align: center;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 1.1rem;
+      margin: 14px 0;
+      border: 2px solid var(--arduino-teal);
+    }
+
+    .formula-highlight {
+      color: #38BDF8;
+      font-weight: 700;
+    }
+
+    /* INTERACTIVE PINOUT */
+    .pin-btn {
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .pin-btn:hover {
+      opacity: 0.85;
+    }
+
+    .pin-info-box {
+      background: #F8FAFC;
+      border: 2px solid var(--arduino-teal);
+      border-radius: 10px;
+      padding: 14px;
+      min-height: 112px;
+    }
+
+    /* SIMULATOR TRACKS */
+    .sim-stage {
+      background: linear-gradient(180deg, #E2E8F0 0%, #CBD5E1 100%);
+      border-radius: 12px;
+      padding: 18px;
+      border: 2px solid #94A3B8;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .track-road {
+      background: #334155;
+      height: 110px;
+      border-radius: 10px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      border-bottom: 4px solid #1E293B;
+      margin-bottom: 14px;
+    }
+
+    .track-dashed {
+      position: absolute;
+      left: 80px;
+      right: 20px;
+      top: 50%;
+      height: 3px;
+      border-top: 3px dashed rgba(255,255,255,0.35);
+      pointer-events: none;
+    }
+
+    .sensor-mount {
+      width: 46px;
+      height: 76px;
+      background: #0284C7;
+      border-radius: 6px;
+      border: 2px solid #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 4;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .sensor-eye {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #334155 35%, #CBD5E1 40%, #94A3B8 100%);
+      border: 2px solid #475569;
+    }
+
+    .car-object {
+      position: absolute;
+      top: 25px;
+      width: 96px;
+      height: 58px;
+      transition: left 0.08s linear;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+    }
+
+    .wave-beam {
+      position: absolute;
+      top: 44px;
+      height: 22px;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 3;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      background: #fff;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    input[type="range"] {
+      flex: 1;
+      min-width: 180px;
+      accent-color: var(--arduino-teal);
+      height: 8px;
+      cursor: pointer;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .metric-box {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      text-align: center;
+    }
+
+    .metric-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .metric-val {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--arduino-dark);
+      font-family: 'Consolas', monospace;
+    }
+
+    /* LEDS & HARDWARE INDICATORS */
+    .hardware-panel {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-around;
+      gap: 18px;
+      background: #1E293B;
+      color: #fff;
+      padding: 18px;
+      border-radius: 12px;
+      margin-top: 14px;
+    }
+
+    .led-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .led-bulb {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+      transition: all 0.15s ease;
+    }
+
+    .led-red { background: #450A0A; }
+    .led-red.on {
+      background: #EF4444;
+      box-shadow: 0 0 22px #EF4444, 0 0 8px #FCA5A5 inset;
+      border-color: #FCA5A5;
+    }
+
+    .led-yellow { background: #422006; }
+    .led-yellow.on {
+      background: #FACC15;
+      box-shadow: 0 0 22px #FACC15, 0 0 8px #FEF08A inset;
+      border-color: #FEF08A;
+    }
+
+    .led-green { background: #052E16; }
+    .led-green.on {
+      background: #22C55E;
+      box-shadow: 0 0 22px #22C55E, 0 0 8px #86EFAC inset;
+      border-color: #86EFAC;
+    }
+
+    /* SERIAL MONITOR */
+    .serial-monitor {
+      background: #0B1120;
+      color: #4ADE80;
+      font-family: 'Consolas', 'Courier New', monospace;
+      border-radius: 10px;
+      border: 2px solid #334155;
+      overflow: hidden;
+    }
+
+    .serial-header {
+      background: #1E293B;
+      color: #E2E8F0;
+      padding: 7px 12px;
+      font-size: 0.82rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+    }
+
+    .serial-body {
+      height: 155px;
+      overflow-y: auto;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    /* CODE BLOCKS */
+    .code-wrapper {
+      background: var(--code-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #334155;
+      margin-top: 12px;
+    }
+
+    .code-toolbar {
+      background: #1E293B;
+      padding: 10px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #334155;
+    }
+
+    .code-title {
+      color: #38BDF8;
+      font-family: 'Consolas', monospace;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    pre {
+      padding: 16px;
+      overflow-x: auto;
+      color: var(--code-text);
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      tab-size: 2;
+    }
+
+    .kw { color: #C084FC; font-weight: 600; }
+    .fn { color: #38BDF8; }
+    .num { color: #FBBF24; }
+    .str { color: #4ADE80; }
+    .cm { color: #94A3B8; font-style: italic; }
+
+    /* TABLE */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.92rem;
+    }
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+    th {
+      background: #F1F5F9;
+      color: var(--arduino-dark);
+      font-weight: 700;
+    }
+
+    /* STEP LIST */
+    .steps-list {
+      list-style: none;
+      counter-reset: step;
+    }
+    .steps-list li {
+      counter-increment: step;
+      position: relative;
+      padding-left: 40px;
+      margin-bottom: 12px;
+    }
+    .steps-list li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 1px;
+      width: 28px;
+      height: 28px;
+      background: var(--arduino-teal);
+      color: #fff;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* CHALLENGE PILLS */
+    .subtabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .subtab-btn {
+      padding: 9px 14px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .subtab-btn.active {
+      background: var(--arduino-dark);
+      color: #fff;
+      border-color: var(--arduino-dark);
+    }
+
+    /* BARRIER SERVO PREVIEW */
+    .barrier-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .barrier-stage {
+      width: 130px;
+      height: 75px;
+      background: #0F172A;
+      border-radius: 8px;
+      position: relative;
+      border: 1px solid #475569;
+      overflow: hidden;
+    }
+
+    .barrier-post {
+      position: absolute;
+      bottom: 0;
+      left: 18px;
+      width: 14px;
+      height: 36px;
+      background: #94A3B8;
+      border-radius: 3px 3px 0 0;
+    }
+
+    .barrier-arm {
+      position: absolute;
+      bottom: 28px;
+      left: 24px;
+      width: 82px;
+      height: 8px;
+      background: repeating-linear-gradient(90deg, #EF4444 0 12px, #FFFFFF 12px 24px);
+      border-radius: 4px;
+      transform-origin: 4px 4px;
+      transform: rotate(0deg);
+      transition: transform 0.35s ease;
+    }
+
+    /* QUIZ */
+    .quiz-item {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .quiz-feedback {
+      margin-top: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    /* FLOWCHART INTERACTIVE */
+    .flow-node {
+      transition: all 0.25s ease;
+    }
+
+    /* DOWNLOAD NAME INPUT */
+    .ino-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      background: #F8FAFC;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-top: 12px;
+    }
+
+    .ino-bar input[type="text"] {
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      min-width: 200px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #0F172A;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      border-left: 4px solid var(--success);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: all 0.25s;
+      z-index: 999;
+      font-weight: 600;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 640px) {
+      header h1 { font-size: 1.25rem; }
+      .tab-btn { min-width: 170px; font-size: 0.88rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="badge-row">
+        <span class="badge">Control y Robótica · 3.º ESO</span>
+        <span class="badge">Arduino UNO + HC-SR04</span>
+        <span class="badge">Proyecto: Barrera de Aparcamiento</span>
+      </div>
+      <h1>Sensor de Ultrasonidos y Sistema de Aparcamiento</h1>
+      <p>Aprende cómo mide distancias un sensor ultrasónico, monta la práctica base y supera los desafíos de programación.</p>
+    </div>
+  </div>
+</header>
+
+<div class="nav-wrapper">
+  <nav class="nav-tabs" role="tablist">
+    <button class="tab-btn active" onclick="switchTab('sec1', this)">
+      <span class="tab-num">1</span> Explicación del Sensor
+    </button>
+    <button class="tab-btn" onclick="switchTab('sec2', this)">
+      <span class="tab-num">2</span> Práctica de Aparcamiento
+    </button>
+    <button class="tab-btn" onclick="switchTab('sec3', this)">
+      <span class="tab-num">3</span> Programas a Mayores y Desafíos
+    </button>
+  </nav>
+</div>
+
+<main>
+  <!-- =========================================================
+       PARTE 1: EXPLICACIÓN DEL SENSOR HC-SR04
+       ========================================================= -->
+  <section id="sec1" class="section-panel active">
+    <div class="card">
+      <h2>¿Qué es y cómo funciona el sensor de ultrasonidos HC-SR04?</h2>
+      <p>
+        Al igual que los murciélagos o los delfines usan la <strong>ecolocalización</strong> para orientarse sin chocar, el sensor <strong>HC-SR04</strong> emite un sonido inaudible para el oído humano (ultrasonido a 40 kHz) y mide cuánto tiempo tarda en rebotar contra un objeto y regresar.
+      </p>
+
+      <div class="grid-2" style="margin-top: 16px; align-items: center;">
+        <div>
+          <h3>Anatomía del sensor (haz clic en cada elemento)</h3>
+          <svg viewBox="0 0 360 210" style="width:100%; max-width:380px; display:block; margin: 0 auto; background:#F8FAFC; border-radius:12px; border:1px solid #CBD5E1;">
+            <!-- PCB -->
+            <rect x="30" y="25" width="300" height="125" rx="10" fill="#0369A1" stroke="#0F172A" stroke-width="2"/>
+            <!-- Mounting holes -->
+            <circle cx="44" cy="39" r="5" fill="#F8FAFC" stroke="#0F172A" stroke-width="1.5"/>
+            <circle cx="316" cy="39" r="5" fill="#F8FAFC" stroke="#0F172A" stroke-width="1.5"/>
+            <circle cx="44" cy="136" r="5" fill="#F8FAFC" stroke="#0F172A" stroke-width="1.5"/>
+            <circle cx="316" cy="136" r="5" fill="#F8FAFC" stroke="#0F172A" stroke-width="1.5"/>
+            <!-- Crystal -->
+            <rect x="160" y="18" width="40" height="14" rx="5" fill="#CBD5E1" stroke="#475569"/>
+            <!-- Transducer T -->
+            <g class="pin-btn" onclick="showPinInfo('T')">
+              <circle cx="95" cy="85" r="42" fill="#CBD5E1" stroke="#334155" stroke-width="3"/>
+              <circle cx="95" cy="85" r="30" fill="#334155"/>
+              <circle cx="95" cy="85" r="14" fill="#64748B"/>
+              <text x="48" y="138" fill="#FFFFFF" font-size="13" font-weight="bold">T (Emisor)</text>
+            </g>
+            <!-- Transducer R -->
+            <g class="pin-btn" onclick="showPinInfo('R')">
+              <circle cx="265" cy="85" r="42" fill="#CBD5E1" stroke="#334155" stroke-width="3"/>
+              <circle cx="265" cy="85" r="30" fill="#334155"/>
+              <circle cx="265" cy="85" r="14" fill="#64748B"/>
+              <text x="224" y="138" fill="#FFFFFF" font-size="13" font-weight="bold">R (Receptor)</text>
+            </g>
+            <text x="151" y="88" fill="#E0F2FE" font-size="13" font-weight="bold">HC-SR04</text>
+
+            <!-- 4 Pins -->
+            <g class="pin-btn" onclick="showPinInfo('VCC')">
+              <rect x="132" y="150" width="14" height="36" rx="2" fill="#EF4444" stroke="#0F172A"/>
+              <text x="128" y="201" fill="#DC2626" font-size="11" font-weight="bold">VCC</text>
+            </g>
+            <g class="pin-btn" onclick="showPinInfo('TRIG')">
+              <rect x="160" y="150" width="14" height="36" rx="2" fill="#16A34A" stroke="#0F172A"/>
+              <text x="152" y="201" fill="#15803D" font-size="11" font-weight="bold">TRIG</text>
+            </g>
+            <g class="pin-btn" onclick="showPinInfo('ECHO')">
+              <rect x="188" y="150" width="14" height="36" rx="2" fill="#2563EB" stroke="#0F172A"/>
+              <text x="180" y="201" fill="#1D4ED8" font-size="11" font-weight="bold">ECHO</text>
+            </g>
+            <g class="pin-btn" onclick="showPinInfo('GND')">
+              <rect x="216" y="150" width="14" height="36" rx="2" fill="#1E293B" stroke="#0F172A"/>
+              <text x="212" y="201" fill="#0F172A" font-size="11" font-weight="bold">GND</text>
+            </g>
+          </svg>
+        </div>
+
+        <div>
+          <div id="pin-info" class="pin-info-box">
+            <strong style="color:var(--arduino-dark);">👆 Haz clic en T, R o en uno de los 4 pines</strong>
+            <p style="margin-top:6px; font-size:0.93rem;">Descubrirás qué hace cada parte del HC-SR04 y a qué pin de la placa Arduino UNO se conecta.</p>
+          </div>
+
+          <div class="callout" style="margin-top:14px;">
+            <strong>La física detrás del sensor (¿Por qué dividimos entre 2?):</strong>
+            <ul style="margin:6px 0 0 18px; font-size:0.92rem;">
+              <li>La velocidad del sonido en el aire es aprox. <strong>340 m/s</strong> (o 343 m/s a 20 ºC), lo que equivale a <strong>0,034 cm/µs</strong> (recorre 1 cm cada 29,2 µs).</li>
+              <li>El sonido hace un viaje de <strong>ida y vuelta</strong> (sensor → coche → sensor).</li>
+              <li>Por tanto, la distancia hasta el coche es la <strong>mitad</strong> del espacio total recorrido:</li>
+            </ul>
+            <div class="formula-box">
+              Distancia (cm) = <span class="formula-highlight">(Tiempo × 0,034) / 2</span> = <span class="formula-highlight">0,017 × Tiempo (µs)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIMULADOR DE ONDA -->
+    <div class="card">
+      <h2>Laboratorio interactivo: Simulador de Pulso Ultrasónico</h2>
+      <p>Mueve el coche y pulsa <strong>"¡Lanzar pulso ultrasónico!"</strong> para observar en cámara lenta cómo viaja el sonido desde <strong>Trigger</strong> y vuelve a <strong>Echo</strong>.</p>
+
+      <div class="sim-stage" style="margin-top:14px;">
+        <div class="track-road" id="s1-road">
+          <div class="track-dashed"></div>
+          <div class="sensor-mount" title="Sensor HC-SR04">
+            <div class="sensor-eye"></div>
+            <div class="sensor-eye"></div>
+          </div>
+          <!-- Wave animations -->
+          <div id="wave-out" class="wave-beam" style="border-right: 4px solid #38BDF8; background: rgba(56,189,248,0.22);"></div>
+          <div id="wave-back" class="wave-beam" style="border-left: 4px solid #FB923C; background: rgba(251,146,60,0.22);"></div>
+
+          <!-- Car -->
+          <div id="s1-car" class="car-object" style="left: 260px;">
+            <svg viewBox="0 0 100 60" width="96" height="58">
+              <rect x="6" y="12" width="88" height="36" rx="10" fill="#E47128" stroke="#fff" stroke-width="2"/>
+              <rect x="26" y="17" width="38" height="26" rx="5" fill="#BAE6FD"/>
+              <circle cx="10" cy="20" r="3.5" fill="#FEF08A"/>
+              <circle cx="10" cy="40" r="3.5" fill="#FEF08A"/>
+              <rect x="18" y="8" width="16" height="5" rx="2" fill="#0F172A"/>
+              <rect x="66" y="8" width="16" height="5" rx="2" fill="#0F172A"/>
+              <rect x="18" y="47" width="16" height="5" rx="2" fill="#0F172A"/>
+              <rect x="66" y="47" width="16" height="5" rx="2" fill="#0F172A"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <label for="s1-slider"><strong>Distancia real del coche:</strong></label>
+          <input type="range" id="s1-slider" min="5" max="100" value="30" oninput="updateSec1Slider()" />
+          <span id="s1-dist-label" style="font-weight:700; min-width:65px;">30 cm</span>
+          <button class="btn btn-primary" onclick="firePulseAnimation()">📡 ¡Lanzar pulso ultrasónico!</button>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric-box">
+            <div class="metric-label">Estado del pulso</div>
+            <div class="metric-val" id="s1-status" style="font-size:1rem;">Listo</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Tiempo Echo (ida + vuelta)</div>
+            <div class="metric-val" id="s1-time">1765 µs</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Cálculo: 0,017 × t</div>
+            <div class="metric-val" id="s1-calc">30 cm</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MINI-TEST DE COMPRENSIÓN -->
+    <div class="card">
+      <h2>Comprueba lo aprendido antes de montar el circuito</h2>
+      <div class="quiz-item">
+        <strong>1. Si la función <code>pulseIn(ECHO, HIGH)</code> mide un tiempo de <code>1000 µs</code>, ¿a qué distancia está el obstáculo?</strong>
+        <div class="quiz-options">
+          <button class="btn btn-outline btn-sm" onclick="checkQuiz(1, false, this)">34 cm</button>
+          <button class="btn btn-outline btn-sm" onclick="checkQuiz(1, true, this)">17 cm</button>
+          <button class="btn btn-outline btn-sm" onclick="checkQuiz(1, false, this)">58 cm</button>
+        </div>
+        <div id="q1-fb" class="quiz-feedback"></div>
+      </div>
+
+      <div class="quiz-item">
+        <strong>2. ¿Qué pin del sensor HC-SR04 se configura como SALIDA (<code>OUTPUT</code>) en Arduino para emitir el sonido?</strong>
+        <div class="quiz-options">
+          <button class="btn btn-outline btn-sm" onclick="checkQuiz(2, true, this)">TRIGGER (Pin 2)</button>
+          <button class="btn btn-outline btn-sm" onclick="checkQuiz(2, false, this)">ECHO (Pin 3)</button>
+          <button class="btn btn-outline btn-sm" onclick="checkQuiz(2, false, this)">GND</button>
+        </div>
+        <div id="q2-fb" class="quiz-feedback"></div>
+      </div>
+
+      <div class="quiz-item">
+        <strong>3. ¿Por qué multiplicamos por <code>0,017</code> en lugar de por <code>0,034</code>?</strong>
+        <div class="quiz-options">
+          <button class="btn btn-outline btn-sm" onclick="checkQuiz(3, false, this)">Porque el sonido va más lento en un parking</button>
+          <button class="btn btn-outline btn-sm" onclick="checkQuiz(3, true, this)">Porque el pulso recorre el doble de distancia (ida y vuelta)</button>
+        </div>
+        <div id="q3-fb" class="quiz-feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       PARTE 2: PRÁCTICA DE APARCAMIENTO (BASE PARA LA BARRERA)
+       ========================================================= -->
+  <section id="sec2" class="section-panel">
+    <div class="callout tip">
+      <strong>Objetivo del Proyecto (Parte 1 de 2):</strong> Hoy construimos el <strong>sistema de detección</strong> de nuestra barrera de aparcamiento (Práctica 8). Cuando un coche se acerque por debajo de la distancia de seguridad, Arduino encenderá un <strong>LED rojo</strong> de aviso. <em>En la próxima sesión sustituiremos o combinaremos este aviso con el <strong>servomotor</strong> que subirá la barrera.</em>
+    </div>
+
+    <div class="grid-2">
+      <!-- ESQUEMA DE MONTAJE -->
+      <div class="card">
+        <h2>Esquema de montaje en Protoboard</h2>
+        <svg viewBox="0 0 460 280" style="width:100%; background:#F8FAFC; border:1px solid #CBD5E1; border-radius:10px;">
+          <!-- Arduino UNO -->
+          <rect x="18" y="48" width="155" height="190" rx="8" fill="#00878F" stroke="#0F172A" stroke-width="2"/>
+          <rect x="6" y="72" width="24" height="32" fill="#94A3B8" stroke="#334155"/> <!-- USB -->
+          <rect x="10" y="185" width="26" height="24" fill="#1E293B"/> <!-- Jack -->
+          <text x="58" y="140" fill="#FFFFFF" font-size="15" font-weight="bold">ARDUINO</text>
+          <text x="74" y="158" fill="#CCFBF1" font-size="13" font-weight="bold">UNO</text>
+          <!-- Pins top (Digital) -->
+          <rect x="55" y="54" width="108" height="14" fill="#1E293B" rx="2"/>
+          <text x="148" y="79" fill="#fff" font-size="9">2</text>
+          <text x="134" y="79" fill="#fff" font-size="9">3</text>
+          <text x="120" y="79" fill="#fff" font-size="9">4</text>
+          <!-- Pins bottom (Power) -->
+          <rect x="55" y="218" width="85" height="14" fill="#1E293B" rx="2"/>
+          <text x="68" y="214" fill="#fff" font-size="9">5V</text>
+          <text x="90" y="214" fill="#fff" font-size="9">GND</text>
+
+          <!-- Protoboard -->
+          <rect x="210" y="95" width="232" height="145" rx="6" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2"/>
+          <line x1="220" y1="112" x2="432" y2="112" stroke="#EF4444" stroke-width="2"/>
+          <line x1="220" y1="122" x2="432" y2="122" stroke="#2563EB" stroke-width="2"/>
+          <text x="214" y="115" fill="#EF4444" font-size="10" font-weight="bold">+</text>
+          <text x="214" y="126" fill="#2563EB" font-size="10" font-weight="bold">-</text>
+
+          <!-- HC-SR04 on top right -->
+          <rect x="295" y="15" width="120" height="50" rx="6" fill="#0284C7" stroke="#0F172A" stroke-width="2"/>
+          <circle cx="322" cy="40" r="14" fill="#CBD5E1" stroke="#334155" stroke-width="2"/>
+          <circle cx="388" cy="40" r="14" fill="#CBD5E1" stroke="#334155" stroke-width="2"/>
+          <text x="339" y="29" fill="#fff" font-size="9" font-weight="bold">HC-SR04</text>
+
+          <!-- Wires from Arduino Power to Protoboard rails -->
+          <path d="M 74 232 L 74 256 L 195 256 L 195 112 L 224 112" fill="none" stroke="#EF4444" stroke-width="3"/>
+          <path d="M 96 232 L 96 266 L 202 266 L 202 122 L 224 122" fill="none" stroke="#1E293B" stroke-width="3"/>
+
+          <!-- HC-SR04 Wires -->
+          <!-- VCC -> + rail -->
+          <path d="M 335 65 L 335 112" fill="none" stroke="#EF4444" stroke-width="2.5"/>
+          <!-- TRIG -> Pin 2 -->
+          <path d="M 350 65 L 350 85 L 240 85 L 240 24 L 151 24 L 151 54" fill="none" stroke="#16A34A" stroke-width="2.5"/>
+          <!-- ECHO -> Pin 3 -->
+          <path d="M 365 65 L 365 78 L 250 78 L 250 32 L 137 32 L 137 54" fill="none" stroke="#2563EB" stroke-width="2.5"/>
+          <!-- GND -> - rail -->
+          <path d="M 380 65 L 380 122" fill="none" stroke="#1E293B" stroke-width="2.5"/>
+
+          <!-- LED + Resistor on Protoboard -->
+          <!-- Resistor -->
+          <rect x="255" y="158" width="26" height="10" rx="3" fill="#FDE68A" stroke="#92400E" stroke-width="1.5"/>
+          <line x1="246" y1="163" x2="255" y2="163" stroke="#64748B" stroke-width="2"/>
+          <line x1="281" y1="163" x2="292" y2="163" stroke="#64748B" stroke-width="2"/>
+          <!-- LED -->
+          <circle cx="298" cy="146" r="10" fill="#EF4444" stroke="#7F1D1D" stroke-width="1.5"/>
+          <line x1="294" y1="155" x2="294" y2="178" stroke="#64748B" stroke-width="2"/>
+          <line x1="302" y1="155" x2="302" y2="122" stroke="#1E293B" stroke-width="2"/>
+          <!-- Wire Pin 4 to Resistor -->
+          <path d="M 123 54 L 123 40 L 232 40 L 232 163 L 246 163" fill="none" stroke="#A855F7" stroke-width="2.5"/>
+
+          <text x="235" y="195" fill="#475569" font-size="10" font-weight="bold">R = 220 Ω + LED Rojo (Pin 4)</text>
+        </svg>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Componente / Pin</th>
+              <th>Conexión en Arduino UNO</th>
+              <th>Función</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>HC-SR04 <strong>VCC</strong></td><td>Pin <strong>5V</strong> (línea roja +)</td><td>Alimentación del sensor</td></tr>
+            <tr><td>HC-SR04 <strong>GND</strong></td><td>Pin <strong>GND</strong> (línea negra -)</td><td>Masa / Tierra</td></tr>
+            <tr><td>HC-SR04 <strong>TRIG</strong></td><td>Pin digital <strong>2</strong></td><td>Emite pulso de sonido</td></tr>
+            <tr><td>HC-SR04 <strong>ECHO</strong></td><td>Pin digital <strong>3</strong></td><td>Recibe el rebote</td></tr>
+            <tr><td><strong>LED Rojo (+)</strong></td><td>Resistencia 220Ω → Pin <strong>4</strong></td><td>Señal luminosa de aviso</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- SIMULADOR DE PRÁCTICA 8 -->
+      <div class="card">
+        <h2>Simulador Práctica 8: Prueba tu código</h2>
+        <p>El PDF te pide probar primero con <strong>10 cm</strong> (Paso 9), luego cambiar a <strong>25 cm</strong> (Paso 10) y en la captura del IDE aparece <strong>30 cm</strong>. ¡Pruébalo aquí!</p>
+
+        <div class="ino-bar" style="margin-bottom:12px;">
+          <label for="s2-threshold"><strong>Distancia umbral (<code>if distancia &lt;=</code>):</strong></label>
+          <select id="s2-threshold" onchange="updatePracticeThreshold()" style="padding:7px 10px; border-radius:6px; border:1.5px solid var(--arduino-teal); font-weight:700;">
+            <option value="10">10 cm (Paso 9 Práctica 8)</option>
+            <option value="25" selected>25 cm (Paso 10 Práctica 8)</option>
+            <option value="30">30 cm (Ejemplo IDE pág. 2)</option>
+          </select>
+        </div>
+
+        <div class="sim-stage">
+          <div class="track-road">
+            <div class="track-dashed"></div>
+            <div class="sensor-mount">
+              <div class="sensor-eye"></div>
+              <div class="sensor-eye"></div>
+            </div>
+            <div id="s2-car" class="car-object" style="left: 220px;">
+              <svg viewBox="0 0 100 60" width="96" height="58">
+                <rect x="6" y="12" width="88" height="36" rx="10" fill="#0EA5E9" stroke="#fff" stroke-width="2"/>
+                <rect x="26" y="17" width="38" height="26" rx="5" fill="#E0F2FE"/>
+                <circle cx="10" cy="20" r="3.5" fill="#FEF08A"/>
+                <circle cx="10" cy="40" r="3.5" fill="#FEF08A"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="slider-row">
+            <label for="s2-slider"><strong>Acercar coche:</strong></label>
+            <input type="range" id="s2-slider" min="2" max="60" value="32" oninput="updateSec2Sim()" />
+            <span id="s2-dist-val" style="font-weight:700; min-width:58px;">32 cm</span>
+          </div>
+
+          <div class="hardware-panel">
+            <div class="led-unit">
+              <div id="s2-led" class="led-bulb led-red"></div>
+              <span style="font-size:0.85rem; font-weight:600;">LED ROJO (Pin 4)</span>
+              <span id="s2-led-txt" style="font-size:0.78rem; color:#94A3B8;">APAGADO (LOW)</span>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:0.8rem; color:#94A3B8; text-transform:uppercase;">Próxima sesión (Barrera)</div>
+              <div id="s2-barrier-hint" style="font-weight:700; font-size:0.95rem; margin-top:4px; color:#38BDF8;">Barrera cerrada (sin coche)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="serial-monitor" style="margin-top:14px;">
+          <div class="serial-header">
+            <span>Monitor Serie (COM3 · 9600 baudios)</span>
+            <button class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:0.75rem;" onclick="clearSerial('s2-serial')">Limpiar</button>
+          </div>
+          <div id="s2-serial" class="serial-body"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CÓDIGO DE LA PRÁCTICA Y DESCARGA .INO -->
+    <div class="card">
+      <h2>Código Arduino de la Práctica 8 (Paso a Paso)</h2>
+      <div class="grid-2">
+        <div>
+          <ol class="steps-list" style="margin-top:8px;">
+            <li><strong>Definición de pines y variables:</strong> Usamos <code>#define</code> para asociar nombres claros (<code>TRIGGER</code>, <code>ECHO</code>, <code>LEDROJO</code>) a los números de pin, y variables <code>long</code> para <code>tiempo</code> y <code>distancia</code>.</li>
+            <li><strong><code>setup()</code>:</strong> Arrancamos el Monitor Serie (<code>Serial.begin(9600)</code>) y configuramos entradas/salidas con <code>pinMode()</code>.</li>
+            <li><strong>Disparo del pulso (<code>loop()</code>):</strong> Ponemos <code>TRIGGER</code> en <code>LOW</code> 2 µs para limpiar la señal, luego <code>HIGH</code> durante <strong>10 microsegundos</strong> y volvemos a <code>LOW</code>.</li>
+            <li><strong>Lectura y cálculo:</strong> <code>pulseIn(ECHO, HIGH)</code> mide el tiempo de rebote y calculamos <code>distancia = int(0.017 * tiempo);</code>.</li>
+            <li><strong>Decisión (<code>if / else</code>):</strong> Si la distancia es menor o igual al umbral configurado, encendemos el LED; si no, lo apagamos.</li>
+          </ol>
+
+          <div class="callout warn">
+            <strong>¡Ojo de programador experto! (Aclaración sobre el PDF):</strong><br/>
+            En los comentarios de la captura de la página 2 pone <em>"2 ms"</em> y <em>"10 ms"</em>, pero el código usa correctamente <code>delayMicroseconds(2)</code> y <code>delayMicroseconds(10)</code> (<strong>microsegundos µs</strong>, no milisegundos). Además, en una placa Arduino real conviene añadir <code>digitalWrite(TRIGGER, LOW);</code> justo después de los 10 µs para cerrar limpiamente el pulso. ¡En el código de la derecha ya está corregido!
+          </div>
+        </div>
+
+        <div>
+          <div class="code-wrapper" style="margin-top:0;">
+            <div class="code-toolbar">
+              <span class="code-title" id="s2-code-filename">UD04_P8_nombreapellido.ino</span>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-outline btn-sm" onclick="copyCode('s2-code-pre')">📋 Copiar código</button>
+              </div>
+            </div>
+            <pre id="s2-code-pre"></pre>
+          </div>
+
+          <div class="ino-bar">
+            <label for="student-name"><strong>Paso 11 · Tu nombre y apellido:</strong></label>
+            <input type="text" id="student-name" placeholder="Ej: Lucía García" oninput="updateFilenamePreview()" />
+            <button class="btn btn-accent" onclick="downloadPracticeIno()">⬇️ Descargar .ino</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       PARTE 3: PROGRAMAS A MAYORES Y DESAFÍOS
+       ========================================================= -->
+  <section id="sec3" class="section-panel">
+    <!-- ESTRUCTURAS DE DECISIÓN INTERACTIVAS -->
+    <div class="card">
+      <h2>Teoría previa: Estructuras de Decisión (<code>if</code>, <code>else</code>, <code>else if</code>)</h2>
+      <p>Para superar los desafíos necesitamos que Arduino tome <strong>múltiples decisiones</strong> según la distancia medida. Prueba cómo fluye el programa pulsando los botones de condición:</p>
+
+      <div class="grid-3" style="margin-top:14px;">
+        <!-- IF SIMPLE -->
+        <div style="background:#F8FAFC; border:1px solid var(--border); border-radius:10px; padding:14px;">
+          <h3 style="margin-top:0;">1. Estructura <code>if</code> simple</h3>
+          <pre style="padding:10px; border-radius:8px; font-size:0.8rem; margin-bottom:10px;"><span class="kw">if</span> (distancia &lt;= 10) {
+  <span class="cm">// Acciones si es verdad</span>
+}</pre>
+          <div style="display:flex; gap:6px; margin-bottom:10px;">
+            <button class="btn btn-outline btn-sm" onclick="setFlow1(true)">Test = VERDADERO</button>
+            <button class="btn btn-outline btn-sm" onclick="setFlow1(false)">Test = FALSO</button>
+          </div>
+          <div id="flow1-res" class="callout" style="margin:0; font-size:0.86rem;">
+            Pulsa un botón para ver el camino del diagrama de flujo.
+          </div>
+        </div>
+
+        <!-- IF ELSE -->
+        <div style="background:#F8FAFC; border:1px solid var(--border); border-radius:10px; padding:14px;">
+          <h3 style="margin-top:0;">2. Estructura <code>if / else</code></h3>
+          <pre style="padding:10px; border-radius:8px; font-size:0.8rem; margin-bottom:10px;"><span class="kw">if</span> (distancia &lt;= 25) {
+  <span class="cm">// Camino 1 (Verdad)</span>
+} <span class="kw">else</span> {
+  <span class="cm">// Camino 2 (Falso)</span>
+}</pre>
+          <div style="display:flex; gap:6px; margin-bottom:10px;">
+            <button class="btn btn-outline btn-sm" onclick="setFlow2(true)">Test = VERDADERO</button>
+            <button class="btn btn-outline btn-sm" onclick="setFlow2(false)">Test = FALSO</button>
+          </div>
+          <div id="flow2-res" class="callout" style="margin:0; font-size:0.86rem;">
+            Siempre se ejecuta uno de los dos bloques, nunca ambos.
+          </div>
+        </div>
+
+        <!-- ELSE IF -->
+        <div style="background:#F8FAFC; border:1px solid var(--border); border-radius:10px; padding:14px;">
+          <h3 style="margin-top:0;">3. Encadenado <code>else if</code></h3>
+          <pre style="padding:10px; border-radius:8px; font-size:0.8rem; margin-bottom:10px;"><span class="kw">if</span> (d &lt;= 15) { ... }
+<span class="kw">else if</span> (d &lt;= 25) { ... }
+<span class="kw">else if</span> (d &lt;= 40) { ... }
+<span class="kw">else</span> { ... }</pre>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
+            <button class="btn btn-outline btn-sm" onclick="setFlow3(10)">d = 10 cm</button>
+            <button class="btn btn-outline btn-sm" onclick="setFlow3(20)">d = 20 cm</button>
+            <button class="btn btn-outline btn-sm" onclick="setFlow3(35)">d = 35 cm</button>
+            <button class="btn btn-outline btn-sm" onclick="setFlow3(55)">d = 55 cm</button>
+          </div>
+          <div id="flow3-res" class="callout" style="margin:0; font-size:0.86rem;">
+            Prueba distintas distancias. ¡Importante: se evalúa de menor a mayor!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BANCO DE PRUEBAS DE LOS 4 DESAFÍOS -->
+    <div class="card">
+      <h2>Programas a Mayores: Banco de Pruebas de los 4 Desafíos</h2>
+      <p>Selecciona un desafío para ver su objetivo, probarlo en el simulador interactivo y obtener su esquema y código Arduino:</p>
+
+      <div class="subtabs" style="margin-top:12px;">
+        <button class="subtab-btn active" onclick="selectChallenge(1, this)">Desafío 1: Varias distancias (15, 25, 40 cm)</button>
+        <button class="subtab-btn" onclick="selectChallenge(2, this)">Desafío 2: Avance Servo Barrera</button>
+        <button class="subtab-btn" onclick="selectChallenge(3, this)">Desafío 3: 3 LEDs progresivos</button>
+        <button class="subtab-btn" onclick="selectChallenge(4, this)">Desafío 4: 3 LEDs + Sonido (Buzzer)</button>
+      </div>
+
+      <div id="ch-desc" class="callout"></div>
+
+      <div class="grid-2">
+        <!-- SIMULADOR MULTINIVEL -->
+        <div>
+          <div class="sim-stage">
+            <div class="track-road">
+              <div class="track-dashed"></div>
+              <div class="sensor-mount">
+                <div class="sensor-eye"></div>
+                <div class="sensor-eye"></div>
+              </div>
+              <div id="s3-car" class="car-object" style="left: 240px;">
+                <svg viewBox="0 0 100 60" width="96" height="58">
+                  <rect x="6" y="12" width="88" height="36" rx="10" fill="#10B981" stroke="#fff" stroke-width="2"/>
+                  <rect x="26" y="17" width="38" height="26" rx="5" fill="#D1FAE5"/>
+                  <circle cx="10" cy="20" r="3.5" fill="#FEF08A"/>
+                  <circle cx="10" cy="40" r="3.5" fill="#FEF08A"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="slider-row">
+              <label for="s3-slider"><strong>Distancia del coche:</strong></label>
+              <input type="range" id="s3-slider" min="2" max="60" value="48" oninput="updateSec3Sim()" />
+              <span id="s3-dist-val" style="font-weight:700; min-width:58px;">48 cm</span>
+              <button id="audio-toggle-btn" class="btn btn-accent btn-sm" style="display:none;" onclick="toggleAudio()">🔊 Activar Sonido</button>
+            </div>
+
+            <div class="hardware-panel">
+              <div class="led-unit" id="s3-u-green">
+                <div id="s3-led-g" class="led-bulb led-green"></div>
+                <span style="font-size:0.78rem;">Verde (Pin 4)</span>
+              </div>
+              <div class="led-unit" id="s3-u-yellow">
+                <div id="s3-led-y" class="led-bulb led-yellow"></div>
+                <span style="font-size:0.78rem;">Amarillo (Pin 5)</span>
+              </div>
+              <div class="led-unit" id="s3-u-red">
+                <div id="s3-led-r" class="led-bulb led-red"></div>
+                <span style="font-size:0.78rem;">Rojo (Pin 6)</span>
+              </div>
+              <div class="barrier-box" id="s3-u-servo" style="display:none;">
+                <div class="barrier-stage">
+                  <div class="barrier-post"></div>
+                  <div id="s3-barrier-arm" class="barrier-arm"></div>
+                </div>
+                <span id="s3-servo-txt" style="font-size:0.78rem;">Servo (Pin 9): 0°</span>
+              </div>
+              <div class="led-unit" id="s3-u-buzzer" style="display:none;">
+                <div id="s3-buzzer-icon" style="font-size:1.7rem;">🔈</div>
+                <span id="s3-buzzer-txt" style="font-size:0.78rem;">Zumbador (Pin 8)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="serial-monitor" style="margin-top:14px;">
+            <div class="serial-header">
+              <span>Monitor Serie · Salida del Desafío</span>
+              <button class="btn btn-outline btn-sm" style="padding:2px 8px; font-size:0.75rem;" onclick="clearSerial('s3-serial')">Limpiar</button>
+            </div>
+            <div id="s3-serial" class="serial-body"></div>
+          </div>
+
+          <!-- Guía rápida de conexiones del desafío 3 y 4 -->
+          <div id="s3-wiring-card" class="callout warn" style="margin-top:14px;"></div>
+        </div>
+
+        <!-- CÓDIGO DEL DESAFÍO -->
+        <div>
+          <div class="code-wrapper" style="margin-top:0;">
+            <div class="code-toolbar">
+              <span class="code-title" id="s3-code-title">Desafio1_varias_distancias.ino</span>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-outline btn-sm" onclick="copyCode('s3-code-pre')">📋 Copiar</button>
+                <button class="btn btn-accent btn-sm" onclick="downloadChallengeIno()">⬇️ Descargar .ino</button>
+              </div>
+            </div>
+            <pre id="s3-code-pre" style="max-height: 495px;"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast">Acción completada</div>
+
+<script>
+  /* =========================================================
+     NAVEGACIÓN Y UTILIDADES GENERALES
+     ========================================================= */
+  function switchTab(sectionId, btn) {
+    document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+    btn.classList.add('active');
+
+    // Apagar sonido si salimos de la sección 3
+    if (sectionId !== 'sec3' && audioEnabled) {
+      stopAudioLoop();
+      audioEnabled = false;
+      updateAudioBtnUI();
+    }
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  function copyCode(preId) {
+    const text = document.getElementById(preId).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('Código copiado al portapapeles');
+    }).catch(() => {
+      showToast('Selecciona y pulsa Ctrl+C para copiar');
+    });
+  }
+
+  function downloadFile(filename, content) {
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Descargado: ' + filename);
+  }
+
+  function appendSerial(boxId, text) {
+    const box = document.getElementById(boxId);
+    const line = document.createElement('div');
+    line.textContent = text;
+    box.appendChild(line);
+    if (box.children.length > 40) {
+      box.removeChild(box.firstChild);
+    }
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function clearSerial(boxId) {
+    document.getElementById(boxId).innerHTML = '';
+  }
+
+  // Resaltado de sintaxis sencillo y limpio para código Arduino C++
+  function highlightArduino(code) {
+    let esc = code
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // Comentarios de línea
+    const lines = esc.split('\n').map(line => {
+      const cmIdx = line.indexOf('//');
+      let codePart = cmIdx >= 0 ? line.slice(0, cmIdx) : line;
+      const cmPart = cmIdx >= 0 ? `<span class="cm">${line.slice(cmIdx)}</span>` : '';
+
+      // Strings
+      codePart = codePart.replace(/"([^"]*)"/g, '<span class="str">"$1"</span>');
+      // Directivas y palabras clave
+      codePart = codePart.replace(/\b(#define|#include|void|long|int|if|else|return)\b/g, '<span class="kw">$1</span>');
+      // Funciones y constantes Arduino
+      codePart = codePart.replace(/\b(Serial|begin|print|println|pinMode|digitalWrite|delayMicroseconds|delay|pulseIn|tone|noTone|Servo|attach|write|OUTPUT|INPUT|HIGH|LOW)\b/g, '<span class="fn">$1</span>');
+      // Números
+      codePart = codePart.replace(/\b(\d+(\.\d+)?)\b/g, '<span class="num">$1</span>');
+
+      return codePart + cmPart;
+    });
+    return lines.join('\n');
+  }
+
+  /* =========================================================
+     PARTE 1: ANATOMÍA, SIMULADOR ONDA Y QUIZ
+     ========================================================= */
+  const pinDetails = {
+    T: {
+      title: 'T — Transmisor Ultrasónico (Emisor)',
+      desc: 'Es el "altavoz" que emite el tren de pulsos ultrasónicos (40 kHz) hacia delante cuando el pin TRIG recibe una señal de 10 microsegundos.'
+    },
+    R: {
+      title: 'R — Receptor Ultrasónico',
+      desc: 'Es el "micrófono" sintonizado para captar únicamente el eco de ese ultrasonido cuando rebota contra un coche u obstáculo.'
+    },
+    VCC: {
+      title: 'Pin VCC (Alimentación +5V)',
+      desc: 'Se conecta al pin 5V de la placa Arduino UNO (cable rojo). Proporciona la energía necesaria para que funcione el sensor.'
+    },
+    TRIG: {
+      title: 'Pin TRIG (Disparador)',
+      desc: 'Se conecta al Pin digital 2 de Arduino (configurado como OUTPUT). Recibe un pulso HIGH de 10 µs para iniciar la medición.'
+    },
+    ECHO: {
+      title: 'Pin ECHO (Eco)',
+      desc: 'Se conecta al Pin digital 3 de Arduino (configurado como INPUT). Permanece en HIGH exactamente el tiempo que tarda el sonido en ir y volver.'
+    },
+    GND: {
+      title: 'Pin GND (Tierra / Masa)',
+      desc: 'Se conecta al pin GND de Arduino (cable negro) para cerrar el circuito eléctrico.'
+    }
+  };
+
+  function showPinInfo(key) {
+    const info = pinDetails[key];
+    document.getElementById('pin-info').innerHTML = `
+      <strong style="color:var(--arduino-dark); font-size:1.02rem;">${info.title}</strong>
+      <p style="margin-top:6px; font-size:0.93rem;">${info.desc}</p>
+    `;
+  }
+
+  function mapDistToLeftPx(distCm, maxCm, roadEl) {
+    const roadW = roadEl ? roadEl.clientWidth : 450;
+    const minLeft = 72;
+    const maxLeft = Math.max(180, roadW - 115);
+    return minLeft + ((distCm - 2) / (maxCm - 2)) * (maxLeft - minLeft);
+  }
+
+  function updateSec1Slider() {
+    const d = Number(document.getElementById('s1-slider').value);
+    document.getElementById('s1-dist-label').textContent = d + ' cm';
+    const road = document.getElementById('s1-road');
+    const leftPx = mapDistToLeftPx(d, 100, road);
+    document.getElementById('s1-car').style.left = leftPx + 'px';
+
+    const t = Math.round(d / 0.017);
+    document.getElementById('s1-time').textContent = t + ' µs';
+    document.getElementById('s1-calc').textContent = Math.round(0.017 * t) + ' cm';
+  }
+
+  let pulseBusy = false;
+  function firePulseAnimation() {
+    if (pulseBusy) return;
+    pulseBusy = true;
+
+    const carLeft = parseFloat(document.getElementById('s1-car').style.left);
+    const startX = 62;
+    const distPx = Math.max(20, carLeft - startX);
+    const waveOut = document.getElementById('wave-out');
+    const waveBack = document.getElementById('wave-back');
+    const status = document.getElementById('s1-status');
+
+    status.textContent = '1. Enviando pulso (TRIG)...';
+    status.style.color = '#0284C7';
+
+    waveOut.style.left = startX + 'px';
+    waveOut.style.width = '10px';
+    waveOut.style.opacity = '1';
+    waveBack.style.opacity = '0';
+
+    const duration = 450 + distPx * 1.4;
+    const t0 = performance.now();
+
+    function animOut(now) {
+      const p = Math.min(1, (now - t0) / duration);
+      waveOut.style.width = (10 + p * (distPx - 10)) + 'px';
+      if (p < 1) {
+        requestAnimationFrame(animOut);
+      } else {
+        waveOut.style.opacity = '0';
+        status.textContent = '2. ¡Rebote! Volviendo a ECHO...';
+        status.style.color = '#EA580C';
+        waveBack.style.left = (carLeft - 14) + 'px';
+        waveBack.style.width = '14px';
+        waveBack.style.opacity = '1';
+        const t1 = performance.now();
+        requestAnimationFrame(function animBack(now2) {
+          const p2 = Math.min(1, (now2 - t1) / duration);
+          const curW = 14 + p2 * (distPx - 14);
+          waveBack.style.width = curW + 'px';
+          waveBack.style.left = (carLeft - curW) + 'px';
+          if (p2 < 1) {
+            requestAnimationFrame(animBack);
+          } else {
+            waveBack.style.opacity = '0';
+            status.textContent = '3. ¡Medición completada!';
+            status.style.color = '#16A34A';
+            pulseBusy = false;
+          }
+        });
+      }
+    }
+    requestAnimationFrame(animOut);
+  }
+
+  function checkQuiz(qNum, isCorrect, btn) {
+    const fb = document.getElementById('q' + qNum + '-fb');
+    const parent = btn.parentElement;
+    parent.querySelectorAll('button').forEach(b => {
+      b.style.background = '#fff';
+      b.style.color = 'var(--text)';
+    });
+    if (isCorrect) {
+      btn.style.background = '#DCFCE7';
+      btn.style.color = '#166534';
+      fb.textContent = '✅ ¡Correcto! Has entendido perfectamente cómo calcula Arduino la distancia.';
+      fb.style.color = '#16A34A';
+    } else {
+      btn.style.background = '#FEE2E2';
+      btn.style.color = '#991B1B';
+      fb.textContent = '❌ Revisa la fórmula: distancia = 0,017 × tiempo y los pines del esquema.';
+      fb.style.color = '#DC2626';
+    }
+  }
+
+  /* =========================================================
+     PARTE 2: PRÁCTICA DEL APARCAMIENTO
+     ========================================================= */
+  function getPracticeCode(umbral) {
+    return `// Práctica 8: Sensor de aparcamiento con 1 LED
+// Pines utilizados
+#define LEDROJO 4
+#define TRIGGER 2
+#define ECHO 3
+
+long distancia;
+long tiempo;
+
+void setup() {
+  // Iniciamos el monitor serie
+  Serial.begin(9600);
+  // Definimos las entradas y salidas de los pines
+  pinMode(LEDROJO, OUTPUT);
+  pinMode(ECHO, INPUT);
+  pinMode(TRIGGER, OUTPUT);
+}
+
+void loop() {
+  // Estabilizamos el sensor de ultrasonidos (2 microsegundos)
+  digitalWrite(TRIGGER, LOW);
+  delayMicroseconds(2);
+
+  // Ponemos Trigger en estado alto 10 microsegundos para lanzar el sonido
+  digitalWrite(TRIGGER, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIGGER, LOW);
+
+  // ECHO mide el tiempo de ida y vuelta en microsegundos
+  tiempo = pulseIn(ECHO, HIGH);
+
+  // Calculamos la distancia en centímetros (s = 0,017 * t)
+  distancia = int(0.017 * tiempo);
+
+  if (distancia <= ${umbral}) { // Si es menor o igual que ${umbral} cm se enciende el LED
+    digitalWrite(LEDROJO, HIGH);
+  } else {
+    digitalWrite(LEDROJO, LOW);
+  }
+
+  Serial.println(distancia); // Mostramos la distancia en el Monitor Serie
+  delay(100);
+}`;
+  }
+
+  function updatePracticeThreshold() {
+    const umbral = document.getElementById('s2-threshold').value;
+    document.getElementById('s2-code-pre').innerHTML = highlightArduino(getPracticeCode(umbral));
+    updateSec2Sim();
+  }
+
+  function updateSec2Sim() {
+    const d = Number(document.getElementById('s2-slider').value);
+    const umbral = Number(document.getElementById('s2-threshold').value);
+    document.getElementById('s2-dist-val').textContent = d + ' cm';
+
+    const car = document.getElementById('s2-car');
+    const road = car.parentElement;
+    car.style.left = mapDistToLeftPx(d, 60, road) + 'px';
+
+    const led = document.getElementById('s2-led');
+    const ledTxt = document.getElementById('s2-led-txt');
+    const hint = document.getElementById('s2-barrier-hint');
+
+    if (d <= umbral) {
+      led.classList.add('on');
+      ledTxt.textContent = 'ENCENDIDO (HIGH)';
+      ledTxt.style.color = '#FCA5A5';
+      hint.textContent = '🚗 COCHE DETECTADO → Próxima sesión: ¡Abrir barrera!';
+      hint.style.color = '#4ADE80';
+    } else {
+      led.classList.remove('on');
+      ledTxt.textContent = 'APAGADO (LOW)';
+      ledTxt.style.color = '#94A3B8';
+      hint.textContent = 'Barrera cerrada (distancia > ' + umbral + ' cm)';
+      hint.style.color = '#38BDF8';
+    }
+    appendSerial('s2-serial', String(d));
+  }
+
+  function buildStudentFilename() {
+    const raw = document.getElementById('student-name').value.trim();
+    if (!raw) return 'UD04_P8_nombreapellido.ino';
+    const clean = raw
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9]/g, '');
+    return `UD04_P8_${clean || 'nombreapellido'}.ino`;
+  }
+
+  function updateFilenamePreview() {
+    document.getElementById('s2-code-filename').textContent = buildStudentFilename();
+  }
+
+  function downloadPracticeIno() {
+    const umbral = document.getElementById('s2-threshold').value;
+    const filename = buildStudentFilename();
+    downloadFile(filename, getPracticeCode(umbral));
+  }
+
+  /* =========================================================
+     PARTE 3: DIAGRAMAS DE FLUJO Y LOS 4 DESAFÍOS
+     ========================================================= */
+  function setFlow1(isTrue) {
+    const box = document.getElementById('flow1-res');
+    box.innerHTML = isTrue
+      ? '✅ <strong>Camino TRUE:</strong> Entra dentro de las llaves <code>{ ... }</code>, ejecuta la instrucción y luego sigue el programa.'
+      : '⏭️ <strong>Camino FALSE:</strong> Salta el bloque <code>if</code> por completo y no hace nada especial.';
+  }
+
+  function setFlow2(isTrue) {
+    const box = document.getElementById('flow2-res');
+    box.innerHTML = isTrue
+      ? '✅ <strong>Camino TRUE:</strong> Ejecuta el bloque del <code>if</code> (por ej. encender LED) e ignora el bloque del <code>else</code>.'
+      : '🔀 <strong>Camino FALSE:</strong> Ignora el <code>if</code> y entra obligatoriamente en el bloque del <code>else</code> (apagar LED).';
+  }
+
+  function setFlow3(d) {
+    const box = document.getElementById('flow3-res');
+    if (d <= 15) {
+      box.innerHTML = `Con <strong>${d} cm</strong>: se cumple la 1.ª condición (<code>&lt;= 15</code>). Se ejecuta y <strong>sale</strong> del bloque sin comprobar las demás.`;
+    } else if (d <= 25) {
+      box.innerHTML = `Con <strong>${d} cm</strong>: falla <code>&lt;= 15</code>, pero cumple el primer <code>else if (&lt;= 25)</code>. Se ejecuta este bloque.`;
+    } else if (d <= 40) {
+      box.innerHTML = `Con <strong>${d} cm</strong>: falla 15 y 25, pero cumple <code>else if (&lt;= 40)</code>.`;
+    } else {
+      box.innerHTML = `Con <strong>${d} cm</strong>: fallan todas las condiciones anteriores, así que entra en el <code>else</code> final.`;
+    }
+  }
+
+  const challenges = {
+    1: {
+      title: 'Desafio1_varias_distancias.ino',
+      desc: '<strong>Desafío 1:</strong> Modifica el programa para que detecte varias zonas de distancia (<strong>15, 25 y 40 cm</strong>) usando <code>if / else if / else</code>, avisando por el Monitor Serie y con el LED rojo en zona crítica.',
+      wiring: '<strong>Montaje:</strong> Es exactamente el mismo circuito que en la Práctica 8 (Sensor HC-SR04 en pines 2 y 3, LED rojo en pin 4).',
+      code: `// Desafío 1: Detección de varias distancias (15, 25 y 40 cm)
+#define LEDROJO 4
+#define TRIGGER 2
+#define ECHO 3
+
+long distancia, tiempo;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(LEDROJO, OUTPUT);
+  pinMode(ECHO, INPUT);
+  pinMode(TRIGGER, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(TRIGGER, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIGGER, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIGGER, LOW);
+
+  tiempo = pulseIn(ECHO, HIGH);
+  distancia = int(0.017 * tiempo);
+
+  if (distancia <= 15) {
+    digitalWrite(LEDROJO, HIGH);
+    Serial.println("¡PELIGRO! Muy cerca (<=15 cm)");
+  } else if (distancia <= 25) {
+    digitalWrite(LEDROJO, HIGH);
+    Serial.println("Precaucion: distancia media (<=25 cm)");
+  } else if (distancia <= 40) {
+    digitalWrite(LEDROJO, LOW);
+    Serial.println("Coche detectado lejos (<=40 cm)");
+  } else {
+    digitalWrite(LEDROJO, LOW);
+    Serial.println("Zona libre (>40 cm)");
+  }
+
+  delay(150);
+}`
+    },
+    2: {
+      title: 'Desafio2_avance_servo_barrera.ino',
+      desc: '<strong>Desafío 2 (Avance de la próxima sesión):</strong> Sustituimos el LED por el <strong>servomotor de la barrera</strong> conectado al Pin 9. Cuando un coche se sitúa a 25 cm o menos, la barrera sube a 90°.',
+      wiring: '<strong>Avance para la próxima sesión:</strong> Necesitaremos incluir la librería <code>&lt;Servo.h&gt;</code>. El cable de señal del servo (naranja/amarillo) irá al pin PWM <strong>9</strong>, el rojo a 5V y el marrón a GND.',
+      code: `// Desafío 2: Activación del servo de la barrera (Avance próxima sesión)
+#include <Servo.h>
+
+#define TRIGGER 2
+#define ECHO 3
+#define PIN_SERVO 9
+
+Servo barrera;
+long distancia, tiempo;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(TRIGGER, OUTPUT);
+  pinMode(ECHO, INPUT);
+  barrera.attach(PIN_SERVO);
+  barrera.write(0); // Barrera bajada al inicio
+}
+
+void loop() {
+  digitalWrite(TRIGGER, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIGGER, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIGGER, LOW);
+
+  tiempo = pulseIn(ECHO, HIGH);
+  distancia = int(0.017 * tiempo);
+
+  if (distancia <= 25) {
+    barrera.write(90); // Levanta la barrera
+    Serial.println("Barrera ABIERTA (90 grados)");
+  } else {
+    barrera.write(0);  // Baja la barrera
+    Serial.println("Barrera CERRADA (0 grados)");
+  }
+
+  delay(200);
+}`
+    },
+    3: {
+      title: 'Desafio3_tres_leds_progresivos.ino',
+      desc: '<strong>Desafío 3 (3 LEDs de uno en uno):</strong> A medida que el coche se acerca (40 cm, 25 cm, 15 cm), se va encendiendo un LED más hasta que por debajo de 15 cm lucen <strong>todos encendidos</strong>.',
+      wiring: '<strong>Esquema ampliado (como en la pág. 4):</strong> Mantén el sensor en pines 2 y 3. Conecta <strong>LED Verde → Pin 4</strong>, <strong>LED Amarillo → Pin 5</strong> y <strong>LED Rojo → Pin 6</strong>, cada uno con su resistencia de 220 Ω a GND.',
+      code: `// Desafío 3: 3 Sensor de aparcamiento LEDs de uno en uno
+#define LED_VERDE 4
+#define LED_AMARILLO 5
+#define LED_ROJO 6
+#define TRIGGER 2
+#define ECHO 3
+
+long distancia, tiempo;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(LED_VERDE, OUTPUT);
+  pinMode(LED_AMARILLO, OUTPUT);
+  pinMode(LED_ROJO, OUTPUT);
+  pinMode(TRIGGER, OUTPUT);
+  pinMode(ECHO, INPUT);
+}
+
+void loop() {
+  digitalWrite(TRIGGER, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIGGER, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIGGER, LOW);
+
+  tiempo = pulseIn(ECHO, HIGH);
+  distancia = int(0.017 * tiempo);
+
+  if (distancia <= 15) {
+    // Todos encendidos
+    digitalWrite(LED_VERDE, HIGH);
+    digitalWrite(LED_AMARILLO, HIGH);
+    digitalWrite(LED_ROJO, HIGH);
+  } else if (distancia <= 25) {
+    // Dos encendidos
+    digitalWrite(LED_VERDE, HIGH);
+    digitalWrite(LED_AMARILLO, HIGH);
+    digitalWrite(LED_ROJO, LOW);
+  } else if (distancia <= 40) {
+    // Uno encendido
+    digitalWrite(LED_VERDE, HIGH);
+    digitalWrite(LED_AMARILLO, LOW);
+    digitalWrite(LED_ROJO, LOW);
+  } else {
+    // Todos apagados
+    digitalWrite(LED_VERDE, LOW);
+    digitalWrite(LED_AMARILLO, LOW);
+    digitalWrite(LED_ROJO, LOW);
+  }
+
+  Serial.println(distancia);
+  delay(100);
+}`
+    },
+    4: {
+      title: 'Desafio4_tres_leds_con_sonido.ino',
+      desc: '<strong>Desafío 4 (Tres LEDs + Sonido):</strong> Añadimos un <strong>zumbador (buzzer)</strong> en el Pin 8. Además de encender los LEDs progresivamente, emite pitidos más agudos y rápidos cuanto más cerca está el obstáculo.',
+      wiring: '<strong>Esquema completo (pág. 4):</strong> LEDs en pines 4, 5 y 6. Zumbador piezoeléctrico: pata negativa (-) a GND y pata positiva (+) al <strong>Pin 8</strong>.',
+      code: `// Desafío 4: 5 Sensor de aparcamiento tres LEDs con sonido
+#define LED_VERDE 4
+#define LED_AMARILLO 5
+#define LED_ROJO 6
+#define BUZZER 8
+#define TRIGGER 2
+#define ECHO 3
+
+long distancia, tiempo;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(LED_VERDE, OUTPUT);
+  pinMode(LED_AMARILLO, OUTPUT);
+  pinMode(LED_ROJO, OUTPUT);
+  pinMode(BUZZER, OUTPUT);
+  pinMode(TRIGGER, OUTPUT);
+  pinMode(ECHO, INPUT);
+}
+
+void loop() {
+  digitalWrite(TRIGGER, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIGGER, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIGGER, LOW);
+
+  tiempo = pulseIn(ECHO, HIGH);
+  distancia = int(0.017 * tiempo);
+
+  if (distancia <= 15) {
+    digitalWrite(LED_VERDE, HIGH);
+    digitalWrite(LED_AMARILLO, HIGH);
+    digitalWrite(LED_ROJO, HIGH);
+    tone(BUZZER, 1200); // Pitido agudo continuo
+  } else if (distancia <= 25) {
+    digitalWrite(LED_VERDE, HIGH);
+    digitalWrite(LED_AMARILLO, HIGH);
+    digitalWrite(LED_ROJO, LOW);
+    tone(BUZZER, 800, 120); // Pitido medio
+    delay(150);
+  } else if (distancia <= 40) {
+    digitalWrite(LED_VERDE, HIGH);
+    digitalWrite(LED_AMARILLO, LOW);
+    digitalWrite(LED_ROJO, LOW);
+    tone(BUZZER, 500, 100); // Pitido lento
+    delay(350);
+  } else {
+    digitalWrite(LED_VERDE, LOW);
+    digitalWrite(LED_AMARILLO, LOW);
+    digitalWrite(LED_ROJO, LOW);
+    noTone(BUZZER); // Silencio
+  }
+
+  Serial.println(distancia);
+  delay(50);
+}`
+    }
+  };
+
+  let currentChallenge = 1;
+  let audioEnabled = false;
+  let audioCtx = null;
+  let beepInterval = null;
+  let currentBeepMode = 'off';
+
+  function selectChallenge(num, btn) {
+    currentChallenge = num;
+    document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const ch = challenges[num];
+    document.getElementById('ch-desc').innerHTML = ch.desc;
+    document.getElementById('s3-wiring-card').innerHTML = ch.wiring;
+    document.getElementById('s3-code-title').textContent = ch.title;
+    document.getElementById('s3-code-pre').innerHTML = highlightArduino(ch.code);
+
+    // Visibilidad de hardware según desafío
+    document.getElementById('s3-u-green').style.display = (num === 3 || num === 4) ? 'flex' : 'none';
+    document.getElementById('s3-u-yellow').style.display = (num === 3 || num === 4) ? 'flex' : 'none';
+    document.getElementById('s3-u-red').style.display = (num === 1 || num === 3 || num === 4) ? 'flex' : 'none';
+    document.getElementById('s3-u-servo').style.display = (num === 2) ? 'flex' : 'none';
+    document.getElementById('s3-u-buzzer').style.display = (num === 4) ? 'flex' : 'none';
+    document.getElementById('audio-toggle-btn').style.display = (num === 4) ? 'inline-flex' : 'none';
+
+    if (num !== 4 && audioEnabled) {
+      stopAudioLoop();
+      audioEnabled = false;
+      updateAudioBtnUI();
+    }
+
+    clearSerial('s3-serial');
+    updateSec3Sim();
+  }
+
+  function updateSec3Sim() {
+    const d = Number(document.getElementById('s3-slider').value);
+    document.getElementById('s3-dist-val').textContent = d + ' cm';
+
+    const car = document.getElementById('s3-car');
+    car.style.left = mapDistToLeftPx(d, 60, car.parentElement) + 'px';
+
+    const ledG = document.getElementById('s3-led-g');
+    const ledY = document.getElementById('s3-led-y');
+    const ledR = document.getElementById('s3-led-r');
+    ledG.classList.remove('on');
+    ledY.classList.remove('on');
+    ledR.classList.remove('on');
+
+    if (currentChallenge === 1) {
+      if (d <= 15) {
+        ledR.classList.add('on');
+        appendSerial('s3-serial', `${d} cm -> ¡PELIGRO! Muy cerca (<=15 cm)`);
+      } else if (d <= 25) {
+        ledR.classList.add('on');
+        appendSerial('s3-serial', `${d} cm -> Precaucion: distancia media (<=25 cm)`);
+      } else if (d <= 40) {
+        appendSerial('s3-serial', `${d} cm -> Coche detectado lejos (<=40 cm)`);
+      } else {
+        appendSerial('s3-serial', `${d} cm -> Zona libre (>40 cm)`);
+      }
+    } else if (currentChallenge === 2) {
+      const arm = document.getElementById('s3-barrier-arm');
+      const txt = document.getElementById('s3-servo-txt');
+      if (d <= 25) {
+        arm.style.transform = 'rotate(-85deg)';
+        txt.textContent = 'Servo (Pin 9): 90° (Abierta)';
+        appendSerial('s3-serial', `${d} cm -> Barrera ABIERTA (90 grados)`);
+      } else {
+        arm.style.transform = 'rotate(0deg)';
+        txt.textContent = 'Servo (Pin 9): 0° (Cerrada)';
+        appendSerial('s3-serial', `${d} cm -> Barrera CERRADA (0 grados)`);
+      }
+    } else if (currentChallenge === 3 || currentChallenge === 4) {
+      let beepMode = 'off';
+      if (d <= 15) {
+        ledG.classList.add('on');
+        ledY.classList.add('on');
+        ledR.classList.add('on');
+        beepMode = 'fast';
+      } else if (d <= 25) {
+        ledG.classList.add('on');
+        ledY.classList.add('on');
+        beepMode = 'med';
+      } else if (d <= 40) {
+        ledG.classList.add('on');
+        beepMode = 'slow';
+      }
+      appendSerial('s3-serial', `${d} cm`);
+
+      if (currentChallenge === 4) {
+        updateBuzzerDisplay(beepMode);
+      }
+    }
+  }
+
+  function updateBuzzerDisplay(mode) {
+    const icon = document.getElementById('s3-buzzer-icon');
+    const txt = document.getElementById('s3-buzzer-txt');
+    if (mode === 'fast') {
+      icon.textContent = '🔊';
+      txt.textContent = '1200 Hz (¡Peligro!)';
+    } else if (mode === 'med') {
+      icon.textContent = '🔉';
+      txt.textContent = '800 Hz (Medio)';
+    } else if (mode === 'slow') {
+      icon.textContent = '🔉';
+      txt.textContent = '500 Hz (Lento)';
+    } else {
+      icon.textContent = '🔈';
+      txt.textContent = 'Silencio (noTone)';
+    }
+
+    if (mode !== currentBeepMode) {
+      currentBeepMode = mode;
+      if (audioEnabled) startAudioLoop();
+    }
+  }
+
+  function playToneOnce(freq, durMs) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.value = freq;
+    gain.gain.value = 0.04;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    setTimeout(() => {
+      try { osc.stop(); } catch (e) {}
+    }, durMs);
+  }
+
+  function stopAudioLoop() {
+    if (beepInterval) {
+      clearInterval(beepInterval);
+      beepInterval = null;
+    }
+  }
+
+  function startAudioLoop() {
+    stopAudioLoop();
+    if (!audioEnabled) return;
+    if (currentBeepMode === 'slow') {
+      playToneOnce(500, 100);
+      beepInterval = setInterval(() => playToneOnce(500, 100), 650);
+    } else if (currentBeepMode === 'med') {
+      playToneOnce(800, 100);
+      beepInterval = setInterval(() => playToneOnce(800, 100), 280);
+    } else if (currentBeepMode === 'fast') {
+      playToneOnce(1200, 110);
+      beepInterval = setInterval(() => playToneOnce(1200, 110), 130);
+    }
+  }
+
+  function toggleAudio() {
+    if (!audioCtx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    audioEnabled = !audioEnabled;
+    updateAudioBtnUI();
+    if (audioEnabled) {
+      startAudioLoop();
+    } else {
+      stopAudioLoop();
+    }
+  }
+
+  function updateAudioBtnUI() {
+    const btn = document.getElementById('audio-toggle-btn');
+    btn.textContent = audioEnabled ? '🔇 Silenciar Sonido' : '🔊 Activar Sonido';
+    btn.className = audioEnabled ? 'btn btn-dark btn-sm' : 'btn btn-accent btn-sm';
+  }
+
+  function downloadChallengeIno() {
+    const ch = challenges[currentChallenge];
+    downloadFile(ch.title, ch.code);
+  }
+
+  /* =========================================================
+     INICIALIZACIÓN AL CARGAR LA PÁGINA
+     ========================================================= */
+  window.addEventListener('DOMContentLoaded', () => {
+    updateSec1Slider();
+    updatePracticeThreshold();
+    selectChallenge(1, document.querySelector('.subtab-btn'));
+  });
+</script>
+</body>
+</html>
