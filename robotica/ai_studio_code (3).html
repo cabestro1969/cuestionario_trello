@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consulta de Calificaciones · Evaluación</title>
+  <style>
+    :root {
+      --primary: #1E3A8A;
+      --primary-light: #3B82F6;
+      --bg: #F1F5F9;
+      --surface: #FFFFFF;
+      --text: #0F172A;
+      --muted: #64748B;
+      --border: #CBD5E1;
+      --peach: #FCD5B5;
+      --yellow: #FEF08A;
+      --yellow-excel: #FFFF00;
+      --blue-excel: #DCE6F2;
+      --green-excel: #92D050;
+      --danger: #DC2626;
+      --success: #16A34A;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, #0F172A 0%, var(--primary) 100%);
+      color: #fff;
+      padding: 20px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+    }
+
+    .header-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    header p {
+      font-size: 0.9rem;
+      opacity: 0.88;
+    }
+
+    /* LOGIN SCREEN */
+    .login-container {
+      max-width: 440px;
+      margin: 60px auto;
+      padding: 0 16px;
+    }
+
+    .login-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 30px 26px;
+      text-align: center;
+    }
+
+    .login-icon {
+      width: 58px;
+      height: 58px;
+      background: #EFF6FF;
+      color: var(--primary);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.7rem;
+      margin-bottom: 14px;
+      border: 2px solid #BFDBFE;
+    }
+
+    .login-card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 6px;
+    }
+
+    .login-card p {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 14px;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .input-wrap {
+      display: flex;
+      gap: 6px;
+    }
+
+    input[type="password"],
+    input[type="text"] {
+      flex: 1;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: 'Consolas', monospace;
+      letter-spacing: 1px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="password"]:focus,
+    input[type="text"]:focus {
+      border-color: var(--primary-light);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.94rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      width: 100%;
+    }
+    .btn-primary:hover { background: #1E40AF; }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn-outline:hover { background: #F8FAFC; }
+
+    .btn-sm {
+      padding: 7px 12px;
+      font-size: 0.84rem;
+    }
+
+    .error-msg {
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      color: var(--danger);
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    /* DASHBOARD */
+    .dashboard {
+      display: none;
+      max-width: 1120px;
+      margin: 24px auto 50px;
+      padding: 0 16px;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .student-banner {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 18px 22px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .student-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .student-sub {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .banner-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+
+    .card-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #F1F5F9;
+    }
+
+    .card-header h2 {
+      font-size: 1.15rem;
+      color: var(--text);
+    }
+
+    .sheet-tag {
+      background: #E2E8F0;
+      color: #334155;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    /* FINAL SUMMARY GRID */
+    .final-grid {
+      display: grid;
+      grid-template-columns: 1.15fr repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .final-grid { grid-template-columns: repeat(2, 1fr); }
+      .final-hero { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 520px) {
+      .final-grid { grid-template-columns: 1fr; }
+    }
+
+    .final-hero {
+      background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%);
+      color: #fff;
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .final-hero .label {
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      opacity: 0.85;
+    }
+
+    .final-hero .score {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin: 6px 0;
+    }
+
+    .status-pill {
+      padding: 3px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .status-pass { background: #DCFCE7; color: #166534; }
+    .status-fail { background: #FEE2E2; color: #991B1B; }
+
+    .summary-tile {
+      border-radius: 12px;
+      padding: 16px 14px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+    }
+
+    .tile-green { background: #ECFCCB; border-color: #A3E635; }
+    .tile-peach { background: #FFEDD5; border-color: #FDBA74; }
+    .tile-yellow { background: #FEF9C3; border-color: #FACC15; }
+    .tile-blue { background: #EFF6FF; border-color: #93C5FD; }
+
+    .tile-title {
+      font-weight: 700;
+      font-size: 0.96rem;
+    }
+
+    .tile-weight {
+      font-size: 0.78rem;
+      color: #475569;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .tile-val {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    /* VIEW SWITCHER */
+    .view-toggle {
+      display: inline-flex;
+      background: #F1F5F9;
+      padding: 4px;
+      border-radius: 8px;
+      gap: 4px;
+    }
+
+    .view-btn {
+      border: none;
+      background: transparent;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .view-btn.active {
+      background: #fff;
+      color: var(--primary);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    /* DETAILED CARDS VIEW */
+    .blocks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .detail-group {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .detail-group-head {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .items-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+      gap: 8px;
+      padding: 14px;
+    }
+
+    .item-chip {
+      border: 1px solid #E2E8F0;
+      background: #F8FAFC;
+      border-radius: 8px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+
+    .item-name {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    .item-grade {
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: 'Consolas', monospace;
+    }
+
+    .grade-zero { color: var(--danger); background: #FEF2F2; border-color: #FECACA; }
+    .grade-empty { color: #94A3B8; }
+    .grade-ok { color: #0F172A; }
+
+    /* EXCEL TABLE VIEW */
+    .table-scroll {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    th, td {
+      border: 1px solid #CBD5E1;
+      padding: 8px 10px;
+      text-align: center;
+    }
+
+    th {
+      background: #F8FAFC;
+      font-weight: 700;
+      color: #1E293B;
+    }
+
+    .col-ej { background: #FCD5B5 !important; font-weight: 700; }
+    .col-ex { background: #FFFF00 !important; font-weight: 700; }
+    .col-or { background: #DCE6F2 !important; font-weight: 700; }
+    .col-pr { background: #92D050 !important; font-weight: 700; }
+
+    .note-foot {
+      margin-top: 12px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* PRINT STYLES */
+    @media print {
+      body { background: #fff; }
+      header, .banner-actions, .view-toggle { display: none !important; }
+      .card, .student-banner { box-shadow: none; border: 1px solid #94A3B8; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <h1>Portal de Calificaciones</h1>
+      <p>Consulta individual de Actividades, Exámenes, Prácticas y Nota Final</p>
+    </div>
+  </div>
+</header>
+
+<!-- PANTALLA DE ACCESO -->
+<section id="login-screen" class="login-container">
+  <div class="login-card">
+    <div class="login-icon">🔐</div>
+    <h2>Acceso del alumnado</h2>
+    <p>Introduce la clave personal que has recibido por correo electrónico (respeta mayúsculas y minúsculas).</p>
+
+    <form onsubmit="handleLogin(event)">
+      <div class="input-group">
+        <label for="clave-input">Clave de acceso</label>
+        <div class="input-wrap">
+          <input type="password" id="clave-input" placeholder="Ej: 00Ab" autocomplete="off" required />
+          <button type="button" class="btn btn-outline btn-sm" onclick="togglePass()" title="Mostrar / ocultar clave">👁️</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Ver mis calificaciones</button>
+      <div id="login-error" class="error-msg">Clave incorrecta. Revisa el correo y comprueba mayúsculas y minúsculas.</div>
+    </form>
+  </div>
+</section>
+
+<!-- PANEL DE RESULTADOS DEL ALUMNO -->
+<main id="dashboard" class="dashboard">
+  <div class="student-banner">
+    <div>
+      <div class="student-sub">Alumno/a identificado/a</div>
+      <div class="student-name" id="st-name">—</div>
+    </div>
+    <div class="banner-actions">
+      <button class="btn btn-outline btn-sm" onclick="window.print()">🖨️ Imprimir / PDF</button>
+      <button class="btn btn-outline btn-sm" onclick="logout()">🔒 Cerrar sesión</button>
+    </div>
+  </div>
+
+  <!-- HOJA 2: FINAL -->
+  <section class="card">
+    <div class="card-header">
+      <h2>Resumen de Evaluación</h2>
+      <span class="sheet-tag">Hoja: Final</span>
+    </div>
+
+    <div class="final-grid">
+      <div class="final-hero">
+        <span class="label">Nota Final</span>
+        <span class="score" id="f-nota">—</span>
+        <span id="f-status" class="status-pill">—</span>
+      </div>
+
+      <div class="summary-tile tile-green">
+        <div>
+          <div class="tile-title">Práctica</div>
+          <div class="tile-weight">Media 25%</div>
+        </div>
+        <div class="tile-val" id="f-practica">—</div>
+      </div>
+
+      <div class="summary-tile tile-peach">
+        <div>
+          <div class="tile-title">Actividades</div>
+          <div class="tile-weight">Media 25%</div>
+        </div>
+        <div class="tile-val" id="f-actividades">—</div>
+      </div>
+
+      <div class="summary-tile tile-yellow">
+        <div>
+          <div class="tile-title">Exámenes</div>
+          <div class="tile-weight">Media 45%</div>
+        </div>
+        <div class="tile-val" id="f-examenes">—</div>
+      </div>
+
+      <div class="summary-tile tile-blue">
+        <div>
+          <div class="tile-title">Exposición oral</div>
+          <div class="tile-weight">Media 5%</div>
+        </div>
+        <div class="tile-val" id="f-oral">—</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOJA 1: ACTIVIDADES-EXAMEN -->
+  <section class="card">
+    <div class="card-header">
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <h2>Desglose Detallado de Calificaciones</h2>
+        <span class="sheet-tag">Hoja: Actividades-Examen</span>
+      </div>
+      <div class="view-toggle">
+        <button id="btn-view-cards" class="view-btn active" onclick="setDetailView('cards')">Vista por bloques</button>
+        <button id="btn-view-table" class="view-btn" onclick="setDetailView('table')">Vista tabla Excel</button>
+      </div>
+    </div>
+
+    <!-- Vista Tarjetas -->
+    <div id="detail-cards-view">
+      <div class="blocks-grid" id="detail-blocks"></div>
+    </div>
+
+    <!-- Vista Tabla Horizontal -->
+    <div id="detail-table-view" style="display:none;">
+      <div class="table-scroll" id="excel-table-wrap"></div>
+    </div>
+
+    <p class="note-foot">
+      Nota: Las casillas marcadas con <strong>—</strong> corresponden a apartados aún sin calificar o no aplicables. En el apartado <em>test8/12</em> la puntuación máxima de la prueba figura sobre 20,00 puntos.
+    </p>
+  </section>
+</main>
+
+<script>
+  /* =========================================================
+     ESTRUCTURA DE COLUMNAS DE LA HOJA "Actividades-Examen"
+     ========================================================= */
+  const EJERCICIOS_COLS = [
+    "APUNTE", "R1", "R2", "P1", "P2", "P3", "P4",
+    "E8", "E9", "E10", "E11", "E12", "test8/12",
+    "E13", "RETO1/3", "E14/15", "p18"
+  ];
+
+  const PRACTICA_COLS = [
+    "PR1", "R2", "P3", "PR9", "PR12", "r3", "r4",
+    "r5", "PR13", "PR14", "PR16/17", "PR18", "PR19", "r6"
+  ];
+
+  /* =========================================================
+     DATOS DE LAS 3 HOJAS DEL LIBRO EXCEL
+     ========================================================= */
+  const STUDENTS = [
+    {
+      clave: "11A1",
+      nombre: "ALEKSANDROV PENKOV, DAVID",
+      final: { nota: 5.55, practica: 8.46, actividades: 3.14, examenes: 5.88, oral: null },
+      hoja1: {
+        ejerciciosMedia: 3.14,
+        ejercicios: [null, null, null, 0.00, null, null, null, 10.00, 10.00, null, null, 10.00, 13.34, 10.00, 0.00, 0.00, null],
+        examen: 5.88,
+        oral: null,
+        practicaMedia: 8.46,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null]
+      }
+    },
+    {
+      clave: "232B",
+      nombre: "ANTÓN SARMIENTO, GONZALO",
+      final: { nota: 7.05, practica: 7.69, actividades: 7.79, examenes: 6.40, oral: 6.00 },
+      hoja1: {
+        ejerciciosMedia: 7.79,
+        ejercicios: [8.00, 10.00, 0.00, 10.00, 10.00, 10.00, null, 10.00, 10.00, 10.00, 10.00, 10.00, 4.44, 10.00, 10.00, 10.00, null],
+        examen: 6.40,
+        oral: 6.00,
+        practicaMedia: 7.69,
+        practica: [10.00, 10.00, null, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null]
+      }
+    },
+    {
+      clave: "12aB",
+      nombre: "ARIAS ARNÁEZ, MARTINA",
+      final: { nota: 9.15, practica: 7.69, actividades: 10.00, examenes: 9.90, oral: 5.50 },
+      hoja1: {
+        ejerciciosMedia: 10.00,
+        ejercicios: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 20.00, 10.00, 10.00, 10.00, null],
+        examen: 9.90,
+        oral: 5.50,
+        practicaMedia: 7.69,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null, null]
+      }
+    },
+    {
+      clave: "22BC",
+      nombre: "ARRIBAS HERRANZ, ITZAN",
+      final: { nota: 7.92, practica: 7.69, actividades: 8.47, examenes: 7.84, oral: 7.00 },
+      hoja1: {
+        ejerciciosMedia: 8.47,
+        ejercicios: [9.00, 0.00, 0.00, 10.00, 10.00, 10.00, 5.00, 10.00, 10.00, 10.00, 10.00, 10.00, 20.00, 10.00, 10.00, 10.00, null],
+        examen: 7.84,
+        oral: 7.00,
+        practicaMedia: 7.69,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null, null]
+      }
+    },
+    {
+      clave: "13a3",
+      nombre: "ASTUDILLO LLORENTE, INÉS",
+      final: { nota: 8.88, practica: 7.69, actividades: 10.00, examenes: 9.29, oral: 5.50 },
+      hoja1: {
+        ejerciciosMedia: 10.00,
+        ejercicios: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 20.00, 10.00, 10.00, 10.00, null],
+        examen: 9.29,
+        oral: 5.50,
+        practicaMedia: 7.69,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null, null]
+      }
+    },
+    {
+      clave: "22BS",
+      nombre: "BENITO SAGREDO, HUGO",
+      final: { nota: 7.96, practica: 6.92, actividades: 7.08, examenes: 9.25, oral: 6.00 },
+      hoja1: {
+        ejerciciosMedia: 7.08,
+        ejercicios: [10.00, 10.00, 0.00, 5.00, 10.00, 2.00, null, 10.00, 10.00, 10.00, 10.00, 10.00, 13.34, 10.00, 10.00, 0.00, null],
+        examen: 9.25,
+        oral: 6.00,
+        practicaMedia: 6.92,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null, null, null]
+      }
+    },
+    {
+      clave: "14aQ",
+      nombre: "CASTRILLO RODRIGO, GABRIEL",
+      final: { nota: 6.09, practica: 7.69, actividades: 7.47, examenes: 5.12, oral: null },
+      hoja1: {
+        ejerciciosMedia: 7.47,
+        ejercicios: [7.00, 10.00, 10.00, 10.00, null, null, null, 10.00, 10.00, 10.00, 10.00, 10.00, 20.00, 10.00, 10.00, 0.00, null],
+        examen: 5.12,
+        oral: null,
+        practicaMedia: 7.69,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null, null]
+      }
+    },
+    {
+      clave: "22BU",
+      nombre: "COELHO ALCALDE, EZEQUIEL",
+      final: { nota: 7.12, practica: 8.46, actividades: 8.71, examenes: 6.29, oral: null },
+      hoja1: {
+        ejerciciosMedia: 8.71,
+        ejercicios: [8.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, 10.00, 0.00, 10.00, 10.00, 10.00, 20.00, 10.00, 10.00, 10.00, null],
+        examen: 6.29,
+        oral: null,
+        practicaMedia: 8.46,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null]
+      }
+    },
+    {
+      clave: "15a6",
+      nombre: "DE GARAY REDONDO, DANIEL",
+      final: { nota: 8.02, practica: 7.69, actividades: 8.18, examenes: 9.00, oral: null },
+      hoja1: {
+        ejerciciosMedia: 8.18,
+        ejercicios: [9.00, 10.00, 0.00, 10.00, 0.00, 10.00, null, 10.00, 10.00, 10.00, 10.00, 10.00, 20.00, 10.00, 10.00, 10.00, null],
+        examen: 9.00,
+        oral: null,
+        practicaMedia: 7.69,
+        practica: [10.00, 0.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null]
+      }
+    },
+    {
+      clave: "22BX",
+      nombre: "FERNÁNDEZ GARCÍA, LINO",
+      final: { nota: 8.83, practica: 8.46, actividades: 9.81, examenes: 9.46, oral: null },
+      hoja1: {
+        ejerciciosMedia: 9.81,
+        ejercicios: [9.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 17.78, 10.00, 10.00, 10.00, null],
+        examen: 9.46,
+        oral: null,
+        practicaMedia: 8.46,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null]
+      }
+    },
+    {
+      clave: "A16a",
+      nombre: "GARCÍA VERGARA, EMILY",
+      final: { nota: 9.18, practica: 8.46, actividades: 9.42, examenes: 9.35, oral: 10.00 },
+      hoja1: {
+        ejerciciosMedia: 9.42,
+        ejercicios: [9.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 11.12, 10.00, 10.00, 10.00, null],
+        examen: 9.35,
+        oral: 10.00,
+        practicaMedia: 8.46,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null]
+      }
+    },
+    {
+      clave: "X22B",
+      nombre: "GATÓN ONGALLO, HUGO",
+      final: { nota: 4.95, practica: 6.92, actividades: 5.01, examenes: 3.77, oral: 5.50 },
+      hoja1: {
+        ejerciciosMedia: 5.01,
+        ejercicios: [9.00, 0.00, 10.00, 10.00, 0.00, 0.00, null, 10.00, 10.00, 10.00, 10.00, 5.00, 11.12, 0.00, 0.00, 0.00, null],
+        examen: 3.77,
+        oral: 5.50,
+        practicaMedia: 6.92,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null, null, null]
+      }
+    },
+    {
+      clave: "Z17a",
+      nombre: "GONZÁLEZ DEL DIEGO, PAULA",
+      final: { nota: 7.64, practica: 7.69, actividades: 8.82, examenes: 6.69, oral: 10.00 },
+      hoja1: {
+        ejerciciosMedia: 8.82,
+        ejercicios: [10.00, 10.00, 10.00, 10.00, 0.00, 4.00, 6.00, 10.00, 10.00, 10.00, 10.00, 10.00, 20.00, 10.00, 10.00, 10.00, null],
+        examen: 6.69,
+        oral: 10.00,
+        practicaMedia: 7.69,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 0.00, 10.00, 10.00, 10.00, 10.00, null, null, null]
+      }
+    },
+    {
+      clave: "Z22B",
+      nombre: "GUTIÉRREZ BONILLA, JUAN",
+      final: { nota: 7.00, practica: 7.69, actividades: 8.65, examenes: 5.70, oral: 7.00 },
+      hoja1: {
+        ejerciciosMedia: 8.65,
+        ejercicios: [7.00, 10.00, 10.00, 10.00, 10.00, 0.00, null, 10.00, 10.00, 10.00, 10.00, 10.00, 20.00, 10.00, 10.00, 10.00, null],
+        examen: 5.70,
+        oral: 7.00,
+        practicaMedia: 7.69,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null, null]
+      }
+    },
+    {
+      clave: "K18a",
+      nombre: "MORENO NORIEGA, GONZALO",
+      final: { nota: 7.52, practica: 6.92, actividades: 9.18, examenes: 7.22, oral: 5.00 },
+      hoja1: {
+        ejerciciosMedia: 9.18,
+        ejercicios: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 8.00, 8.00, 10.00, 10.00, 10.00, 20.00, 10.00, 10.00, 0.00, null],
+        examen: 7.22,
+        oral: 5.00,
+        practicaMedia: 6.92,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null, null, null]
+      }
+    },
+    {
+      clave: "322B",
+      nombre: "PINTO PÉREZ, ADRIÁN",
+      final: { nota: 6.17, practica: 6.92, actividades: 7.58, examenes: 5.10, oral: 5.00 },
+      hoja1: {
+        ejerciciosMedia: 7.58,
+        ejercicios: [null, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 2.22, 10.00, 6.66, 0.00, null],
+        examen: 5.10,
+        oral: 5.00,
+        practicaMedia: 6.92,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null, null, null]
+      }
+    },
+    {
+      clave: "H19a",
+      nombre: "SEVILLA LAPRESA, NICOLÁS",
+      final: { nota: 6.53, practica: 7.69, actividades: 7.16, examenes: 6.27, oral: null },
+      hoja1: {
+        ejerciciosMedia: 7.16,
+        ejercicios: [7.00, 10.00, 0.00, 10.00, 10.00, 10.00, null, 10.00, 10.00, 10.00, 10.00, 10.00, 6.66, 8.00, 10.00, 0.00, null],
+        examen: 6.27,
+        oral: null,
+        practicaMedia: 7.69,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null, null]
+      }
+    },
+    {
+      clave: "2H2B",
+      nombre: "VILLAMUDRIA ANTÓN, RODRIGO",
+      final: { nota: 8.01, practica: 8.46, actividades: 9.56, examenes: 7.13, oral: 6.00 },
+      hoja1: {
+        ejerciciosMedia: 9.56,
+        ejercicios: [8.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 4.44, 10.00, 10.00, 10.00, 10.00],
+        examen: 7.13,
+        oral: 6.00,
+        practicaMedia: 8.46,
+        practica: [10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, null, null, null]
+      }
+    }
+  ];
+
+  /* =========================================================
+     LÓGICA DE INTERFAZ Y RENDERIZADO
+     ========================================================= */
+  function fmt(val) {
+    return val === null || val === undefined ? '—' : Number(val).toFixed(2);
+  }
+
+  function gradeClass(val) {
+    if (val === null || val === undefined) return 'grade-empty';
+    if (val === 0) return 'grade-zero';
+    return 'grade-ok';
+  }
+
+  function togglePass() {
+    const inp = document.getElementById('clave-input');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+  }
+
+  function handleLogin(e) {
+    e.preventDefault();
+    const inputKey = document.getElementById('clave-input').value.trim();
+    const errBox = document.getElementById('login-error');
+
+    const student = STUDENTS.find(s => s.clave === inputKey);
+    if (!student) {
+      errBox.style.display = 'block';
+      return;
+    }
+
+    errBox.style.display = 'none';
+    renderStudent(student);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+  }
+
+  function logout() {
+    document.getElementById('clave-input').value = '';
+    document.getElementById('clave-input').type = 'password';
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'block';
+  }
+
+  function setDetailView(mode) {
+    const isCards = mode === 'cards';
+    document.getElementById('detail-cards-view').style.display = isCards ? 'block' : 'none';
+    document.getElementById('detail-table-view').style.display = isCards ? 'none' : 'block';
+    document.getElementById('btn-view-cards').classList.toggle('active', isCards);
+    document.getElementById('btn-view-table').classList.toggle('active', !isCards);
+  }
+
+  function renderStudent(st) {
+    document.getElementById('st-name').textContent = st.nombre;
+
+    // Hoja 2: Final
+    document.getElementById('f-nota').textContent = fmt(st.final.nota);
+    const pill = document.getElementById('f-status');
+    if (st.final.nota >= 5.0) {
+      pill.textContent = 'APROBADO';
+      pill.className = 'status-pill status-pass';
+    } else {
+      pill.textContent = 'NO SUPERADO';
+      pill.className = 'status-pill status-fail';
+    }
+
+    document.getElementById('f-practica').textContent = fmt(st.final.practica);
+    document.getElementById('f-actividades').textContent = fmt(st.final.actividades);
+    document.getElementById('f-examenes').textContent = fmt(st.final.examenes);
+    document.getElementById('f-oral').textContent = fmt(st.final.oral);
+
+    // Hoja 1: Vista por bloques
+    const blocksEl = document.getElementById('detail-blocks');
+    blocksEl.innerHTML = '';
+
+    // Bloque 1: Ejercicios (25%)
+    blocksEl.appendChild(buildGroupCard(
+      'Ejercicios (25%)',
+      st.hoja1.ejerciciosMedia,
+      '#FCD5B5',
+      EJERCICIOS_COLS.map((name, i) => ({ name, val: st.hoja1.ejercicios[i] }))
+    ));
+
+    // Bloque 2: Práctica (25%)
+    blocksEl.appendChild(buildGroupCard(
+      'Práctica (25%)',
+      st.hoja1.practicaMedia,
+      '#92D050',
+      PRACTICA_COLS.map((name, i) => ({ name, val: st.hoja1.practica[i] }))
+    ));
+
+    // Bloque 3: Examen (45%) y Exposición oral (20% en Hoja 1)
+    const evalCard = document.createElement('div');
+    evalCard.className = 'detail-group';
+    evalCard.innerHTML = `
+      <div class="detail-group-head" style="background:#F8FAFC;">
+        <span>Pruebas Evaluables</span>
+        <span style="font-size:0.82rem; color:var(--muted);">Examen y Oral</span>
+      </div>
+      <div class="items-list" style="grid-template-columns: 1fr;">
+        <div class="item-chip" style="background:#FEF9C3; border-color:#FACC15; display:flex; justify-content:space-between; align-items:center; padding:14px 16px;">
+          <div style="text-align:left;">
+            <div class="item-name" style="color:#713F12; font-size:0.88rem;">Examen</div>
+            <div style="font-size:0.76rem; color:#854D0E;">Peso en Hoja 1: 45%</div>
+          </div>
+          <div class="item-grade" style="font-size:1.35rem;">${fmt(st.hoja1.examen)}</div>
+        </div>
+        <div class="item-chip" style="background:#EFF6FF; border-color:#93C5FD; display:flex; justify-content:space-between; align-items:center; padding:14px 16px;">
+          <div style="text-align:left;">
+            <div class="item-name" style="color:#1E3A8A; font-size:0.88rem;">Exposición oral</div>
+            <div style="font-size:0.76rem; color:#1E40AF;">En Hoja 1: 20% (Final: 5%)</div>
+          </div>
+          <div class="item-grade" style="font-size:1.35rem;">${fmt(st.hoja1.oral)}</div>
+        </div>
+      </div>
+    `;
+    blocksEl.appendChild(evalCard);
+
+    // Hoja 1: Vista Tabla estilo Excel
+    renderExcelTable(st);
+  }
+
+  function buildGroupCard(title, media, headerBg, items) {
+    const div = document.createElement('div');
+    div.className = 'detail-group';
+
+    const itemsHtml = items.map(it => `
+      <div class="item-chip ${gradeClass(it.val)}">
+        <div class="item-name">${it.name}</div>
+        <div class="item-grade">${fmt(it.val)}</div>
+      </div>
+    `).join('');
+
+    div.innerHTML = `
+      <div class="detail-group-head" style="background:${headerBg};">
+        <span>${title}</span>
+        <span>Media: ${fmt(media)}</span>
+      </div>
+      <div class="items-list">${itemsHtml}</div>
+    `;
+    return div;
+  }
+
+  function renderExcelTable(st) {
+    const wrap = document.getElementById('excel-table-wrap');
+
+    const thRow1 = [
+      '<th>Alumno/a</th>',
+      '<th class="col-ej">Ejercicios</th>',
+      ...EJERCICIOS_COLS.map(c => `<th>${c}</th>`),
+      '<th class="col-ex">Examen</th>',
+      '<th class="col-or">Exposición oral</th>',
+      '<th class="col-pr">Práctica</th>',
+      ...PRACTICA_COLS.map(c => `<th>${c}</th>`)
+    ].join('');
+
+    const thRow2 = [
+      '<th>Porcentaje</th>',
+      '<th class="col-ej">25%</th>',
+      ...EJERCICIOS_COLS.map(() => '<th></th>'),
+      '<th class="col-ex">45%</th>',
+      '<th class="col-or">20%</th>',
+      '<th class="col-pr">25%</th>',
+      ...PRACTICA_COLS.map(() => '<th></th>')
+    ].join('');
+
+    const tdVals = [
+      `<td style="text-align:left; font-weight:700;">${st.nombre}</td>`,
+      `<td class="col-ej">${fmt(st.hoja1.ejerciciosMedia)}</td>`,
+      ...st.hoja1.ejercicios.map(v => `<td class="${gradeClass(v)}">${fmt(v)}</td>`),
+      `<td class="col-ex">${fmt(st.hoja1.examen)}</td>`,
+      `<td class="col-or">${fmt(st.hoja1.oral)}</td>`,
+      `<td class="col-pr">${fmt(st.hoja1.practicaMedia)}</td>`,
+      ...st.hoja1.practica.map(v => `<td class="${gradeClass(v)}">${fmt(v)}</td>`)
+    ].join('');
+
+    wrap.innerHTML = `
+      <table>
+        <thead>
+          <tr>${thRow1}</tr>
+          <tr>${thRow2}</tr>
+        </thead>
+        <tbody>
+          <tr>${tdVals}</tr>
+        </tbody>
+      </table>
+    `;
+  }
+</script>
+</body>
+</html>
