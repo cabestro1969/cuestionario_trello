@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laboratorio virtual de electricidad 3 · IES Comuneros de Castilla</title>
+<style>
+:root{--bg:#eef2f7;--card:#fff;--ink:#142133;--muted:#58687c;--brand:#0b5cad;--brand2:#0a3f78;--accent:#f2a900;--ok:#16794c;--bad:#c0392b;--line:#d6dee8;--r:14px}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+header.top{background:linear-gradient(135deg,#0a2f5c,#0b5cad);color:#fff;padding:14px 22px;display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .logo{width:42px;height:42px;border-radius:12px;background:var(--accent);display:grid;place-items:center}
+.brand h1{margin:0;font-size:18px;line-height:1.2}
+.brand small{opacity:.85;font-size:12.5px}
+nav.tabs{display:flex;flex-wrap:wrap;gap:8px}
+nav.tabs button{border:0;border-radius:999px;padding:8px 16px;font:600 14px inherit;font-family:inherit;color:#e5f0fc;background:rgba(255,255,255,.14);cursor:pointer}
+nav.tabs button.on{background:#fff;color:var(--brand2)}
+nav.tabs button:hover{background:rgba(255,255,255,.28)}nav.tabs button.on:hover{background:#fff}
+main{max-width:1500px;margin:0 auto;padding:18px}
+.view{display:none}.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(20,33,51,.05)}
+.card h2,.card h3{margin:0 0 8px}
+h2{font-size:19px;color:var(--brand2)}h3{font-size:16px}
+h4{margin:14px 0 6px;font-size:14px;color:var(--brand2);text-transform:uppercase;letter-spacing:.04em}
+.pgrid{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:1100px){.pgrid{grid-template-columns:minmax(0,1.55fr) minmax(340px,1fr)}}
+.muted{color:var(--muted)}.small{font-size:13px}
+table.comp{width:100%;border-collapse:collapse;font-size:13.5px}
+table.comp th,table.comp td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+table.comp th{background:#f1f6fb}
+ol.steps{margin:6px 0 0;padding-left:20px}ol.steps li{margin:4px 0}
+button,.btn{font:600 13.5px inherit;font-family:inherit;border:1px solid var(--line);background:#fff;color:var(--ink);padding:7px 12px;border-radius:9px;cursor:pointer}
+button:hover{border-color:var(--brand);color:var(--brand)}
+button.primary{background:var(--brand);color:#fff;border-color:var(--brand)}button.primary:hover{background:var(--brand2);color:#fff}
+button.big{font-size:16px;padding:12px 20px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.bench-h{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.badge{font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;background:#e8eef6;color:var(--muted)}
+.badge.on{background:#dff3e8;color:var(--ok)}.badge.bad{background:#fbe1dd;color:var(--bad)}
+.palette{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.pal{display:flex;flex-direction:column;align-items:center;gap:0;padding:4px 8px 6px;min-width:96px;position:relative}
+.pal svg{width:70px;height:36px;stroke-linecap:round}
+.pal span{font-size:12px;font-weight:600}.pal em{font-weight:400;color:var(--muted)}
+.pal .cnt{position:absolute;top:2px;right:5px;font-size:11px;color:var(--brand)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.svgwrap{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+svg.board{width:100%;height:auto;display:block;touch-action:none;user-select:none;-webkit-user-select:none}
+.wire{fill:none;stroke:#1d2b3a;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.wire.sel{stroke:#e08a00;stroke-width:4.5}
+.wirehit{fill:none;stroke:transparent;stroke-width:16;cursor:pointer}
+.hit{fill:transparent;cursor:grab}
+.selbox{fill:rgba(11,92,173,.07);stroke:#0b5cad;stroke-dasharray:5 4;stroke-width:1.5;pointer-events:none}
+.termhit{fill:transparent;cursor:crosshair}
+.termdot{fill:#fff;stroke:#e08a00;stroke-width:2.5;pointer-events:none}
+.termdot.con{fill:#1d2b3a;stroke:#1d2b3a}.termdot.act{fill:#e08a00}
+.lbl{font:600 13px system-ui,sans-serif;fill:#142133;pointer-events:none}
+.ra{fill:#0b5cad;font-weight:800;font-size:16px}.rv{fill:#b3541e;font-weight:800;font-size:16px}
+.prev{stroke:#e08a00;stroke-dasharray:6 5;fill:none;stroke-width:3;pointer-events:none}
+.props{min-height:46px;margin-top:8px;padding:8px 10px;border:1px dashed var(--line);border-radius:10px;font-size:14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.props input[type=number]{width:96px;padding:5px 7px;border:1px solid var(--line);border-radius:8px;font:inherit}
+.verify{margin-top:8px;font-size:14px;border-radius:10px;padding:0}
+.verify.ok,.verify.bad{padding:9px 12px}
+.verify.ok{background:#e3f5ec;color:#0f5a38}.verify.bad{background:#fdecea;color:#8c2a1f}
+.verify ul{margin:4px 0 0;padding-left:18px}
+details.schem{margin-top:10px}details.schem summary{cursor:pointer;font-weight:600;color:var(--brand)}
+.tabs2{display:flex;gap:8px;margin-bottom:10px}
+.tabs2 button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.arow{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;padding:6px 0;border-bottom:1px solid #edf1f6}
+.arow label{font-size:14px}
+.ain{display:flex;align-items:center;gap:6px}
+.ain input{width:100px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font:inherit;text-align:right}
+.ain .u{width:22px;color:var(--muted)}
+.mark{font-size:12.5px;font-weight:700;min-width:62px}
+.mark.ok{color:var(--ok)}.mark.bad{color:var(--bad)}.mark.empty{color:#9aa7b6}.mark.text{color:var(--brand)}
+textarea,input.txt,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:9px;font:inherit;background:#fff}
+select.inl{width:auto;display:inline-block;padding:4px 8px;margin:0 3px}
+.q{margin:8px 0}.q label{display:block;font-weight:600;font-size:14px;margin-bottom:4px}
+.fb-box{min-height:44px;border:2px dashed #b9c7d8;border-radius:10px;padding:6px 8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:18px;background:#fbfdff}
+.fb-pal{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chip{border-radius:8px;padding:5px 11px;font-size:16px;background:#eaf2fb;border:1px solid #b9d1ec}
+.chip.ghost{background:#fff;font-size:13px}
+.tok{background:#0b5cad;color:#fff;border-radius:7px;padding:1px 9px;font-weight:600}
+.tok.op{background:#f2a900;color:#142133}
+.fb-t{font-weight:600;font-size:14px}
+.sumline{margin-top:10px;font-weight:600}
+.grid2{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.field label{display:block;font-weight:600;font-size:14px;margin-bottom:4px}
+.pend li{margin:2px 0}
+.ok-t{color:var(--ok);font-weight:700}.bad-t{color:var(--bad);font-weight:700}
+table.res{width:100%;border-collapse:collapse;font-size:14px}
+table.res td,table.res th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+footer{text-align:center;color:var(--muted);font-size:12.5px;padding:10px 0 26px}
+
+.ex-fields{margin-top:14px;border-top:1px solid var(--line);padding-top:4px}
+.bench .statement,.bench>p{max-width:980px}
+select.inl{width:auto}
+.bench-h h3{font-size:17px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="logo"><svg width="26" height="26" viewBox="0 0 24 24" fill="#142133"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></div>
+    <div><h1>Laboratorio virtual de electricidad</h1><small>IES Comuneros de Castilla · Departamento de Tecnología · Montajes eléctricos (ejercicios 1–20)</small></div>
+  </div>
+  <nav class="tabs" id="nav"></nav>
+</header>
+<main id="main" style="max-width:1100px"></main>
+<footer>IES Comuneros de Castilla · Departamento de Tecnología · Los datos se guardan solo en este navegador.</footer>
+<script>
+'use strict';
+const INK='#1d2b3a',SNAP=20,MOTOR_R=20,K_RPM=100,LAMP_P0=2.7;
+const TYPES={
+  pila:{name:'Pila',unit:'V',def:9},
+  lampara:{name:'Lámpara',def:30},
+  motor:{name:'Motor',def:20},
+  interruptor:{name:'Interruptor',def:0},
+  pulsadorNA:{name:'Pulsador',def:0},
+  conmutador:{name:'Conmutador',def:0},
+  conmutador2:{name:'Conmutador doble',def:0}
+};
+const TERM={
+  def:{a:[-40,0],b:[40,0]},
+  conmutador:{c:[-40,0],'0':[40,-20],'1':[40,20]},
+  conmutador2:{c1:[-40,-40],'0a':[40,-60],'1a':[40,-20],c2:[-40,40],'0b':[40,20],'1b':[40,60]}
+};
+const HH={conmutador:40,conmutador2:78};
+const fmtNum=v=>String(Math.round(+v*1000)/1000).replace('.',',');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function parseNum(s){const m=/^\s*(-?[\d.,]+)\s*(rpm)?\s*$/i.exec(String(s||''));return m?parseFloat(m[1].replace(',','.')):NaN;}
+const rotVec=(x,y,r)=>{switch(((r%360)+360)%360){case 90:return[-y,x];case 180:return[-x,-y];case 270:return[y,-x];default:return[x,y];}};
+const tmap=c=>TERM[c.type]||TERM.def;
+function termPos(c,t){const L=tmap(c)[t],v=rotVec(L[0],L[1],c.rot||0);return{x:c.x+v[0],y:c.y+v[1]};}
+function termDir(c,t){const L=tmap(c)[t],v=rotVec(L[0]<0?-1:1,0,c.rot||0);return{x:v[0],y:v[1]};}
+const parseKey=k=>{const i=k.indexOf('.');return{id:+k.slice(0,i),t:k.slice(i+1)};};
+const getComp=(b,id)=>b.comps.find(c=>c.id===id);
+const newBoard=()=>({comps:[],wires:[],nid:1});
+function wirePts(b,w){
+  const A=parseKey(w.a),B=parseKey(w.b),ca=getComp(b,A.id),cb=getComp(b,B.id);
+  if(!ca||!cb||!tmap(ca)[A.t]||!tmap(cb)[B.t])return null;
+  const p=termPos(ca,A.t),q=termPos(cb,B.t),dp=termDir(ca,A.t),dq=termDir(cb,B.t),St=20;
+  const p1={x:p.x+dp.x*St,y:p.y+dp.y*St},q1={x:q.x+dq.x*St,y:q.y+dq.y*St};
+  const mid=dp.x!==0?{x:p1.x,y:q1.y}:{x:q1.x,y:p1.y};
+  return[p,p1,mid,q1,q];
+}
+function gauss(A,z){
+  const n=z.length;
+  for(let i=0;i<n;i++){
+    let p=i;for(let r=i+1;r<n;r++)if(Math.abs(A[r][i])>Math.abs(A[p][i]))p=r;
+    if(Math.abs(A[p][i])<1e-30)return null;
+    if(p!==i){[A[p],A[i]]=[A[i],A[p]];[z[p],z[i]]=[z[i],z[p]];}
+    for(let r=i+1;r<n;r++){const f=A[r][i]/A[i][i];if(f===0)continue;for(let c=i;c<n;c++)A[r][c]-=f*A[i][c];z[r]-=f*z[i];}
+  }
+  const x=new Float64Array(n);
+  for(let i=n-1;i>=0;i--){let s=z[i];for(let c=i+1;c<n;c++)s-=A[i][c]*x[c];x[i]=s/A[i][i];}
+  return x;
+}
+/* Simulador: varios circuitos independientes en una misma hoja (cada uno con su referencia) */
+function sim1(b){
+  const par=[],gp=[],idx=new Map();
+  const gi=k=>{if(!idx.has(k)){idx.set(k,par.length);par.push(par.length);gp.push(gp.length);}return idx.get(k);};
+  const fd=(a,i)=>{while(a[i]!==i){a[i]=a[a[i]];i=a[i];}return i;};
+  const un=(a,x,y)=>{x=fd(a,x);y=fd(a,y);if(x!==y)a[x]=y;};
+  b.comps.forEach(c=>Object.keys(tmap(c)).forEach(t=>gi(c.id+'.'+t)));
+  const K=(c,t)=>idx.get(c.id+'.'+t);
+  b.wires.forEach(w=>{if(idx.has(w.a)&&idx.has(w.b)){un(par,idx.get(w.a),idx.get(w.b));un(gp,idx.get(w.a),idx.get(w.b));}});
+  const els=[];
+  const add=(c,a,bb,g,e)=>{els.push({c,a:K(c,a),b:K(c,bb),g,E:e});un(gp,K(c,a),K(c,bb));};
+  b.comps.forEach(c=>{
+    switch(c.type){
+      case 'pila':add(c,'a','b',1e4,+c.value);break;
+      case 'lampara':add(c,'a','b',c.burnt?1e-9:1/Math.max(+c.value||30,1e-6),null);break;
+      case 'motor':add(c,'a','b',1/MOTOR_R,null);break;
+      case 'interruptor':add(c,'a','b',c.closed?1e6:1e-12,null);break;
+      case 'pulsadorNA':add(c,'a','b',c.pressed?1e6:1e-12,null);break;
+      case 'conmutador':add(c,'c',c.pos?'1':'0',1e6,null);un(gp,K(c,'c'),K(c,'0'));un(gp,K(c,'c'),K(c,'1'));break;
+      case 'conmutador2':{const p=c.pos?'1':'0';add(c,'c1',p+'a',1e6,null);add(c,'c2',p+'b',1e6,null);
+        ['0a','1a'].forEach(t=>un(gp,K(c,'c1'),K(c,t)));['0b','1b'].forEach(t=>un(gp,K(c,'c2'),K(c,t)));un(gp,K(c,'c1'),K(c,'c2'));break;}
+    }
+  });
+  const gset=new Set(),gdone=new Set();
+  b.comps.filter(c=>c.type==='pila').sort((x,y)=>x.id-y.id).forEach(c=>{
+    const g=fd(gp,K(c,'a'));if(!gdone.has(g)){gdone.add(g);gset.add(fd(par,K(c,'b')));}});
+  const roots=new Map();let n=0;
+  for(let i=0;i<par.length;i++){const r=fd(par,i);if(!gset.has(r)&&!roots.has(r))roots.set(r,n++);}
+  const row=i=>{const r=fd(par,i);return gset.has(r)?-1:roots.get(r);};
+  const A=Array.from({length:n},()=>new Float64Array(n)),z=new Float64Array(n);
+  for(let i=0;i<n;i++)A[i][i]+=1e-9;
+  els.forEach(e=>{
+    const ra=row(e.a),rb=row(e.b);if(ra===rb)return;
+    if(ra>=0)A[ra][ra]+=e.g;if(rb>=0)A[rb][rb]+=e.g;
+    if(ra>=0&&rb>=0){A[ra][rb]-=e.g;A[rb][ra]-=e.g;}
+    if(e.E!==null){const I=e.E*e.g;if(ra>=0)z[ra]+=I;if(rb>=0)z[rb]-=I;}
+  });
+  const x=n?gauss(A,z):new Float64Array(0);
+  const res={vd:{},cur:{},br:{},rpm:{},group:{},shortG:{},short:false};
+  const V=i=>{if(!x)return 0;const r=row(i);return r<0?0:x[r];};
+  els.forEach(e=>{res.vd[e.c.id]=V(e.a)-V(e.b);});
+  b.comps.forEach(c=>{
+    res.group[c.id]=fd(gp,K(c,Object.keys(tmap(c))[0]));
+    const v=res.vd[c.id]||0;
+    if(c.type==='lampara')res.br[c.id]=c.burnt?0:Math.min(1,Math.sqrt(v*v/Math.max(+c.value||30,1e-6)/LAMP_P0));
+    if(c.type==='motor')res.rpm[c.id]=v*K_RPM;
+    if(c.type==='pila'){const I=((+c.value)-v)*1e4;res.cur[c.id]=I;if(Math.abs(I)>50){res.shortG[res.group[c.id]]=true;res.short=true;}}
+  });
+  return res;
+}
+function simulate(b){
+  for(let pass=0;pass<4;pass++){
+    const r=sim1(b);let again=false;
+    b.comps.forEach(c=>{if(c.type==='lampara'&&!c.burnt&&Math.abs(r.vd[c.id]||0)>(+c.vmax||12)+1e-6){c.burnt=true;again=true;}});
+    if(!again)return r;
+  }
+  return sim1(b);
+}
+function mixColor(c1,c2,t){
+  const p=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));
+  const a=p(c1),b=p(c2);return '#'+a.map((v,i)=>Math.round(v+(b[i]-v)*t).toString(16).padStart(2,'0')).join('');
+}
+const conducting=c=>c.type==='interruptor'?!!c.closed:c.type==='pulsadorNA'?!!c.pressed:false;
+/* ---------- símbolos ---------- */
+function prims(c,res){
+  const P=[];
+  const L=(x1,y1,x2,y2,w)=>P.push({k:'l',x1,y1,x2,y2,w});
+  const T=(x,y,t,sz,bold)=>P.push({k:'t',x,y,t,sz,bold});
+  const C=(cx,cy,r,f,ns)=>P.push({k:'c',cx,cy,r,f,ns});
+  const G=(pts,f)=>P.push({k:'p',pts,f});
+  const pole=(yo,pos)=>{
+    L(-40,yo,-14,yo);L(14,yo-20,40,yo-20);L(14,yo+20,40,yo+20);
+    C(-14,yo,3.5,INK);C(14,yo-20,3.5,'#fff');C(14,yo+20,3.5,'#fff');
+    L(-14,yo,12,yo+(pos?17:-17),3);
+  };
+  switch(c.type){
+    case 'pila':L(-40,0,-6,0);L(-6,-16,-6,16,3.5);L(6,-9,6,9,3.5);L(6,0,40,0);T(-31,-8,'+',14,true);T(31,-8,'-',16,true);break;
+    case 'lampara':{
+      const br=(res&&res.br&&res.br[c.id])||0;
+      if(br>0.04)C(0,0,17+br*10,mixColor('#ffffff','#ffe680',br),true);
+      L(-40,0,-16,0);L(16,0,40,0);C(0,0,16,c.burnt?'#8b929a':mixColor('#eceff2','#ffd21f',br));L(-11,-11,11,11);L(-11,11,11,-11);break;}
+    case 'motor':
+      L(-40,0,-18,0);L(18,0,40,0);C(0,0,18,'#fff');T(0,6,'M',17,true);T(-31,-8,'+',13,true);T(31,-8,'-',15,true);
+      P.push({k:'r',rpm:(res&&res.rpm&&res.rpm[c.id])||0,id:c.id});break;
+    case 'interruptor':case 'pulsadorNA':{
+      L(-40,0,-14,0);L(14,0,40,0);C(-14,0,3.5,'#fff');C(14,0,3.5,'#fff');
+      const on=conducting(c);on?L(-14,0,14,0,3):L(-14,0,12,-15,3);
+      if(c.type==='pulsadorNA'){const d=c.pressed?5:0;L(-8,-24+d,8,-24+d,3.5);L(0,-24+d,0,on?-3:-7,2);}
+      break;}
+    case 'conmutador':{
+      L(-40,0,-14,0);L(14,-20,40,-20);L(14,20,40,20);C(-14,0,3.5,INK);C(14,-20,3.5,'#fff');C(14,20,3.5,'#fff');
+      L(-14,0,12,c.pos?17:-17,3);T(27,-26,'0',11);T(27,36,'1',11);break;}
+    case 'conmutador2':{
+      pole(-40,c.pos);pole(40,c.pos);
+      for(let y=-30;y<30;y+=14)L(-14,y,-14,y+7,1.5);
+      T(27,-66,'0',11);T(27,-8,'1',11);T(27,14,'0',11);T(27,76,'1',11);break;}
+  }
+  return P;
+}
+const nameOf=(b,c)=>{const n=b.comps.filter(x=>x.type===c.type).indexOf(c)+1;return TYPES[c.type].name+(['lampara','motor','pila'].includes(c.type)?' '+n:'');};
+const rpmTxt=r=>Math.abs(r)<1?'parado':Math.round(Math.abs(r))+' rpm ('+(r>0?'horario':'antihorario')+')';
+function labelLines(b,c,res){
+  switch(c.type){
+    case 'pila':return[{t:'Pila · '+fmtNum(c.value)+' V'}];
+    case 'lampara':return c.burnt?[{t:'¡FUNDIDA!',cls:'rv'}]:[{t:'Lámpara'}];
+    case 'motor':return[{t:'Motor'},{t:rpmTxt(res.rpm[c.id]||0),cls:'ra'}];
+    case 'interruptor':return[{t:'Interruptor'+(c.closed?' (cerrado)':' (abierto)')}];
+    case 'pulsadorNA':return[{t:'Pulsador'+(c.pressed?' (pulsado)':'')}];
+    default:return[{t:TYPES[c.type].name+' · pos. '+(c.pos?1:0)}];
+  }
+}
+function labelPlace(c,L){
+  const h=((c.rot||0)%180)===0,n=L.length,hh=HH[c.type]||28;
+  return L.map((l,i)=>h?Object.assign({},l,{x:c.x,y:c.y-hh-6-(n-1-i)*17,a:'middle'}):Object.assign({},l,{x:c.x+hh+4,y:c.y-((n-1)*17)/2+i*17+5,a:'start'}));
+}
+/* ---------- PDF propio (sin librerías) ---------- */
+const HW={' ':278,'!':278,'"':355,'#':556,'$':556,'%':889,'&':667,"'":191,'(':333,')':333,'*':389,'+':584,',':278,'-':333,'.':278,'/':278,':':278,';':278,'<':584,'=':584,'>':584,'?':556,'@':1015,A:667,B:667,C:722,D:722,E:667,F:611,G:778,H:722,I:278,J:500,K:667,L:556,M:833,N:722,O:778,P:667,Q:778,R:722,S:667,T:611,U:722,V:667,W:944,X:667,Y:667,Z:611,'[':278,'\\':278,']':278,'^':469,_:556,'`':333,a:556,b:556,c:500,d:556,e:556,f:278,g:556,h:556,i:222,j:222,k:500,l:222,m:833,n:556,o:556,p:556,q:556,r:333,s:500,t:278,u:556,v:500,w:722,x:500,y:500,z:500,'{':334,'|':260,'}':334,'~':584};
+function tw(s,size,bold){
+  let w=0;
+  for(const ch of String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'')){
+    w+=ch==='Ω'?1600:(/\d/.test(ch)?556:(HW[ch]||556));
+  }
+  return w*size/1000*(bold?1.06:1);
+}
+const WIN={0x2013:0x96,0x2014:0x97,0x2018:0x91,0x2019:0x92,0x201C:0x93,0x201D:0x94,0x2022:0x95,0x20AC:0x80,0x2026:0x85};
+function enc(s){
+  let o='';
+  for(const ch of String(s)){
+    let c=ch.codePointAt(0);
+    if(c===0x3A9||c===0x2126){o+='ohm';continue;}
+    if(c===0x2212){o+='-';continue;}
+    if(c===0x2192){o+='->';continue;}
+    if(WIN[c])c=WIN[c];else if(c>255||c<32)c=c===10||c===9?32:63;
+    const t=String.fromCharCode(c);
+    o+=(t==='('||t===')'||t==='\\')?'\\'+t:t;
+  }
+  return o;
+}
+class Doc{
+  constructor(){this.pages=[];this.W=595.28;this.H=841.89;this.M=40;this.hdr=null;this.newPage();}
+  newPage(){this.ops=['1 J 1 j'];this.pages.push(this.ops);this.y=this.pages.length>1?58:this.M;
+    if(this.pages.length>1&&this.hdr)this.text(this.M,32,this.hdr,{size:8.5,color:'#58687c'});}
+  col(h){if(h&&/^#[0-9a-f]{3}$/i.test(h))h='#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];const m=/^#?([0-9a-f]{6})$/i.exec(h||'#000000'),n=parseInt(m?m[1]:'000000',16);
+    return[(n>>16&255)/255,(n>>8&255)/255,(n&255)/255].map(v=>v.toFixed(3)).join(' ');}
+  f(n){return(+n).toFixed(2);}
+  text(x,y,s,o={}){
+    const size=o.size||10,w=tw(s,size,o.bold);let xx=x;
+    if(o.align==='center')xx=x-w/2;else if(o.align==='right')xx=x-w;
+    this.ops.push('BT /'+(o.bold?'F2':'F1')+' '+this.f(size)+' Tf '+this.col(o.color)+' rg '+this.f(xx)+' '+this.f(this.H-y)+' Td ('+enc(s)+') Tj ET');
+    return w;
+  }
+  line(x1,y1,x2,y2,o={}){
+    this.ops.push(this.col(o.color||INK)+' RG '+this.f(o.w||1)+' w '+this.f(x1)+' '+this.f(this.H-y1)+' m '+this.f(x2)+' '+this.f(this.H-y2)+' l S');
+  }
+  poly(pts,o={}){
+    let s=pts.map((p,i)=>this.f(p[0])+' '+this.f(this.H-p[1])+(i?' l':' m')).join(' ')+' h';
+    const st=[];if(o.fill)st.push(this.col(o.fill)+' rg');st.push(this.col(INK)+' RG '+this.f(o.lw||1)+' w');
+    this.ops.push(st.join(' ')+' '+s+(o.fill?' B':' S'));
+  }
+  rect(x,y,w,h,o={}){
+    const st=[];if(o.fill)st.push(this.col(o.fill)+' rg');if(o.stroke)st.push(this.col(o.stroke)+' RG '+this.f(o.lw||1)+' w');
+    this.ops.push(st.join(' ')+' '+this.f(x)+' '+this.f(this.H-y-h)+' '+this.f(w)+' '+this.f(h)+' re '+(o.fill&&o.stroke?'B':o.fill?'f':'S'));
+  }
+  circle(cx,cy,r,o={}){
+    const k=0.5523*r,X=cx,Y=this.H-cy,f=this.f.bind(this);
+    const st=[];if(o.fill)st.push(this.col(o.fill)+' rg');if(!o.ns)st.push(this.col(INK)+' RG '+f(o.lw||1)+' w');
+    this.ops.push(st.join(' ')+' '+f(X+r)+' '+f(Y)+' m '+f(X+r)+' '+f(Y+k)+' '+f(X+k)+' '+f(Y+r)+' '+f(X)+' '+f(Y+r)+' c '+
+      f(X-k)+' '+f(Y+r)+' '+f(X-r)+' '+f(Y+k)+' '+f(X-r)+' '+f(Y)+' c '+f(X-r)+' '+f(Y-k)+' '+f(X-k)+' '+f(Y-r)+' '+f(X)+' '+f(Y-r)+' c '+
+      f(X+k)+' '+f(Y-r)+' '+f(X+r)+' '+f(Y-k)+' '+f(X+r)+' '+f(Y)+' c h '+(o.fill?(o.ns?'f':'B'):'S'));
+  }
+  ensure(h){if(this.y+h>this.H-this.M-12)this.newPage();}
+  wrap(s,w,size,bold){
+    const out=[];
+    String(s).split('\n').forEach(par=>{
+      let line='';
+      par.split(/\s+/).forEach(wd=>{
+        while(tw(wd,size,bold)>w&&wd.length>1){ // palabra muy larga
+          let k=wd.length-1;while(k>1&&tw(wd.slice(0,k),size,bold)>w)k--;
+          if(line){out.push(line);line='';}
+          out.push(wd.slice(0,k));wd=wd.slice(k);
+        }
+        const t=line?line+' '+wd:wd;
+        if(!line||tw(t,size,bold)<=w)line=t;else{out.push(line);line=wd;}
+      });
+      out.push(line);
+    });
+    return out;
+  }
+  head(s){this.ensure(30);this.rect(this.M,this.y,this.W-2*this.M,20,{fill:'#e3eefa'});
+    this.text(this.M+8,this.y+14,s,{size:11,bold:true,color:'#0a3f78'});this.y+=28;}
+  row(lab,val,st){
+    const lines=this.wrap(lab,300,9.5),h=Math.max(lines.length*12,14)+8;this.ensure(h);
+    const y0=this.y;
+    lines.forEach((l,i)=>this.text(this.M+4,y0+11+i*12,l,{size:9.5}));
+    this.text(this.M+330,y0+11,val||'-',{size:10,bold:true});
+    const c={ok:'#16794c',bad:'#c0392b',empty:'#7a8796',text:'#0b5cad'}[st],t={ok:'Correcto',bad:'Revisar',empty:'Sin responder',text:'Para el profesor'}[st];
+    this.text(this.W-this.M-4,y0+11,t,{size:8.5,bold:true,color:c,align:'right'});
+    this.line(this.M,y0+h,this.W-this.M,y0+h,{color:'#d6dee8',w:0.6});this.y+=h;
+  }
+  block(lab,txt){
+    const lines=this.wrap(txt||'(sin responder)',this.W-2*this.M-16,10);
+    this.ensure(18+Math.min(lines.length,3)*12);
+    this.text(this.M+4,this.y+11,lab,{size:9.5,bold:true,color:'#0a3f78'});this.y+=16;
+    lines.forEach(l=>{this.ensure(14);this.text(this.M+12,this.y+10,l,{size:10,color:txt?'#000000':'#7a8796'});this.y+=12;});
+    this.y+=6;
+  }
+  finish(title,footL){
+    const n=this.pages.length;
+    this.pages.forEach((ops,i)=>{
+      this.ops=ops;
+      this.line(this.M,this.H-30,this.W-this.M,this.H-30,{color:'#c5d0dc',w:0.6});
+      this.text(this.M,this.H-20,footL,{size:8,color:'#58687c'});
+      this.text(this.W-this.M,this.H-20,'Página '+(i+1)+' de '+n,{size:8,color:'#58687c',align:'right'});
+    });
+    const objs=[];const add=s=>{objs.push(s);return objs.length;};
+    add('<< /Type /Catalog /Pages 2 0 R >>');add('');
+    add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
+    add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+    add('<< /Title ('+enc(title)+') /Author (IES Comuneros de Castilla) /Producer (Laboratorio virtual de electricidad) >>');
+    const kids=[];
+    this.pages.forEach(ops=>{
+      const content=ops.join('\n');
+      const cid=add('<< /Length '+content.length+' >>\nstream\n'+content+'\nendstream');
+      const pid=add('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents '+cid+' 0 R >>');
+      kids.push(pid+' 0 R');
+    });
+    objs[1]='<< /Type /Pages /Kids ['+kids.join(' ')+'] /Count '+kids.length+' >>';
+    let out='%PDF-1.4\n%\u00e2\u00e3\u00cf\u00d3\n';const offs=[];
+    objs.forEach((o,i)=>{offs.push(out.length);out+=(i+1)+' 0 obj\n'+o+'\nendobj\n';});
+    const xr=out.length;
+    out+='xref\n0 '+(objs.length+1)+'\n0000000000 65535 f \n';
+    offs.forEach(o=>{out+=String(o).padStart(10,'0')+' 00000 n \n';});
+    out+='trailer\n<< /Size '+(objs.length+1)+' /Root 1 0 R /Info 5 0 R >>\nstartxref\n'+xr+'\n%%EOF';
+    const u=new Uint8Array(out.length);for(let i=0;i<out.length;i++)u[i]=out.charCodeAt(i)&255;
+    return u;
+  }
+}
+
+
+/* ---------- análisis por circuitos y verificación ---------- */
+function analyze(b){
+  const res=simulate(b),map=new Map();
+  b.comps.forEach(c=>{
+    const g=res.group[c.id];
+    if(!map.has(g))map.set(g,{ids:[],n:{},pilas:[],short:!!res.shortG[g]});
+    const G=map.get(g);G.ids.push(c.id);G.n[c.type]=(G.n[c.type]||0)+1;
+    if(c.type==='pila')G.pilas.push(+c.value);
+  });
+  return{groups:[...map.values()],res};
+}
+function runG(b,G,set){
+  const cl=JSON.parse(JSON.stringify(b));
+  cl.comps.forEach(c=>{if(c.type==='lampara')c.burnt=false;});
+  const ids=new Set(G.ids),mine=t=>cl.comps.filter(c=>ids.has(c.id)&&c.type===t).sort((x,y)=>x.id-y.id);
+  Object.keys(set||{}).forEach(t=>mine(t).forEach((c,i)=>{
+    const v=Array.isArray(set[t])?set[t][i]:set[t];
+    if(t==='interruptor')c.closed=!!v;else if(t==='pulsadorNA')c.pressed=!!v;else c.pos=v?1:0;}));
+  const res=simulate(cl),lamps=mine('lampara'),motors=mine('motor');
+  const lit=lamps.filter(c=>res.br[c.id]>0.12);
+  return{br:lamps.map(c=>res.br[c.id]),burnt:lamps.filter(c=>c.burnt).length,litIds:lit.map(c=>c.id),lit:lit.length,
+    rpm:motors.map(c=>res.rpm[c.id]),run:motors.filter(c=>Math.abs(res.rpm[c.id])>20).length,short:!!res.shortG[res.group[G.ids[0]]]};
+}
+function sigMatch(G,sp){
+  for(const k of new Set([...Object.keys(G.n),...Object.keys(sp.n)]))if((G.n[k]||0)!==(sp.n[k]||0))return false;
+  if(sp.v){const a=G.pilas.slice().sort((x,y)=>x-y),e=sp.v.slice().sort((x,y)=>x-y);if(a.length!==e.length||a.some((x,i)=>Math.abs(x-e[i])>1e-9))return false;}
+  return true;
+}
+const PL={pila:['pila','pilas'],lampara:['lámpara','lámparas'],motor:['motor','motores'],interruptor:['interruptor','interruptores'],pulsadorNA:['pulsador','pulsadores'],conmutador:['conmutador','conmutadores'],conmutador2:['conmutador doble','conmutadores dobles']};
+function descr(sp){
+  return Object.keys(sp.n).map(t=>sp.n[t]+' '+PL[t][sp.n[t]>1?1:0]).join(', ')+(sp.v?' (pilas de '+sp.v.map(fmtNum).join(' V y ')+' V)':'');
+}
+function verifyBoard(key){
+  const b=S.boards[key],specs=SPECS[key];
+  if(!b.comps.length)return{ok:false,msgs:['El área de trabajo está vacía.']};
+  const A=analyze(b),used=new Set(),msgs=[];
+  specs.forEach(sp=>{
+    const cands=A.groups.map((G,i)=>i).filter(i=>!used.has(i)&&sigMatch(A.groups[i],sp));
+    if(!cands.length){msgs.push('Falta o no coincide el circuito «'+sp.name+'»: debe llevar '+descr(sp)+', conectados entre sí.');return;}
+    let first=null,done=false;
+    for(const i of cands){
+      const m=sp.test(set=>runG(b,A.groups[i],set));
+      if(!m.length){used.add(i);done=true;break;}
+      if(!first)first=m;
+    }
+    if(!done)msgs.push('«'+sp.name+'»: '+first.join(' '));
+  });
+  if(!msgs.length&&A.groups.length>specs.length)msgs.push('Hay componentes o circuitos de más: deja solo los que pide el ejercicio.');
+  return msgs.length?{ok:false,msgs}:{ok:true,msgs:['Montaje correcto: todos los circuitos funcionan como pide el ejercicio.']};
+}
+
+/* ---------- esquemas de ayuda (solo de los circuitos que da el enunciado) ---------- */
+function PB(){
+  const comps=[],wires=[];let nid=1;
+  const add=(type,x,y,rot,o)=>{const c=Object.assign({id:nid++,type,x,y,rot:rot||0,value:TYPES[type].def,closed:false,pressed:false,pos:0,vmax:12,burnt:false},o||{});comps.push(c);return c.id;};
+  const w=(a,b)=>wires.push({a,b});
+  return{add,w,out:()=>({comps,wires,nid})};
+}
+function loopS(p,x0,y0,v,items,rev){
+  const bat=p.add('pila',x0,y0+40,rev?270:90,{value:v});
+  let prev=rev?bat+'.b':bat+'.a';
+  items.forEach((t,i)=>{const id=p.add(t,x0+140+i*120,y0,0);p.w(prev,id+'.a');prev=id+'.b';});
+  p.w(prev,rev?bat+'.a':bat+'.b');return bat;
+}
+function parL(p,x0,y0,v,n){
+  const bat=p.add('pila',x0,y0+40,90,{value:v}),ls=[];
+  for(let i=0;i<n;i++)ls.push(p.add('lampara',x0+120+i*130,y0+40,90));
+  p.w(bat+'.a',ls[0]+'.a');p.w(bat+'.b',ls[0]+'.b');
+  for(let i=1;i<n;i++){p.w(ls[i-1]+'.a',ls[i]+'.a');p.w(ls[i-1]+'.b',ls[i]+'.b');}
+  return bat;
+}
+function stackP(p,x0,y0,vals){
+  const b1=p.add('pila',x0,y0+40,90,{value:vals[0]}),b2=p.add('pila',x0,y0+140,90,{value:vals[1]}),m=p.add('motor',x0+150,y0+90,90);
+  p.w(b1+'.a',m+'.a');p.w(b1+'.b',b2+'.a');p.w(b2+'.b',m+'.b');
+}
+function mixedP(p,x0,y0,cable){
+  const bat=p.add('pila',x0,y0+40,90,{value:9}),sw=p.add('interruptor',x0+140,y0,0),l1=p.add('lampara',x0+260,y0,0),
+    l2=p.add('lampara',x0+420,y0+40,90),l3=p.add('lampara',x0+520,y0+40,90);
+  p.w(bat+'.a',sw+'.a');p.w(sw+'.b',l1+'.a');p.w(l1+'.b',l2+'.a');p.w(l2+'.a',l3+'.a');p.w(l2+'.b',bat+'.b');p.w(l3+'.b',l2+'.b');
+  if(cable)p.w(l1+'.b',l2+'.b');
+}
+const PRESETS={
+  b1:()=>{const p=PB();loopS(p,40,60,9,['lampara']);loopS(p,460,60,9,['pulsadorNA','lampara']);loopS(p,40,230,9,['interruptor','motor']);
+    const bat=p.add('pila',460,270,90,{value:9}),sw=p.add('conmutador',640,270,90),m=p.add('motor',740,370,90),l=p.add('lampara',560,370,90);
+    p.w(bat+'.a',sw+'.c');p.w(sw+'.0',m+'.a');p.w(sw+'.1',l+'.a');p.w(m+'.b',bat+'.b');p.w(l+'.b',bat+'.b');return p.out();},
+  b5:()=>{const p=PB();loopS(p,40,80,4.5,['lampara']);loopS(p,440,80,9,['lampara']);return p.out();},
+  b6:()=>{const p=PB();loopS(p,40,80,9,['motor']);loopS(p,440,80,9,['motor'],true);return p.out();},
+  b7:()=>{const p=PB();loopS(p,40,60,9,['lampara','lampara']);parL(p,40,260,9,2);return p.out();},
+  b8:()=>{const p=PB();loopS(p,40,60,9,['lampara','lampara','lampara']);parL(p,40,260,9,3);return p.out();},
+  b9:()=>{const p=PB();loopS(p,40,50,1.5,['motor']);stackP(p,40,190,[1.5,1.5]);stackP(p,440,190,[3,3]);return p.out();},
+  b10:()=>{const p=PB();loopS(p,40,60,4.5,['motor']);loopS(p,440,60,4.5,['motor','motor']);return p.out();},
+  b11:()=>{const p=PB();loopS(p,40,60,9,['interruptor','lampara']);const bat=loopS(p,40,260,9,['interruptor','lampara']);p.w((bat+1)+'.b',bat+'.b');return p.out();},
+  b12:()=>{const p=PB();mixedP(p,40,60,false);mixedP(p,40,260,true);return p.out();}
+};
+
+/* ---------- comprobaciones por comportamiento ---------- */
+const sg=a=>a>0?1:a<0?-1:0;
+const near=(a,e,t)=>Math.abs(a-e)<=e*t;
+const SP=(name,n,v,test)=>({name,n,v,test});
+const fail=(c,m)=>c?[m]:[];
+const COMBOS=[[0,0],[0,1],[1,0],[1,1]];
+/* inversión de giro con un conmutador (2 posiciones) o con dos conmutadores (4 combinaciones) */
+function revTest(r,o){
+  const m=[];
+  if(o.two){
+    const R=COMBOS.map(c=>({c,x:r({conmutador:c})})),run=R.filter(q=>Math.abs(q.x.rpm[0])>(o.min||20));
+    const pos=run.filter(q=>q.x.rpm[0]>0),neg=run.filter(q=>q.x.rpm[0]<0);
+    if(!pos.length||!neg.length)return['El motor debe girar en un sentido en unas posiciones de los conmutadores y en sentido contrario en otras.'];
+    if(o.strict){
+      if(run.length!==2||run[0].c[0]===run[1].c[0]||run[0].c[1]===run[1].c[1]||sg(run[0].x.rpm[0])===sg(run[1].x.rpm[0]))
+        m.push('Con los conmutadores el motor debe girar en un sentido en una combinación, en sentido contrario en la opuesta, y pararse al cambiar uno solo.');
+    }
+    if(o.lamps){
+      run.forEach(q=>{if(q.x.lit!==1)m.push('Con los conmutadores en '+q.c.join('-')+' debe encenderse una sola bombilla (ahora '+q.x.lit+').');});
+      if(!m.length&&pos[0].x.litIds[0]===neg[0].x.litIds[0])m.push('La bombilla encendida debe ser distinta según el sentido de giro.');
+      if(!m.length&&o.noburn&&run.some(q=>q.x.burnt))m.push('Alguna bombilla se funde: revisa las conexiones.');
+    }
+    return m;
+  }
+  const key=o.key||'conmutador',a=r({[key]:0}),b=r({[key]:1});
+  if(Math.abs(a.rpm[0])<(o.min||20)||Math.abs(b.rpm[0])<(o.min||20)||sg(a.rpm[0])===sg(b.rpm[0]))
+    m.push('El motor debe girar en un sentido en una posición del conmutador y en sentido contrario en la otra.');
+  if(o.big&&!m.length&&(Math.abs(a.rpm[0])<800||Math.abs(b.rpm[0])<800))m.push('El motor debe recibir los 9 V completos en cada posición (revisa el montaje).');
+  if(o.lamps&&!m.length){
+    if(a.lit!==1||b.lit!==1)m.push('En cada posición debe encenderse una única bombilla (posición 0: '+a.lit+', posición 1: '+b.lit+').');
+    else if(a.litIds[0]===b.litIds[0])m.push('La bombilla que se enciende debe ser distinta en cada sentido de giro.');
+  }
+  if(o.either&&!m.length&&(a.burnt+a.lit<1||b.burnt+b.lit<1))m.push('En cada posición debería actuar una bombilla (encendida o fundida).');
+  return m;
+}
+const SPECS={
+  b1:[
+    SP('1) Pila y lámpara',{pila:1,lampara:1},[9],r=>fail(r({}).lit!==1,'La lámpara debe encenderse al cerrar el circuito.')),
+    SP('2) Pulsador y lámpara',{pila:1,pulsadorNA:1,lampara:1},[9],r=>fail(r({pulsadorNA:0}).lit!==0||r({pulsadorNA:1}).lit!==1,'La lámpara solo debe encenderse mientras se mantiene pulsado el pulsador.')),
+    SP('3) Interruptor y motor',{pila:1,interruptor:1,motor:1},[9],r=>fail(r({interruptor:0}).run!==0||r({interruptor:1}).run!==1,'El motor solo debe girar con el interruptor cerrado.')),
+    SP('4) Conmutador: lámpara o motor',{pila:1,conmutador:1,lampara:1,motor:1},[9],r=>{
+      const a=r({conmutador:0}),b=r({conmutador:1});
+      return fail(!(a.lit+a.run===1&&b.lit+b.run===1&&a.lit!==b.lit),'En una posición debe funcionar solo la lámpara y en la otra solo el motor.');})
+  ],
+  b5:[
+    SP('Bombilla con pila de 4,5 V',{pila:1,lampara:1},[4.5],r=>fail(r({}).lit!==1,'La bombilla debe encenderse.')),
+    SP('Bombilla con pila de 9 V',{pila:1,lampara:1},[9],r=>fail(r({}).lit!==1,'La bombilla debe encenderse.'))
+  ],
+  b6:[
+    SP('6a) Motor con la pila en un sentido',{pila:1,motor:1},[9],r=>fail(!(r({}).rpm[0]>800),'Conecta el + de la pila al + del motor (debe girar en sentido horario).')),
+    SP('6b) Motor con los polos al revés',{pila:1,motor:1},[9],r=>fail(!(r({}).rpm[0]<-800),'Conecta el + de la pila al − del motor (debe girar en sentido antihorario).'))
+  ],
+  b7:[
+    SP('2 bombillas en serie',{pila:1,lampara:2},[9],r=>{const a=r({});return fail(!(a.br.length===2&&a.br.every(x=>Math.abs(x-0.5)<0.1)),'Las dos bombillas deben ir una a continuación de la otra (cada una recibe la mitad de la tensión).');}),
+    SP('2 bombillas en paralelo',{pila:1,lampara:2},[9],r=>fail(!r({}).br.every(x=>x>0.95),'Cada bombilla debe conectarse directamente a los dos polos de la pila.'))
+  ],
+  b8:[
+    SP('3 bombillas en serie',{pila:1,lampara:3},[9],r=>fail(!r({}).br.every(x=>Math.abs(x-1/3)<0.07),'Las tres bombillas deben ir una a continuación de otra.')),
+    SP('3 bombillas en paralelo',{pila:1,lampara:3},[9],r=>fail(!r({}).br.every(x=>x>0.95),'Cada bombilla debe conectarse directamente a los dos polos de la pila.'))
+  ],
+  b9:[
+    SP('9a) Una pila de 1,5 V',{pila:1,motor:1},[1.5],r=>fail(!near(Math.abs(r({}).rpm[0]),150,0.05),'El motor debería girar a unos 150 rpm.')),
+    SP('9b) Dos pilas de 1,5 V en serie',{pila:2,motor:1},[1.5,1.5],r=>fail(!near(Math.abs(r({}).rpm[0]),300,0.05),'Con las pilas bien colocadas (positivo con negativo) el motor debería girar a unos 300 rpm.')),
+    SP('9c) Dos pilas de 3 V en serie',{pila:2,motor:1},[3,3],r=>fail(!near(Math.abs(r({}).rpm[0]),600,0.05),'Con las pilas bien colocadas (positivo con negativo) el motor debería girar a unos 600 rpm.'))
+  ],
+  b10:[
+    SP('10a) Un motor con 4,5 V',{pila:1,motor:1},[4.5],r=>fail(!near(Math.abs(r({}).rpm[0]),450,0.05),'El motor debería girar a unos 450 rpm.')),
+    SP('10b) Dos motores en serie',{pila:1,motor:2},[4.5],r=>fail(!r({}).rpm.every(x=>near(Math.abs(x),225,0.06)),'Los dos motores deben ir uno a continuación del otro (cada uno recibe 2,25 V).')),
+    SP('10c) Solución: dos motores en paralelo',{pila:1,motor:2},[4.5],r=>fail(!r({}).rpm.every(x=>near(Math.abs(x),450,0.05)),'Para que cada motor reciba los 4,5 V, conecta cada motor directamente a los polos de la pila.'))
+  ],
+  b11:[
+    SP('Circuito con interruptor y lámpara',{pila:1,interruptor:1,lampara:1},[9],r=>fail(r({interruptor:0}).lit!==0||r({interruptor:1}).lit!==1||r({interruptor:1}).short,'Sin cable A–B: la lámpara debe encenderse solo con el interruptor cerrado.')),
+    SP('Mismo circuito con el cable A–B',{pila:1,interruptor:1,lampara:1},[9],r=>fail(!r({interruptor:1}).short,'El cable entre A (salida del interruptor) y B (cable inferior de la pila) debe producir un cortocircuito al cerrar.'))
+  ],
+  b12:[
+    SP('Circuito mixto',{pila:1,interruptor:1,lampara:3},[9],r=>{
+      const a=r({interruptor:1}),s=a.br.slice().sort((x,y)=>y-x);
+      return fail(!(a.lit===3&&s[0]>0.55&&s[1]<0.45&&!a.short),'Una lámpara en serie con el interruptor y, a continuación, dos lámparas en paralelo entre B y C.');}),
+    SP('Con el cable B–C',{pila:1,interruptor:1,lampara:3},[9],r=>{
+      const a=r({interruptor:1});return fail(!(a.lit===1&&Math.max(...a.br)>0.95&&!a.short),'El cable B–C pone en cortocircuito las dos lámparas en paralelo: solo debe lucir la lámpara en serie (a pleno brillo).');}),
+    SP('Solución: cable que provoque cortocircuito',{pila:1,interruptor:1,lampara:3},[9],r=>fail(!r({interruptor:1}).short,'Para que ocurra lo del ejercicio 11, el cable debe unir los dos polos de la pila a través del interruptor (saltándose todas las lámparas).'))
+  ],
+  b13:[SP('Motor, conmutador y dos pilas',{pila:2,motor:1,conmutador:1},[9,9],r=>revTest(r,{big:true}))],
+  b14:[SP('Motor con dos conmutadores',{pila:1,motor:1,conmutador:2},[9],r=>revTest(r,{two:true,strict:true,min:800}))],
+  b15:[SP('Motor, conmutador, dos pilas y dos bombillas',{pila:2,motor:1,conmutador:1,lampara:2},[9,9],r=>revTest(r,{lamps:true}))],
+  b16:[SP('Dos conmutadores con dos bombillas',{pila:1,motor:1,conmutador:2,lampara:2},[9],r=>revTest(r,{two:true,lamps:true}))],
+  b17:[SP('Circuito del ejercicio 13 con bombillas en paralelo con los contactos',{pila:2,motor:1,conmutador:1,lampara:2},null,r=>revTest(r,{either:true}))],
+  b18:[SP('Dos conmutadores con bombillas en paralelo con cada contacto',{pila:1,motor:1,conmutador:2,lampara:2},[9],r=>revTest(r,{two:true,lamps:true,noburn:true}))],
+  b19:[SP('Conmutador doble con dos bombillas',{pila:1,motor:1,conmutador2:1,lampara:2},[9],r=>revTest(r,{key:'conmutador2',lamps:true}))],
+  b20:[SP('Llave de cruce con conmutador doble',{pila:1,motor:1,conmutador2:1},[9],r=>revTest(r,{key:'conmutador2',big:true}))]
+};
+/* ---------- ejercicios ---------- */
+const SEL=(id,label,opts,ok)=>({id,type:'sel',label,opts,ok});
+const TXT=(id,label,rows)=>({id,type:'text',label,rows:rows||3});
+const NUMF=(id,label,exp)=>({id,type:'num',label,u:'rpm',exp});
+const BLOCKS=[
+ {k:'b1',tab:'t1',title:'Ejercicios 1 a 4 · Elementos de maniobra',size:[840,560],pdfH:215,fields:[],
+  html:'<p>Monta los <b>cuatro circuitos</b> en la misma área de trabajo (todas las pilas de 9 V) y, cuando los tengas, enseña su funcionamiento al profesor.</p><ol class="steps"><li>Pila y lámpara.</li><li>Pila, <b>pulsador</b> y lámpara.</li><li>Pila, <b>interruptor</b> y motor.</li><li>Pila y <b>conmutador</b>: en una posición funciona la lámpara y en la otra el motor.</li></ol>'},
+ {k:'b5',tab:'t2',title:'Ejercicio 5 · Métodos de conexión: la tensión de la pila',size:[840,460],pdfH:150,
+  html:'<p>Monta los dos circuitos (pila con bombilla): uno con una pila de <b>4,5 V</b> y otro con una de <b>9 V</b>. Para cambiar la tensión selecciona la pila y escribe el valor.</p>',
+  fields:[SEL('e5_sel','¿En cuál de ellos se ilumina más la bombilla?',['La de 4,5 V','La de 9 V','Igual en las dos'],'La de 9 V'),TXT('e5_why','¿Por qué crees que en ese circuito se ilumina más la bombilla?')]},
+ {k:'b6',tab:'t2',title:'Ejercicio 6 · Motor con la pila al revés',size:[840,460],pdfH:150,
+  html:'<p>Monta un motor de dos formas distintas: se trata de <b>cambiar los polos (+ y −)</b> de la pila y conectarlos al revés. (Con «Girar» das la vuelta a la pila; el + del motor está a la izquierda.)</p>',
+  fields:[SEL('e6_sel','¿Qué diferencias observas en el funcionamiento de los motores?',['Gira más rápido','Gira más despacio','Gira en sentido contrario','No gira'],'Gira en sentido contrario'),TXT('e6_why','¿A qué se deben las diferencias?')]},
+ {k:'b7',tab:'t2',title:'Ejercicio 7 · Dos bombillas: serie y paralelo',size:[840,460],pdfH:160,
+  html:'<p>Monta un circuito con <b>2 bombillas en serie</b> y otro con <b>2 bombillas en paralelo</b> (pilas de 9 V). Prueba también a quitar una bombilla de cada uno.</p>',
+  fields:[SEL('e7a','¿En cuál de ellos se iluminan más las bombillas?',['En serie','En paralelo'],'En paralelo'),SEL('e7b','Si en el circuito en serie quito una de las bombillas, ¿qué le ocurre a la otra?',['Se apaga','Sigue igual','Brilla más','Brilla menos'],'Se apaga'),SEL('e7c','Si quito una de las bombillas en el circuito paralelo, ¿qué le ocurre a la otra?',['Se apaga','Sigue igual','Brilla más','Brilla menos'],'Sigue igual')]},
+ {k:'b8',tab:'t2',title:'Ejercicio 8 · Tres bombillas: serie y paralelo',size:[840,460],pdfH:170,copyFrom:'b7',
+  html:'<p>Conecta ahora una bombilla más en cada circuito: <b>3 bombillas en serie</b> y <b>3 en paralelo</b>. Puedes partir del montaje del ejercicio 7 con «Copiar el montaje del ejercicio 7».</p>',
+  fields:[SEL('e8a','¿Iluminan más o menos las otras bombillas en el circuito en serie?',['Más','Igual','Menos'],'Menos'),SEL('e8b','¿Y en el circuito en paralelo?',['Más','Igual','Menos'],'Igual')]},
+ {k:'b9',tab:'t3',title:'Ejercicio 9 · Pilas en serie',size:[840,460],pdfH:190,
+  html:'<p>Monta tres circuitos con un motor: <b>a)</b> una pila de 1,5 V; <b>b)</b> dos pilas de 1,5 V en serie; <b>c)</b> dos pilas de 3 V en serie. Cuidado con los polos: el + de una pila se une al − de la otra. La velocidad en rpm aparece junto a cada motor.</p>',
+  fields:[NUMF('e9a','a) Velocidad del motor con 1,5 V',150),NUMF('e9b','b) Velocidad con 1,5 V + 1,5 V',300),NUMF('e9c','c) Velocidad con 3 V + 3 V',600),SEL('e9_fast','¿En cuál de ellos gira más deprisa el motor?',['a)','b)','c)'],'c)'),TXT('e9_why','¿Por qué?')]},
+ {k:'b10',tab:'t3',title:'Ejercicio 10 · Problemas en los circuitos: dos motores',size:[840,460],pdfH:170,
+  html:'<p>Monta un motor con una pila de <b>4,5 V</b> y mide su velocidad. En otro lugar, monta una pila de 4,5 V con <b>dos motores en serie</b> y compara. Por último, monta <b>como tercer circuito la solución</b> que propongas.</p>',
+  fields:[NUMF('e10_v1','Velocidad del motor solo (4,5 V)',450),NUMF('e10_v2a','Velocidad del primer motor (dos motores en serie)',225),NUMF('e10_v2b','Velocidad del segundo motor (dos motores en serie)',225),TXT('e10_what','¿Qué ocurre en este segundo circuito?'),TXT('e10_why','¿Por qué?'),TXT('e10_sol','¿Cómo se podría solucionar? Descríbelo (y monta el esquema en el tercer circuito).')]},
+ {k:'b11',tab:'t4',title:'Ejercicio 11 · Cortocircuito',size:[840,460],pdfH:170,
+  html:'<p>Monta una pila de 9 V con interruptor y lámpara y comprueba que funciona. Después monta <b>otro igual con un cable</b> que una el punto <b>A</b> (salida del interruptor) con el punto <b>B</b> (cable inferior de la pila). <b>¡No lo hagas en un circuito real!</b> Puede ser peligroso.</p>',
+  fields:[TXT('e11_what','¿Qué ocurre al hacer esto y darle al interruptor?'),TXT('e11_why','¿Por qué puede ser peligroso hacer esto en un circuito real?')]},
+ {k:'b12',tab:'t4',title:'Ejercicio 12 · Circuito mixto',size:[840,460],pdfH:170,
+  html:'<p>Monta el <b>circuito mixto</b>: pila de 9 V, interruptor, una lámpara y, a continuación, dos lámparas en paralelo (B arriba, C abajo). Monta después otro igual con un <b>cable entre B y C</b>. Por último, monta un tercer circuito donde el cable provoque lo mismo que en el ejercicio 11.</p>',
+  fields:[TXT('e12_what','¿Qué ocurre ahora en el circuito si le damos al interruptor?'),TXT('e12_why','¿Por qué no ocurre lo mismo que en el circuito anterior?'),TXT('e12_sol','¿Qué habría que hacer para que pasara lo mismo que en el ejercicio 11? (Descríbelo y móntalo como tercer circuito)')]},
+ {k:'b13',tab:'t5',title:'Ejercicio 13 · El conmutador',size:[840,460],pdfH:170,
+  html:'<p>Monta: un <b>motor</b>, un <b>conmutador</b> (A) y <b>dos pilas de 9 V</b>. El común del conmutador va a un polo del motor; el contacto <b>0</b> a una pila y el contacto <b>1</b> a la otra; las pilas se colocan con polaridad contraria y comparten el cable inferior, que vuelve al otro polo del motor. <b>No lo desmontes</b>: lo usarás después.</p>',
+  fields:[TXT('e13_what','¿Qué ocurre al darle al conmutador?')]},
+ {k:'b14',tab:'t5',title:'Ejercicio 14 · Dos conmutadores',size:[840,460],pdfH:170,
+  html:'<p>Monta un motor, una pila de 9 V y <b>dos conmutadores (A y B)</b>: A y B se conectan cada uno a un polo del motor. Los contactos <b>0 de A y 1 de B</b> van al mismo polo de la pila y los contactos <b>1 de A y 0 de B</b>, al otro. Sitúalos para que el motor gire en un sentido y estudia el funcionamiento. <b>No lo desmontes.</b></p>',
+  fields:[TXT('e14_one','¿Qué ocurre si cambias uno solo de los conmutadores?'),TXT('e14_two','¿Qué ocurre si cambias los dos conmutadores de posición?'),TXT('e14_diff','¿Qué diferencias tiene este circuito, en su funcionamiento o construcción, con el anterior?')]},
+ {k:'b15',tab:'t5',title:'Ejercicio 15 · Bombillas indicadoras de giro (1 conmutador)',size:[840,520],pdfH:190,copyFrom:'b13',
+  html:'<p>Parte del circuito del ejercicio 13 (puedes copiarlo) e introduce <b>dos bombillas donde tú creas</b> de modo que una se encienda cuando el motor gira en un sentido y la otra cuando gira en sentido contrario. El esquema que dejes montado es tu respuesta.</p>',fields:[]},
+ {k:'b16',tab:'t5',title:'Ejercicio 16 · Bombillas indicadoras de giro (2 conmutadores)',size:[840,520],pdfH:190,copyFrom:'b14',
+  html:'<p>Parte del circuito del ejercicio 14 e introduce <b>dos bombillas</b> de modo que, cuando el motor gira en un sentido, se ilumine una sola de ellas y, cuando gira al revés, solo la otra. El esquema montado es tu respuesta.</p>',fields:[]},
+ {k:'b17',tab:'t6',title:'Ejercicio 17 · Comparar con un circuito problemático',size:[840,520],pdfH:190,copyFrom:'b13',
+  html:'<p>Compara tu circuito del ejercicio 15 con este: parte del ejercicio 13 y coloca <b>una bombilla entre el común (A) y el contacto 0</b> y <b>otra entre A y el contacto 1</b>. Pruébalo. Para solucionarlo puedes cambiar las bombillas por otras que aguanten más tensión (selecciona la lámpara y cambia su «tensión máxima») o bien poner las dos pilas de 4,5 V. Si tu circuito del 15 era igual, inventa otro para el 15.</p>',
+  fields:[TXT('e17_fail','¿Qué fallo o problema tiene este circuito?'),TXT('e17_cause','¿A qué se debe?'),TXT('e17_def','NOTA 2: si montas este circuito en la realidad verás otro posible defecto. ¿Cuál crees que es?'),TXT('e17_diff','¿Qué diferencias observas en el funcionamiento de los dos circuitos?'),TXT('e17_diffwhy','¿A qué se deben estas diferencias?')]},
+ {k:'b18',tab:'t6',title:'Ejercicio 18 · Dos conmutadores con bombillas en los contactos',size:[840,520],pdfH:190,copyFrom:'b14',
+  html:'<p>Compara tu circuito del ejercicio 16 con este: parte del ejercicio 14 y coloca <b>una bombilla entre el común de A y su contacto 0</b> y <b>otra entre el común de B y su contacto 1</b>. Pruébalos y responde.</p>',
+  fields:[SEL('e18_sel','¿Tiene este circuito el mismo problema del anterior, debido a la tensión que soporta la bombilla?',['Sí','No'],'No'),TXT('e18_why','¿Por qué?'),TXT('e18_diff','¿Qué diferencias observas en el funcionamiento de los dos circuitos?'),TXT('e18_cause','¿A qué se deben estas diferencias?')]},
+ {k:'b19',tab:'t6',title:'Ejercicio 19 · El conmutador doble (llave de cruce)',size:[840,520],pdfH:200,
+  html:'<p>Monta el circuito anterior pero usando un <b>conmutador doble</b> en lugar de dos simples: el polo superior (A) y el inferior (B) se mueven a la vez. Contacto 0 de A y 1 de B al mismo polo de la pila; 1 de A y 0 de B al otro. Una bombilla entre el común de A y su contacto 0 y otra entre el común de B y su contacto 1. Comprueba su funcionamiento.</p>',
+  fields:[TXT('e19_diff','¿Qué diferencias observas en el funcionamiento?'),TXT('e19_adv','¿Qué ventajas tiene con respecto al anterior?')]},
+ {k:'b20',tab:'t6',title:'Ejercicio 20 · Llave de cruce con conmutador doble',size:[840,460],pdfH:170,
+  html:'<p>Dibuja (monta) el mismo circuito del ejercicio 14, <b>sin bombillas</b>, pero utilizando un conmutador doble. Este es el circuito básico de <b>llave de cruce mediante conmutador doble</b>. Comprueba su funcionamiento.</p>',fields:[]}
+];
+const TABS=[{k:'t1',label:'1–4 · Maniobra'},{k:'t2',label:'5–8 · Conexiones'},{k:'t3',label:'9–10 · Pilas y motores'},{k:'t4',label:'11–12 · Cortocircuitos'},{k:'t5',label:'13–16 · Conmutadores'},{k:'t6',label:'17–20 · Llaves de cruce'}];
+const FIELDS=BLOCKS.flatMap(b=>b.fields);
+const LIMITS={};
+BLOCKS.forEach(bl=>{const L={};SPECS[bl.k].forEach(sp=>Object.keys(sp.n).forEach(t=>L[t]=(L[t]||0)+sp.n[t]));LIMITS[bl.k]=L;});
+let S={names:{n1:'',n2:'',group:''},boards:{},ans:{},checked:{},view:'datos'};
+BLOCKS.forEach(bl=>{S.boards[bl.k]=newBoard();});
+function statusOf(f){
+  const v=S.ans[f.id];
+  if(f.type==='text')return(v||'').trim().length>=8?'text':'empty';
+  if(f.type==='sel')return!v?'empty':v===f.ok?'ok':'bad';
+  if(!v||!String(v).trim())return'empty';
+  const n=parseNum(v);if(isNaN(n))return'bad';
+  return Math.abs(Math.abs(n)-f.exp)<=Math.max(3,f.exp*0.04)?'ok':'bad';
+}
+function evaluate(){
+  let ok=0,total=0;const pend=[],rows=[];
+  BLOCKS.forEach(bl=>{
+    const ver=verifyBoard(bl.k),items=bl.fields.map(f=>({f,st:statusOf(f)}));
+    items.forEach(i=>{if(i.f.type!=='text'){total++;if(i.st==='ok')ok++;}if(i.st==='empty')pend.push(bl.title.split(' · ')[0]+': '+i.f.label);});
+    if(!ver.ok)pend.push(bl.title.split(' · ')[0]+': montaje sin verificar');
+    rows.push({bl,ver,items});
+  });
+  return{rows,ok,total,pend};
+}
+
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return(h>>>0).toString(16).toUpperCase().padStart(8,'0');}
+const slug=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+function pdfName(){return['montajes_electricos',slug(S.names.n1),slug(S.names.n2),slug(S.names.group)].filter(Boolean).join('_')+'.pdf';}
+function drawBoard(d,b,w,h){
+  d.ensure(h+8);
+  const x=d.M,y=d.y;
+  d.rect(x,y,w,h,{stroke:'#c5d0dc',lw:0.8,fill:'#fbfcfe'});
+  if(!b.comps.length){d.text(x+w/2,y+h/2,'(montaje vacio)',{align:'center',color:'#888888',size:10});d.y+=h+8;return;}
+  const res=simulate(b);
+  let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+  b.comps.forEach(c=>Object.keys(tmap(c)).forEach(t=>{const p=termPos(c,t);x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);y0=Math.min(y0,p.y);y1=Math.max(y1,p.y);}));
+  x0-=30;x1+=70;y0-=58;y1+=30;
+  const sc=Math.min((w-14)/(x1-x0),(h-10)/(y1-y0),1),ox=x+w/2-((x0+x1)/2)*sc,oy=y+h/2-((y0+y1)/2)*sc;
+  const X=v=>ox+v*sc,Y=v=>oy+v*sc;
+  b.wires.forEach(wi=>{const p=wirePts(b,wi);if(!p)return;for(let i=0;i<p.length-1;i++)d.line(X(p[i].x),Y(p[i].y),X(p[i+1].x),Y(p[i+1].y),{w:2*sc+0.4});});
+  b.comps.forEach(c=>{
+    const T=(px,py)=>{const v=rotVec(px,py,c.rot||0);return[X(c.x+v[0]),Y(c.y+v[1])];};
+    prims(c,res).forEach(p=>{
+      if(p.k==='l'){const a=T(p.x1,p.y1),e=T(p.x2,p.y2);d.line(a[0],a[1],e[0],e[1],{w:(p.w||2)*sc+0.3});}
+      else if(p.k==='p')d.poly(p.pts.map(q=>T(q[0],q[1])),{fill:p.f,lw:sc+0.3});
+      else if(p.k==='c'){const m=T(p.cx,p.cy);d.circle(m[0],m[1],p.r*sc,{fill:p.f,lw:sc+0.3,ns:p.ns});}
+      else if(p.k==='t'){const m=T(p.x,p.y);d.text(m[0],m[1]+p.sz*sc*0.3,p.t,{size:Math.max(5.5,p.sz*sc),bold:p.bold,align:'center'});}
+    });
+    labelPlace(c,labelLines(b,c,res)).forEach(l=>d.text(X(l.x),Y(l.y),l.t,{size:Math.max(6.5,12*sc),bold:!!l.cls,align:l.a==='middle'?'center':'left',color:l.cls==='ra'?'#0b5cad':l.cls==='rv'?'#c0392b':'#142133'}));
+  });
+  d.y+=h+8;
+}
+function buildPDF(){
+  const ev=evaluate(),d=new Doc(),M=d.M,W=d.W-2*M,now=new Date();
+  const fecha=now.toLocaleDateString('es-ES')+' '+now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  const code=hash(JSON.stringify([S.names,S.ans,fecha]));
+  const alum=[S.names.n1,S.names.n2].filter(Boolean).join(' y ');
+  d.hdr='IES Comuneros de Castilla · Montajes eléctricos · '+alum+' · '+S.names.group;
+  d.rect(0,0,d.W,62,{fill:'#0a3f78'});
+  d.text(M,28,'IES Comuneros de Castilla',{size:16,bold:true,color:'#ffffff'});
+  d.text(M,46,'Departamento de Tecnología',{size:10,color:'#cfe2f7'});
+  d.text(d.W-M,28,'Montajes eléctricos · Crocodile Clips',{size:10.5,bold:true,color:'#ffffff',align:'right'});
+  d.text(d.W-M,46,'Laboratorio virtual de circuitos',{size:9.5,color:'#cfe2f7',align:'right'});
+  d.y=90;
+  d.text(M,d.y,'HOJA DE RESPUESTAS · MONTAJES ELÉCTRICOS',{size:16,bold:true,color:'#0a3f78'});d.y+=16;
+  d.text(M,d.y,'Elementos de maniobra, métodos de conexión, problemas en los circuitos y conmutadores (ejercicios 1 a 20)',{size:9,color:'#58687c'});d.y+=14;
+  d.rect(M,d.y,W,62,{fill:'#f4f8fc',stroke:'#c5d0dc',lw:0.8});
+  const kv=(x,y,k,v)=>{const w=d.text(x,y,k,{size:9.5,bold:true});d.text(x+w+6,y,v||'-',{size:10.5});};
+  kv(M+10,d.y+18,'Nombre 1:',S.names.n1);kv(M+300,d.y+18,'Grupo:',S.names.group);
+  kv(M+10,d.y+34,'Nombre 2:',S.names.n2);kv(M+300,d.y+34,'Fecha de entrega:',fecha);
+  kv(M+10,d.y+50,'Código de verificación:',code);
+  d.y+=78;
+  const nv=ev.rows.filter(r=>r.ver.ok).length;
+  d.rect(M,d.y,W,34,{fill:nv===ev.rows.length&&ev.ok===ev.total?'#e3f5ec':'#fff6e0',stroke:'#c5d0dc',lw:0.8});
+  d.text(M+10,d.y+14,'Autocomprobación del simulador: '+ev.ok+' de '+ev.total+' respuestas comprobables correctas',{size:10,bold:true});
+  d.text(M+10,d.y+27,'Montajes verificados: '+nv+' de '+ev.rows.length+'  ·  Los textos de explicación los corrige el profesor',{size:9,color:'#58687c'});
+  d.y+=48;
+  ev.rows.forEach(r=>{
+    const bl=r.bl;
+    d.head(bl.title);
+    r.items.forEach(i=>{
+      const f=i.f,v=S.ans[f.id]||'';
+      if(f.type==='text')d.block(f.label,v);
+      else d.row(f.label,v?(f.type==='num'?fmtNum(parseNum(v))+' rpm':v):'',i.st);
+    });
+    d.ensure(20);
+    d.text(M+4,d.y+10,'Montaje en el simulador: '+(r.ver.ok?'verificado':'sin verificar'),{size:9,bold:true,color:r.ver.ok?'#16794c':'#c0392b'});d.y+=14;
+    drawBoard(d,S.boards[bl.k],W,bl.pdfH);
+    d.y+=4;
+  });
+  return d.finish('Montajes eléctricos · '+alum+' · '+S.names.group,'IES Comuneros de Castilla · Dpto. de Tecnología · '+alum+' · '+S.names.group+' · '+code);
+}
+
+/* ================= INTERFAZ ================= */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const UI={sel:{},selWire:{},wire:null,drag:null,mouse:{x:0,y:0},active:'b1'};
+const ANG={};
+const STORE='ies-comuneros-lab-electricidad-croclip-v1';
+const BL=k=>BLOCKS.find(b=>b.k===k);
+let saveT=null;
+function persist(){
+  clearTimeout(saveT);
+  saveT=setTimeout(()=>{try{
+    const c=JSON.parse(JSON.stringify(S));
+    Object.values(c.boards).forEach(b=>b.comps.forEach(x=>delete x.pressed));
+    localStorage.setItem(STORE,JSON.stringify(c));}catch(e){}},250);
+}
+function sanitizeBoard(o){
+  if(!o||!Array.isArray(o.comps)||!Array.isArray(o.wires))return null;
+  const comps=o.comps.filter(c=>TYPES[c.type]&&isFinite(c.x)&&isFinite(c.y)).map(c=>({id:+c.id,type:c.type,x:+c.x,y:+c.y,rot:+c.rot||0,
+    value:isFinite(c.value)?+c.value:TYPES[c.type].def,closed:!!c.closed,pressed:false,pos:c.pos?1:0,vmax:isFinite(c.vmax)&&c.vmax>0?+c.vmax:12,burnt:!!c.burnt}));
+  const ids=new Set(comps.map(c=>c.id));
+  const wires=o.wires.filter(w=>w&&typeof w.a==='string'&&typeof w.b==='string'&&ids.has(parseKey(w.a).id)&&ids.has(parseKey(w.b).id)).map(w=>({a:w.a,b:w.b}));
+  return{comps,wires,nid:Math.max(0,...comps.map(c=>c.id))+1};
+}
+function load(){
+  try{
+    const o=JSON.parse(localStorage.getItem(STORE)||'null');
+    if(o&&o.boards){
+      S.names=Object.assign(S.names,o.names||{});S.ans=o.ans||{};S.checked=o.checked||{};S.view=o.view||'datos';
+      BLOCKS.forEach(bl=>{const nb=sanitizeBoard(o.boards[bl.k]);if(nb)S.boards[bl.k]=nb;});
+    }
+  }catch(e){}
+}
+function download(name,data,mime){
+  const url=URL.createObjectURL(new Blob([data],{type:mime}));
+  const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},800);
+}
+/* --- dibujo SVG --- */
+function primSVG(p,rot,key){
+  const f=n=>Math.round(n*100)/100;
+  switch(p.k){
+    case 'l':return '<line x1="'+p.x1+'" y1="'+p.y1+'" x2="'+p.x2+'" y2="'+p.y2+'" stroke="'+INK+'" stroke-width="'+(p.w||2)+'" stroke-linecap="round"/>';
+    case 'p':return '<polygon points="'+p.pts.map(q=>q.join(',')).join(' ')+'" fill="'+(p.f||'none')+'" stroke="'+INK+'" stroke-width="2" stroke-linejoin="round"/>';
+    case 'c':return '<circle cx="'+p.cx+'" cy="'+p.cy+'" r="'+p.r+'" fill="'+(p.f||'none')+'" stroke="'+(p.ns?'none':INK)+'" stroke-width="2"/>';
+    case 't':return '<text x="'+p.x+'" y="'+p.y+'" font-size="'+p.sz+'" font-weight="'+(p.bold?700:400)+'" text-anchor="middle" fill="'+INK+'" font-family="system-ui,sans-serif" transform="rotate('+f(-rot)+' '+p.x+' '+p.y+')">'+esc(p.t)+'</text>';
+    case 'r':{const k=key+':'+p.id;return '<g class="rotor" data-k="'+k+'" data-rpm="'+f(p.rpm)+'" transform="rotate('+(ANG[k]||0)+')"><line x1="0" y1="-16" x2="0" y2="-10" stroke="#b3541e" stroke-width="3" stroke-linecap="round"/><line x1="0" y1="10" x2="0" y2="16" stroke="#b3541e" stroke-width="3" stroke-linecap="round"/></g>';}
+  }
+  return '';
+}
+function boardSVG(key,b,res,o){
+  o=o||{};
+  const size=o.size||[840,460];
+  let s='';
+  if(!o.readonly)s+='<defs><pattern id="grid-'+key+'" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#cfd8e3"/></pattern></defs><rect width="'+size[0]+'" height="'+size[1]+'" fill="url(#grid-'+key+')"/>';
+  const conn=new Set();
+  b.wires.forEach((w,i)=>{
+    const pts=wirePts(b,w);if(!pts)return;conn.add(w.a);conn.add(w.b);
+    const d=pts.map(p=>p.x+','+p.y).join(' ');
+    s+='<polyline class="wire'+(o.selWire===i?' sel':'')+'" points="'+d+'"/>';
+    if(!o.readonly)s+='<polyline class="wirehit" data-wire="'+i+'" points="'+d+'"/>';
+  });
+  b.comps.forEach(c=>{
+    const r=c.rot||0,hh=HH[c.type]||28;
+    s+='<g transform="translate('+c.x+' '+c.y+') rotate('+r+')">'+prims(c,res).map(p=>primSVG(p,r,key)).join('');
+    if(!o.readonly)s+='<rect class="hit" data-comp="'+c.id+'" x="-28" y="'+(-hh)+'" width="56" height="'+(2*hh)+'"/>';
+    if(o.sel===c.id)s+='<rect class="selbox" x="-34" y="'+(-hh-4)+'" width="68" height="'+(2*hh+8)+'" rx="8"/>';
+    s+='</g>';
+    labelPlace(c,labelLines(b,c,res)).forEach(l=>{
+      s+='<text class="lbl'+(l.cls?' '+l.cls:'')+'" x="'+l.x+'" y="'+l.y+'" text-anchor="'+l.a+'">'+esc(l.t)+'</text>';
+    });
+  });
+  b.comps.forEach(c=>Object.keys(tmap(c)).forEach(t=>{
+    const p=termPos(c,t),k=c.id+'.'+t;
+    s+='<circle class="termdot'+(conn.has(k)?' con':'')+(o.wire===k?' act':'')+'" cx="'+p.x+'" cy="'+p.y+'" r="'+(o.readonly?3.5:5.5)+'"/>';
+    if(!o.readonly)s+='<circle class="termhit" data-term="'+k+'" cx="'+p.x+'" cy="'+p.y+'" r="'+(HH[c.type]?9:12)+'"/>';
+  }));
+  if(o.wire){
+    const A=parseKey(o.wire),ca=getComp(b,A.id);
+    if(ca){const p=termPos(ca,A.t);s+='<line class="prev" x1="'+p.x+'" y1="'+p.y+'" x2="'+UI.mouse.x+'" y2="'+UI.mouse.y+'"/>';}
+  }
+  return s;
+}
+function iconSVG(t){
+  const c={type:t,x:0,y:0,rot:0,value:TYPES[t].def,closed:false,pos:0};
+  const sc=(HH[t]||0)>30?0.5:1;
+  return '<g transform="scale('+sc+')">'+prims(c,null).filter(p=>p.k!=='r').map(p=>primSVG(p,0,'ico')).join('')+'</g>';
+}
+function redraw(key){
+  const b=S.boards[key],svg=$('#svg-'+key);if(!svg)return;
+  const res=simulate(b),bl=BL(key);
+  svg.innerHTML=boardSVG(key,b,res,{size:bl.size,sel:UI.sel[key],selWire:UI.selWire[key],wire:UI.wire&&UI.wire.key===key?UI.wire.from:null});
+  const bd=$('#stat-'+key);
+  let t='Sin corriente',cl='badge';
+  if(res.short){t='¡Cortocircuito!';cl='badge bad';}
+  else if(b.comps.some(c=>c.burnt)){t='Lámpara fundida';cl='badge bad';}
+  else if(b.comps.some(c=>(c.type==='lampara'&&res.br[c.id]>0.12)||(c.type==='motor'&&Math.abs(res.rpm[c.id])>1))){t='En funcionamiento';cl='badge on';}
+  bd.textContent=t;bd.className=cl;
+  refreshPalette(key);
+}
+function refreshPalette(key){
+  const b=S.boards[key],lim=LIMITS[key];
+  $$('#bench-'+key+' [data-add]').forEach(btn=>{
+    const t=btn.dataset.add,left=lim[t]-b.comps.filter(c=>c.type===t).length;
+    btn.disabled=left<=0;btn.querySelector('.cnt').textContent='×'+Math.max(left,0);
+  });
+}
+function props(key){
+  const b=S.boards[key],el=$('#props-'+key),id=UI.sel[key],w=UI.selWire[key];
+  if(w!=null&&b.wires[w]){el.innerHTML='<b>Cable seleccionado</b><button data-act="delwire">Eliminar cable</button>';return;}
+  const c=id?getComp(b,id):null;
+  if(!c){el.innerHTML='<span class="muted">Selecciona un componente para cambiar su valor, girarlo o eliminarlo. Pulsa en un círculo (terminal) y luego en otro para unirlos con un cable.</span>';return;}
+  let h='<b>'+esc(nameOf(b,c))+'</b>';
+  if(c.type==='pila')h+='<label>Tensión <input type="number" min="0" step="any" id="pv-'+key+'" value="'+c.value+'"> V</label><span class="muted small">El + está en el terminal marcado.</span>';
+  if(c.type==='lampara'){
+    h+='<label>Tensión máxima <input type="number" min="1" step="any" id="pm-'+key+'" value="'+c.vmax+'"> V</label>';
+    if(c.burnt)h+='<button data-act="fix">Cambiar bombilla fundida</button>';
+  }
+  if(c.type==='interruptor')h+='<button data-act="toggle">'+(c.closed?'Abrir':'Cerrar')+' interruptor</button>';
+  if(c.type==='conmutador'||c.type==='conmutador2')h+='<button data-act="toggle">Cambiar de posición (ahora: '+(c.pos?1:0)+')</button>';
+  if(c.type==='pulsadorNA')h+='<span class="muted small">Mantén pulsado el ratón sobre el pulsador.</span>';
+  if(c.type==='motor')h+='<span class="muted small">Gira en sentido horario si el + del motor está a mayor tensión.</span>';
+  h+='<button data-act="rot">↻ Girar</button><button data-act="del">Eliminar</button>';
+  el.innerHTML=h;
+}
+function touch(key){persist();const v=$('#ver-'+key);if(v){v.className='verify';v.innerHTML='';}}
+function addComp(key,type){
+  const b=S.boards[key],bl=BL(key);
+  if(b.comps.filter(c=>c.type===type).length>=LIMITS[key][type])return;
+  let spot=[140,100];
+  outer:for(let y=100;y<bl.size[1]-60;y+=100)for(let x=100;x<bl.size[0]-60;x+=120){
+    if(!b.comps.some(c=>Math.hypot(c.x-x,c.y-y)<(HH[c.type]||0)+80)){spot=[x,y];break outer;}
+  }
+  const c={id:b.nid++,type,x:spot[0],y:spot[1],rot:0,value:TYPES[type].def,closed:false,pressed:false,pos:0,vmax:12,burnt:false};
+  b.comps.push(c);UI.sel[key]=c.id;UI.selWire[key]=null;UI.wire=null;
+  props(key);redraw(key);touch(key);
+}
+function delComp(key){
+  const b=S.boards[key],id=UI.sel[key];if(!id)return;
+  b.comps=b.comps.filter(c=>c.id!==id);
+  b.wires=b.wires.filter(w=>parseKey(w.a).id!==id&&parseKey(w.b).id!==id);
+  UI.sel[key]=null;props(key);redraw(key);touch(key);
+}
+function rotComp(key){const c=getComp(S.boards[key],UI.sel[key]);if(!c)return;c.rot=((c.rot||0)+90)%360;redraw(key);touch(key);}
+function termClick(key,tk){
+  const b=S.boards[key];
+  if(!UI.wire||UI.wire.key!==key){UI.wire={key,from:tk};UI.sel[key]=null;UI.selWire[key]=null;props(key);redraw(key);return;}
+  const a=UI.wire.from;
+  if(a!==tk&&!b.wires.some(w=>(w.a===a&&w.b===tk)||(w.a===tk&&w.b===a)))b.wires.push({a,b:tk});
+  UI.wire=null;redraw(key);touch(key);
+}
+const svgPt=(svg,e)=>{const r=svg.getBoundingClientRect(),vb=svg.viewBox.baseVal;return{x:(e.clientX-r.left)*vb.width/r.width,y:(e.clientY-r.top)*vb.height/r.height};};
+const snap=v=>Math.round(v/SNAP)*SNAP;
+function onDown(key,e){
+  UI.active=key;const svg=$('#svg-'+key),p=svgPt(svg,e),b=S.boards[key];
+  const t=e.target.closest('[data-term]');
+  if(t){e.preventDefault();termClick(key,t.dataset.term);return;}
+  const ce=e.target.closest('[data-comp]');
+  if(ce){
+    e.preventDefault();
+    const c=getComp(b,+ce.dataset.comp);
+    UI.sel[key]=c.id;UI.selWire[key]=null;UI.wire=null;
+    UI.drag={key,id:c.id,ox:c.x-p.x,oy:c.y-p.y,sx:p.x,sy:p.y,moved:false};
+    if(c.type==='pulsadorNA')c.pressed=true;
+    try{svg.setPointerCapture(e.pointerId);}catch(x){}
+    props(key);redraw(key);return;
+  }
+  const we=e.target.closest('[data-wire]');
+  UI.wire=null;
+  if(we){UI.selWire[key]=+we.dataset.wire;UI.sel[key]=null;}else{UI.selWire[key]=null;UI.sel[key]=null;}
+  props(key);redraw(key);
+}
+function onMove(key,e){
+  const svg=$('#svg-'+key),p=svgPt(svg,e),bl=BL(key);
+  if(UI.drag&&UI.drag.key===key){
+    const d=UI.drag,c=getComp(S.boards[key],d.id);if(!c)return;
+    if(!d.moved&&Math.hypot(p.x-d.sx,p.y-d.sy)>6){d.moved=true;c.pressed=false;}
+    if(d.moved){c.x=Math.max(60,Math.min(bl.size[0]-60,snap(p.x+d.ox)));c.y=Math.max(60,Math.min(bl.size[1]-40,snap(p.y+d.oy)));redraw(key);}
+    return;
+  }
+  if(UI.wire&&UI.wire.key===key){UI.mouse=p;redraw(key);}
+}
+function onUp(key){
+  const d=UI.drag;if(!d||d.key!==key)return;
+  const c=getComp(S.boards[key],d.id);UI.drag=null;
+  if(c){
+    if(!d.moved){if(c.type==='interruptor')c.closed=!c.closed;else if(c.type==='conmutador'||c.type==='conmutador2')c.pos=c.pos?0:1;}
+    c.pressed=false;props(key);redraw(key);touch(key);
+  }
+}
+function showVerify(key){
+  const v=verifyBoard(key),el=$('#ver-'+key);
+  el.className='verify '+(v.ok?'ok':'bad');
+  el.innerHTML=v.ok?'<b>✔ '+esc(v.msgs[0])+'</b>':'<b>Revisa el montaje:</b><ul>'+v.msgs.map(m=>'<li>'+esc(m)+'</li>').join('')+'</ul>';
+}
+function initBench(key){
+  const svg=$('#svg-'+key),root=$('#bench-'+key),bl=BL(key);
+  svg.addEventListener('pointerdown',e=>onDown(key,e));
+  svg.addEventListener('pointermove',e=>onMove(key,e));
+  svg.addEventListener('pointerup',()=>onUp(key));
+  svg.addEventListener('pointercancel',()=>onUp(key));
+  root.addEventListener('click',e=>{
+    UI.active=key;
+    const add=e.target.closest('[data-add]');if(add){addComp(key,add.dataset.add);return;}
+    const a=e.target.closest('[data-act]');if(!a)return;
+    const b=S.boards[key];
+    switch(a.dataset.act){
+      case 'rot':rotComp(key);break;
+      case 'del':delComp(key);break;
+      case 'delwire':b.wires.splice(UI.selWire[key],1);UI.selWire[key]=null;props(key);redraw(key);touch(key);break;
+      case 'toggle':{const c=getComp(b,UI.sel[key]);if(c){if(c.type==='interruptor')c.closed=!c.closed;else c.pos=c.pos?0:1;props(key);redraw(key);touch(key);}break;}
+      case 'fix':{const c=getComp(b,UI.sel[key]);if(c){c.burnt=false;props(key);redraw(key);touch(key);}break;}
+      case 'clear':if(b.comps.length&&!confirm('¿Vaciar todo el montaje?'))break;S.boards[key]=newBoard();UI.sel[key]=null;UI.selWire[key]=null;UI.wire=null;props(key);redraw(key);touch(key);break;
+      case 'verify':showVerify(key);break;
+      case 'copy':{
+        if(b.comps.length&&!confirm('Se sustituirá el montaje actual por una copia del ejercicio anterior. ¿Continuar?'))break;
+        const nb=sanitizeBoard(JSON.parse(JSON.stringify(S.boards[bl.copyFrom])));
+        if(nb){nb.comps.forEach(c=>{c.burnt=false;});S.boards[key]=nb;UI.sel[key]=null;UI.selWire[key]=null;props(key);redraw(key);touch(key);}break;}
+      case 'save':download('montaje_'+key+'_'+(slug(S.names.n1)||'alumno')+'.json',JSON.stringify({tipo:'montaje-ies-comuneros',key,board:b},null,1),'application/json');break;
+      case 'open':$('#file-'+key).click();break;
+    }
+  });
+  root.addEventListener('input',e=>{
+    const c=getComp(S.boards[key],UI.sel[key]),v=parseFloat(e.target.value);
+    if(!c||!isFinite(v)||v<=0)return;
+    if(e.target.id==='pv-'+key){c.value=v;redraw(key);touch(key);}
+    else if(e.target.id==='pm-'+key){c.vmax=v;redraw(key);touch(key);}
+  });
+  $('#file-'+key).addEventListener('change',e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=()=>{try{const o=JSON.parse(r.result),nb=sanitizeBoard(o.board||o);if(!nb)throw 0;S.boards[key]=nb;UI.sel[key]=null;UI.selWire[key]=null;props(key);redraw(key);touch(key);}catch(x){alert('No se ha podido abrir ese archivo de montaje.');}};
+    r.readAsText(f);e.target.value='';
+  });
+  const dt=root.querySelector('details.schem');
+  if(dt)dt.addEventListener('toggle',ev=>{
+    if(!ev.target.open)return;
+    const pb=PRESETS[key](),pv=$('#prev-'+key);
+    pv.innerHTML=boardSVG('prev'+key,pb,simulate(pb),{readonly:true});
+  });
+  props(key);redraw(key);
+}
+/* --- plantillas --- */
+function fieldHTML(f){
+  const m='<span class="mark" data-mark="'+f.id+'"></span>';
+  if(f.type==='num')return '<div class="arow"><label for="a-'+f.id+'">'+esc(f.label)+'</label><div class="ain"><input id="a-'+f.id+'" data-ans="'+f.id+'" inputmode="decimal" autocomplete="off" placeholder="0"><span class="u">rpm</span>'+m+'</div></div>';
+  if(f.type==='sel')return '<div class="q"><label for="a-'+f.id+'">'+esc(f.label)+' '+m+'</label><select id="a-'+f.id+'" data-ans="'+f.id+'"><option value="">— elige —</option>'+f.opts.map(o=>'<option>'+esc(o)+'</option>').join('')+'</select></div>';
+  return '<div class="q"><label for="a-'+f.id+'">'+esc(f.label)+' '+m+'</label><textarea id="a-'+f.id+'" data-ans="'+f.id+'" rows="'+f.rows+'" maxlength="700"></textarea></div>';
+}
+function blockHTML(bl){
+  const k=bl.k;
+  const pal=Object.keys(TYPES).filter(t=>LIMITS[k][t]).map(t=>
+    '<button type="button" class="pal" data-add="'+t+'" title="Añadir '+TYPES[t].name+'"><svg viewBox="-44 -26 88 52" fill="none" aria-hidden="true">'+iconSVG(t)+'</svg><span>'+TYPES[t].name+'</span><b class="cnt"></b></button>').join('');
+  return '<div class="card bench" id="bench-'+k+'"><div class="bench-h"><h3>'+bl.title+'</h3><span class="badge" id="stat-'+k+'"></span></div>'+bl.html+
+    '<h4>Componentes</h4><div class="palette">'+pal+'</div>'+
+    '<div class="tools"><button data-act="rot">↻ Girar (R)</button><button data-act="del">Eliminar (Supr)</button><button data-act="clear">Vaciar</button>'+
+    (bl.copyFrom?'<button data-act="copy">Copiar el montaje del ejercicio '+BL(bl.copyFrom).title.match(/\d+/)[0]+'</button>':'')+
+    '<button data-act="verify" class="primary">✓ Comprobar montaje</button><button data-act="save">Guardar montaje</button><button data-act="open">Abrir montaje</button><input type="file" accept=".json" hidden id="file-'+k+'"></div>'+
+    '<div class="svgwrap"><svg class="board" id="svg-'+k+'" viewBox="0 0 '+bl.size[0]+' '+bl.size[1]+'"></svg></div>'+
+    '<div class="props" id="props-'+k+'"></div><div class="verify" id="ver-'+k+'" role="status"></div>'+
+    (PRESETS[k]?'<details class="schem"><summary>Ver esquema de ayuda</summary><svg class="board" id="prev-'+k+'" viewBox="0 0 '+bl.size[0]+' '+bl.size[1]+'"></svg></details>':'')+
+    (bl.fields.length?'<div class="ex-fields"><h4>Hoja de respuestas</h4>'+bl.fields.map(fieldHTML).join('')+'<p><button class="primary" data-check="'+k+'">Comprobar respuestas</button></p><div class="sumline" id="sum-'+k+'"></div></div>':'')+
+    '</div>';
+}
+function datosHTML(){
+  return '<div class="card"><h2>Bienvenido al laboratorio virtual</h2><p>Aquí montarás los circuitos de la actividad <b>«Montajes eléctricos»</b> (ejercicios 1 a 20), probarás cómo funcionan y contestarás a las preguntas. Al terminar descargarás un <b>PDF</b> con tu nombre y grupo para entregar a tu profesor.</p>'+
+  '<div class="grid2"><div class="field"><label for="n1">Nombre y apellidos (alumno 1) *</label><input class="txt" id="n1" autocomplete="name"></div>'+
+  '<div class="field"><label for="n2">Nombre y apellidos (alumno 2)</label><input class="txt" id="n2"></div>'+
+  '<div class="field"><label for="grp">Grupo *</label><input class="txt" id="grp" placeholder="Ej.: 3º ESO A"></div></div>'+
+  '<p style="margin-top:14px"><button class="primary big" data-go="t1">Empezar →</button></p></div>'+
+  '<div class="card"><h3>Cómo se usa el simulador</h3><ol class="steps">'+
+  '<li><b>Añade componentes</b> pulsando en la lista de cada ejercicio y arrástralos (se ajustan a la cuadrícula). Cada ejercicio ofrece solo los componentes que necesitas.</li>'+
+  '<li><b>Conéctalos con cables</b>: pulsa en un círculo (terminal) y después en otro. Pulsa sobre un cable para seleccionarlo y bórralo con «Supr».</li>'+
+  '<li><b>Pilas</b>: selecciónala para cambiar su tensión (9 V, 4,5 V, 1,5 V…). El terminal <b>+</b> es el marcado; «Girar» solo cambia la posición, lo que importa es a qué terminal conectas cada cable.</li>'+
+  '<li><b>Interruptor y conmutadores</b>: haz clic para cambiarlos de posición. <b>Pulsador</b>: mantén el botón del ratón pulsado sobre él.</li>'+
+  '<li><b>Motor</b>: muestra su velocidad en rpm y su sentido de giro (horario o antihorario); gira más deprisa cuanta más tensión recibe.</li>'+
+  '<li><b>Lámparas</b>: brillan más cuanta más tensión reciben. Si superan su tensión máxima (12 V) <b>se funden</b>; puedes cambiarla por otra o aumentar su tensión máxima.</li>'+
+  '<li><b>Cortocircuito</b>: si un cable une directamente los dos polos de una pila, el simulador lo avisa. ¡No lo hagas en un circuito real!</li>'+
+  '<li>Pulsa <b>Comprobar montaje</b> para saber si tu circuito está bien hecho y <b>Comprobar respuestas</b> para revisar lo contestado. Los textos los corrige tu profesor.</li>'+
+  '<li>En «Entrega» descarga el <b>PDF</b>. Tu trabajo se guarda en este navegador, pero descarga el PDF antes de cerrar.</li></ol></div>';
+}
+function refreshMarks(k){
+  const bl=BL(k),lab={ok:'✔ Correcto',bad:'✘ Revisa',empty:'· Falta',text:'✔ Anotado'};
+  bl.fields.forEach(f=>{
+    const m=document.querySelector('[data-mark="'+f.id+'"]');if(!m)return;
+    if(!S.checked[k]){m.textContent='';m.className='mark';return;}
+    const st=statusOf(f);m.textContent=lab[st];m.className='mark '+st;
+  });
+  const el=$('#sum-'+k);if(!el)return;
+  const its=bl.fields.filter(f=>f.type!=='text'),ok=its.filter(f=>statusOf(f)==='ok').length;
+  if(S.checked[k]&&its.length)el.innerHTML='Has acertado <span class="'+(ok===its.length?'ok-t':'bad-t')+'">'+ok+' de '+its.length+'</span> apartados comprobables. '+(ok<its.length?'Repasa las marcadas con ✘ probando de nuevo en el simulador. ':'¡Muy bien! ')+'Los textos los revisará tu profesor.';
+  else if(S.checked[k])el.textContent='Los textos los revisará tu profesor.';
+  else el.textContent='';
+}
+function bindAnswers(){
+  $$('[data-ans]').forEach(el=>{
+    const id=el.dataset.ans;el.value=S.ans[id]||'';
+    el.addEventListener('input',()=>{S.ans[id]=el.value;persist();});
+    el.addEventListener('change',()=>{S.ans[id]=el.value;persist();});
+  });
+}
+function renderFinal(){
+  const ev=evaluate(),okN=S.names.n1.trim()&&S.names.group.trim();
+  let h='<div class="card"><h2>Entrega · Hoja de respuestas en PDF</h2>';
+  h+='<p><b>Alumno/s:</b> '+esc([S.names.n1,S.names.n2].filter(Boolean).join(' y ')||'—')+' · <b>Grupo:</b> '+esc(S.names.group||'—')+' <button data-go="datos">Editar datos</button></p>';
+  if(!okN)h+='<p class="bad-t">Rellena al menos el nombre del alumno 1 y el grupo para poder descargar el PDF.</p>';
+  h+='<table class="res"><tr><th>Ejercicio</th><th>Montaje</th><th>Respuestas</th></tr>';
+  ev.rows.forEach(r=>{
+    const its=r.items.filter(i=>i.f.type!=='text'),ok=its.filter(i=>i.st==='ok').length;
+    h+='<tr><td>'+esc(r.bl.title)+'</td><td>'+(r.ver.ok?'<span class="ok-t">✔ Verificado</span>':'<span class="bad-t">Sin verificar</span>')+'</td><td>'+(its.length?ok+' / '+its.length:'—')+'</td></tr>';
+  });
+  h+='</table>';
+  if(ev.pend.length)h+='<h4>Pendiente de completar</h4><ul class="pend">'+ev.pend.map(p=>'<li>'+esc(p)+'</li>').join('')+'</ul>';
+  else h+='<p class="ok-t">¡Todo completado!</p>';
+  h+='<p><button class="primary big" id="btn-pdf"'+(okN?'':' disabled')+'>Descargar PDF'+(ev.pend.length?' (incompleto)':'')+'</button></p><p class="muted small">Archivo: '+esc(pdfName())+'</p></div>'+
+  '<div class="card"><h3>Copia de seguridad</h3><p class="muted small">Guarda todo tu trabajo en un archivo para continuar en otro ordenador.</p><button id="btn-sv">Guardar trabajo (.json)</button> <button id="btn-op">Abrir trabajo</button><input type="file" accept=".json" hidden id="file-all"></div>';
+  $('#v-fin').innerHTML=h;
+  $('#btn-pdf').onclick=()=>{try{download(pdfName(),buildPDF(),'application/pdf');}catch(e){alert('Error al crear el PDF: '+e.message);}};
+  $('#btn-sv').onclick=()=>download('trabajo_'+(slug(S.names.n1)||'alumno')+'.json',JSON.stringify(S),'application/json');
+  $('#btn-op').onclick=()=>$('#file-all').click();
+  $('#file-all').onchange=e=>{
+    const f=e.target.files[0];if(!f)return;const r=new FileReader();
+    r.onload=()=>{try{
+      const o=JSON.parse(r.result);if(!o.boards||!o.names)throw 0;
+      BLOCKS.forEach(bl=>{const nb=sanitizeBoard(o.boards[bl.k]);if(nb)S.boards[bl.k]=nb;});
+      S.names=Object.assign(S.names,o.names);S.ans=o.ans||{};persist();location.reload();
+    }catch(x){alert('Archivo no válido.');}};r.readAsText(f);
+  };
+}
+function go(v){
+  S.view=v;
+  $$('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  $$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.go===v));
+  if(v==='fin')renderFinal();
+  BLOCKS.filter(b=>b.tab===v).forEach(b=>redraw(b.k));
+  window.scrollTo(0,0);persist();
+}
+let lastT=0;
+function spin(t){
+  const dt=Math.min(0.05,(t-lastT)/1000);lastT=t;
+  document.querySelectorAll('g.rotor').forEach(g=>{
+    const rpm=+g.dataset.rpm;if(Math.abs(rpm)<1)return;
+    const k=g.dataset.k;ANG[k]=((ANG[k]||0)+Math.max(-900,Math.min(900,rpm))/60*360*0.18*dt)%360;
+    g.setAttribute('transform','rotate('+ANG[k].toFixed(1)+')');
+  });
+  requestAnimationFrame(spin);
+}
+function init(){
+  load();
+  $('#nav').innerHTML='<button data-go="datos">Datos</button>'+TABS.map(t=>'<button data-go="'+t.k+'">'+t.label+'</button>').join('')+'<button data-go="fin">Entrega (PDF)</button>';
+  const main=$('#main');
+  main.innerHTML='<section class="view" id="v-datos">'+datosHTML()+'</section>'+TABS.map(t=>'<section class="view" id="v-'+t.k+'">'+BLOCKS.filter(b=>b.tab===t.k).map(blockHTML).join('')+'</section>').join('')+'<section class="view" id="v-fin"></section>';
+  BLOCKS.forEach(bl=>{initBench(bl.k);refreshMarks(bl.k);});
+  bindAnswers();
+  [['n1','n1'],['n2','n2'],['grp','group']].forEach(a=>{
+    const el=$('#'+a[0]);el.value=S.names[a[1]]||'';
+    el.addEventListener('input',()=>{S.names[a[1]]=el.value;persist();});
+  });
+  document.addEventListener('click',e=>{
+    const g=e.target.closest('[data-go]');if(g){go(g.dataset.go);return;}
+    const c=e.target.closest('[data-check]');if(c){S.checked[c.dataset.check]=true;refreshMarks(c.dataset.check);persist();}
+  });
+  document.addEventListener('keydown',e=>{
+    if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+    const key=UI.active,bench=$('#bench-'+key);if(!bench||!bench.offsetParent)return;
+    if(e.key==='r'||e.key==='R')rotComp(key);
+    else if(e.key==='Delete'||e.key==='Backspace'){
+      e.preventDefault();
+      if(UI.selWire[key]!=null){S.boards[key].wires.splice(UI.selWire[key],1);UI.selWire[key]=null;props(key);redraw(key);touch(key);}
+      else delComp(key);
+    }else if(e.key==='Escape'){UI.wire=null;redraw(key);}
+  });
+  go(S.view&&($('#v-'+S.view))?S.view:'datos');
+  requestAnimationFrame(spin);
+}
+init();
+
+</script>
+</body>
+</html>
