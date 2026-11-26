@@ -136,11 +136,17 @@ function termDir(c,t){const L=tmap(c)[t],v=rotVec(L[0]<0?-1:1,0,c.rot||0);return
 const parseKey=k=>{const i=k.indexOf('.');return{id:+k.slice(0,i),t:k.slice(i+1)};};
 const getComp=(b,id)=>b.comps.find(c=>c.id===id);
 const newBoard=()=>({comps:[],wires:[],nid:1});
+function ortho(pts){
+  const out=[pts[0]];
+  for(let i=1;i<pts.length;i++){const a=out[out.length-1],c=pts[i];if(a.x!==c.x&&a.y!==c.y)out.push({x:c.x,y:a.y});out.push(c);}
+  return out;
+}
 function wirePts(b,w){
   const A=parseKey(w.a),B=parseKey(w.b),ca=getComp(b,A.id),cb=getComp(b,B.id);
   if(!ca||!cb||!tmap(ca)[A.t]||!tmap(cb)[B.t])return null;
   const p=termPos(ca,A.t),q=termPos(cb,B.t),dp=termDir(ca,A.t),dq=termDir(cb,B.t),St=20;
   const p1={x:p.x+dp.x*St,y:p.y+dp.y*St},q1={x:q.x+dq.x*St,y:q.y+dq.y*St};
+  if(Array.isArray(w.via))return ortho([p,p1].concat(w.via.map(v=>({x:v[0],y:v[1]})),[q1,q]));
   const mid=dp.x!==0?{x:p1.x,y:q1.y}:{x:q1.x,y:p1.y};
   return[p,p1,mid,q1,q];
 }
@@ -450,7 +456,7 @@ function verifyBoard(key){
 function PB(){
   const comps=[],wires=[];let nid=1;
   const add=(type,x,y,rot,o)=>{const c=Object.assign({id:nid++,type,x,y,rot:rot||0,value:TYPES[type].def,closed:false,pressed:false,pos:0,vmax:12,burnt:false},o||{});comps.push(c);return c.id;};
-  const w=(a,b)=>wires.push({a,b});
+  const w=(a,b,v)=>wires.push(v?{a,b,via:v}:{a,b});
   return{add,w,out:()=>({comps,wires,nid})};
 }
 function loopS(p,x0,y0,v,items,rev){
@@ -487,7 +493,36 @@ const PRESETS={
   b9:()=>{const p=PB();loopS(p,40,50,1.5,['motor']);stackP(p,40,190,[1.5,1.5]);stackP(p,440,190,[3,3]);return p.out();},
   b10:()=>{const p=PB();loopS(p,40,60,4.5,['motor']);loopS(p,440,60,4.5,['motor','motor']);return p.out();},
   b11:()=>{const p=PB();loopS(p,40,60,9,['interruptor','lampara']);const bat=loopS(p,40,260,9,['interruptor','lampara']);p.w((bat+1)+'.b',bat+'.b');return p.out();},
-  b12:()=>{const p=PB();mixedP(p,40,60,false);mixedP(p,40,260,true);return p.out();}
+  b12:()=>{const p=PB();mixedP(p,40,60,false);mixedP(p,40,260,true);return p.out();},
+  b13:()=>{const p=PB();const m=p.add('motor',120,260,90),sw=p.add('conmutador',300,160,0),b1=p.add('pila',560,260,90,{value:9}),b2=p.add('pila',440,260,270,{value:9});
+    p.w(m+'.a',sw+'.c',[[120,160]]);p.w(sw+'.0',b1+'.a',[[560,140]]);p.w(sw+'.1',b2+'.b',[[440,180]]);p.w(b1+'.b',b2+'.a',[]);p.w(b2+'.a',m+'.b',[]);return p.out();},
+  b14:()=>{const p=PB();const m=p.add('motor',120,240,90),A=p.add('conmutador',300,120,0),B=p.add('conmutador',300,360,0),bat=p.add('pila',560,240,90,{value:9});
+    p.w(m+'.a',A+'.c',[[120,120]]);p.w(m+'.b',B+'.c',[[120,360]]);p.w(A+'.0',bat+'.a',[[560,100]]);p.w(B+'.1',bat+'.a',[[640,380],[640,180]]);
+    p.w(A+'.1',bat+'.b',[[500,140],[500,300]]);p.w(B+'.0',bat+'.b',[[560,340]]);return p.out();},
+  b15:()=>{const p=PB();const m=p.add('motor',120,300,90),sw=p.add('conmutador',260,200,0),l1=p.add('lampara',400,140,0),l2=p.add('lampara',400,300,0),
+      b1=p.add('pila',600,200,90,{value:9}),b2=p.add('pila',700,360,270,{value:9});
+    p.w(m+'.a',sw+'.c',[[120,200]]);p.w(sw+'.0',l1+'.a',[[320,140]]);p.w(sw+'.1',l2+'.a',[[320,300]]);
+    p.w(l1+'.b',b1+'.a',[]);p.w(l2+'.b',b2+'.b',[]);p.w(b1+'.b',b2+'.a',[[560,260],[560,420]]);p.w(b2+'.a',m+'.b',[[120,420]]);return p.out();},
+  b16:()=>{const p=PB();const m=p.add('motor',120,300,90),A=p.add('conmutador',260,160,0),B=p.add('conmutador',260,440,0),bat=p.add('pila',700,300,90,{value:9}),
+      l1=p.add('lampara',440,140,0),l2=p.add('lampara',440,220,0);
+    p.w(m+'.a',A+'.c',[[120,160]]);p.w(m+'.b',B+'.c',[[120,440]]);p.w(A+'.0',l1+'.a',[]);p.w(A+'.1',l2+'.a',[[320,220]]);
+    p.w(l1+'.b',bat+'.a',[[700,140]]);p.w(l2+'.b',bat+'.b',[[560,220],[560,360]]);p.w(B+'.1',bat+'.a',[[760,460],[760,240]]);p.w(B+'.0',bat+'.b',[[700,420]]);return p.out();},
+  b17:()=>{const p=PB();const m=p.add('motor',120,300,90),sw=p.add('conmutador',300,220,0),l1=p.add('lampara',300,100,0),l2=p.add('lampara',300,360,0),
+      b1=p.add('pila',600,160,90,{value:9}),b2=p.add('pila',600,420,270,{value:9});
+    p.w(m+'.a',sw+'.c',[[120,220]]);p.w(l1+'.a',sw+'.c',[]);p.w(l2+'.a',sw+'.c',[]);p.w(l1+'.b',sw+'.0',[]);p.w(l2+'.b',sw+'.1',[]);
+    p.w(l1+'.b',b1+'.a',[]);p.w(l2+'.b',b2+'.b',[]);p.w(b1+'.b',b2+'.a',[[660,220],[660,480]]);p.w(m+'.b',b2+'.a',[[120,480]]);return p.out();},
+  b18:()=>{const p=PB();const m=p.add('motor',120,240,90),A=p.add('conmutador',300,120,0),B=p.add('conmutador',300,360,0),bat=p.add('pila',600,240,90,{value:9}),
+      la=p.add('lampara',300,40,0),lb=p.add('lampara',300,440,0);
+    p.w(m+'.a',A+'.c',[[120,120]]);p.w(m+'.b',B+'.c',[[120,360]]);p.w(la+'.a',A+'.c',[]);p.w(la+'.b',A+'.0',[]);p.w(lb+'.a',B+'.c',[]);p.w(lb+'.b',B+'.1',[]);
+    p.w(A+'.0',bat+'.a',[[600,100]]);p.w(B+'.1',bat+'.a',[[660,380],[660,180]]);p.w(A+'.1',bat+'.b',[[500,140],[500,300]]);p.w(B+'.0',bat+'.b',[[600,340]]);return p.out();},
+  b19:()=>{const p=PB();const m=p.add('motor',120,260,90),D=p.add('conmutador2',320,260,0),bat=p.add('pila',640,260,90,{value:9}),
+      la=p.add('lampara',320,100,0),lb=p.add('lampara',320,440,0);
+    p.w(m+'.a',D+'.c1',[[260,200]]);p.w(m+'.b',D+'.c2',[[260,320]]);p.w(la+'.a',D+'.c1',[]);p.w(lb+'.a',D+'.c2',[]);
+    p.w(la+'.b',D+'.0a',[]);p.w(lb+'.b',D+'.1b',[]);p.w(D+'.0a',bat+'.a',[]);
+    p.w(D+'.1b',bat+'.a',[[420,320],[420,360],[700,360],[700,200]]);p.w(D+'.1a',bat+'.b',[[500,240],[500,320]]);p.w(D+'.0b',bat+'.b',[[460,280],[460,340],[600,340],[600,320]]);return p.out();},
+  b20:()=>{const p=PB();const m=p.add('motor',120,240,90),D=p.add('conmutador2',320,240,0),bat=p.add('pila',640,240,90,{value:9});
+    p.w(m+'.a',D+'.c1',[[260,180]]);p.w(m+'.b',D+'.c2',[[260,300]]);p.w(D+'.0a',bat+'.a',[]);
+    p.w(D+'.1b',bat+'.a',[[420,300],[420,340],[700,340],[700,180]]);p.w(D+'.1a',bat+'.b',[[500,220],[500,300]]);p.w(D+'.0b',bat+'.b',[[460,260],[460,320],[600,320],[600,300]]);return p.out();}
 };
 
 /* ---------- comprobaciones por comportamiento ---------- */
@@ -618,9 +653,9 @@ const BLOCKS=[
  {k:'b14',tab:'t5',title:'Ejercicio 14 · Dos conmutadores',size:[840,460],pdfH:170,
   html:'<p>Monta un motor, una pila de 9 V y <b>dos conmutadores (A y B)</b>: A y B se conectan cada uno a un polo del motor. Los contactos <b>0 de A y 1 de B</b> van al mismo polo de la pila y los contactos <b>1 de A y 0 de B</b>, al otro. Sitúalos para que el motor gire en un sentido y estudia el funcionamiento. <b>No lo desmontes.</b></p>',
   fields:[TXT('e14_one','¿Qué ocurre si cambias uno solo de los conmutadores?'),TXT('e14_two','¿Qué ocurre si cambias los dos conmutadores de posición?'),TXT('e14_diff','¿Qué diferencias tiene este circuito, en su funcionamiento o construcción, con el anterior?')]},
- {k:'b15',tab:'t5',title:'Ejercicio 15 · Bombillas indicadoras de giro (1 conmutador)',size:[840,520],pdfH:190,copyFrom:'b13',
+ {k:'b15',tab:'t5',presetLabel:'Ver una posible solución (inténtalo antes)',title:'Ejercicio 15 · Bombillas indicadoras de giro (1 conmutador)',size:[840,520],pdfH:190,copyFrom:'b13',
   html:'<p>Parte del circuito del ejercicio 13 (puedes copiarlo) e introduce <b>dos bombillas donde tú creas</b> de modo que una se encienda cuando el motor gira en un sentido y la otra cuando gira en sentido contrario. El esquema que dejes montado es tu respuesta.</p>',fields:[]},
- {k:'b16',tab:'t5',title:'Ejercicio 16 · Bombillas indicadoras de giro (2 conmutadores)',size:[840,520],pdfH:190,copyFrom:'b14',
+ {k:'b16',tab:'t5',presetLabel:'Ver una posible solución (inténtalo antes)',title:'Ejercicio 16 · Bombillas indicadoras de giro (2 conmutadores)',size:[840,520],pdfH:190,copyFrom:'b14',
   html:'<p>Parte del circuito del ejercicio 14 e introduce <b>dos bombillas</b> de modo que, cuando el motor gira en un sentido, se ilumine una sola de ellas y, cuando gira al revés, solo la otra. El esquema montado es tu respuesta.</p>',fields:[]},
  {k:'b17',tab:'t6',title:'Ejercicio 17 · Comparar con un circuito problemático',size:[840,520],pdfH:190,copyFrom:'b13',
   html:'<p>Compara tu circuito del ejercicio 15 con este: parte del ejercicio 13 y coloca <b>una bombilla entre el común (A) y el contacto 0</b> y <b>otra entre A y el contacto 1</b>. Pruébalo. Para solucionarlo puedes cambiar las bombillas por otras que aguanten más tensión (selecciona la lámpara y cambia su «tensión máxima») o bien poner las dos pilas de 4,5 V. Si tu circuito del 15 era igual, inventa otro para el 15.</p>',
@@ -746,7 +781,7 @@ function sanitizeBoard(o){
   const comps=o.comps.filter(c=>TYPES[c.type]&&isFinite(c.x)&&isFinite(c.y)).map(c=>({id:+c.id,type:c.type,x:+c.x,y:+c.y,rot:+c.rot||0,
     value:isFinite(c.value)?+c.value:TYPES[c.type].def,closed:!!c.closed,pressed:false,pos:c.pos?1:0,vmax:isFinite(c.vmax)&&c.vmax>0?+c.vmax:12,burnt:!!c.burnt}));
   const ids=new Set(comps.map(c=>c.id));
-  const wires=o.wires.filter(w=>w&&typeof w.a==='string'&&typeof w.b==='string'&&ids.has(parseKey(w.a).id)&&ids.has(parseKey(w.b).id)).map(w=>({a:w.a,b:w.b}));
+  const wires=o.wires.filter(w=>w&&typeof w.a==='string'&&typeof w.b==='string'&&ids.has(parseKey(w.a).id)&&ids.has(parseKey(w.b).id)).map(w=>{const r={a:w.a,b:w.b};if(Array.isArray(w.via)&&w.via.every(v=>Array.isArray(v)&&isFinite(v[0])&&isFinite(v[1])))r.via=w.via.map(v=>[+v[0],+v[1]]);return r;});
   return{comps,wires,nid:Math.max(0,...comps.map(c=>c.id))+1};
 }
 function load(){
@@ -804,7 +839,7 @@ function boardSVG(key,b,res,o){
   }));
   if(o.wire){
     const A=parseKey(o.wire),ca=getComp(b,A.id);
-    if(ca){const p=termPos(ca,A.t);s+='<line class="prev" x1="'+p.x+'" y1="'+p.y+'" x2="'+UI.mouse.x+'" y2="'+UI.mouse.y+'"/>';}
+    if(ca){const p=termPos(ca,A.t),d=termDir(ca,A.t),vs=(UI.wire&&UI.wire.via)||[];const pts=ortho([p,{x:p.x+d.x*20,y:p.y+d.y*20}].concat(vs.map(v=>({x:v[0],y:v[1]})),[{x:snap(UI.mouse.x),y:snap(UI.mouse.y)}]));s+='<polyline class="prev" points="'+pts.map(q=>q.x+','+q.y).join(' ')+'"/>'+vs.map(v=>'<circle cx="'+v[0]+'" cy="'+v[1]+'" r="4" fill="#e08a00"/>').join('');}
   }
   return s;
 }
@@ -834,6 +869,7 @@ function refreshPalette(key){
 }
 function props(key){
   const b=S.boards[key],el=$('#props-'+key),id=UI.sel[key],w=UI.selWire[key];
+  if(UI.wire&&UI.wire.key===key){el.innerHTML='<b>Dibujando cable</b><span class="muted">Pulsa en un espacio vacío para añadir un punto de paso (así evitas que se solape con otros cables) y en otro terminal para terminar.</span><button data-act="wirepop">Quitar último punto</button><button data-act="wirecancel">Cancelar cable</button>';return;}
   if(w!=null&&b.wires[w]){el.innerHTML='<b>Cable seleccionado</b><button data-act="delwire">Eliminar cable</button>';return;}
   const c=id?getComp(b,id):null;
   if(!c){el.innerHTML='<span class="muted">Selecciona un componente para cambiar su valor, girarlo o eliminarlo. Pulsa en un círculo (terminal) y luego en otro para unirlos con un cable.</span>';return;}
@@ -871,10 +907,10 @@ function delComp(key){
 function rotComp(key){const c=getComp(S.boards[key],UI.sel[key]);if(!c)return;c.rot=((c.rot||0)+90)%360;redraw(key);touch(key);}
 function termClick(key,tk){
   const b=S.boards[key];
-  if(!UI.wire||UI.wire.key!==key){UI.wire={key,from:tk};UI.sel[key]=null;UI.selWire[key]=null;props(key);redraw(key);return;}
+  if(!UI.wire||UI.wire.key!==key){UI.wire={key,from:tk,via:[]};UI.sel[key]=null;UI.selWire[key]=null;props(key);redraw(key);return;}
   const a=UI.wire.from;
-  if(a!==tk&&!b.wires.some(w=>(w.a===a&&w.b===tk)||(w.a===tk&&w.b===a)))b.wires.push({a,b:tk});
-  UI.wire=null;redraw(key);touch(key);
+  if(a!==tk&&!b.wires.some(w=>(w.a===a&&w.b===tk)||(w.a===tk&&w.b===a))){const nw={a,b:tk};if(UI.wire.via.length)nw.via=UI.wire.via.slice();b.wires.push(nw);}
+  UI.wire=null;props(key);redraw(key);touch(key);
 }
 const svgPt=(svg,e)=>{const r=svg.getBoundingClientRect(),vb=svg.viewBox.baseVal;return{x:(e.clientX-r.left)*vb.width/r.width,y:(e.clientY-r.top)*vb.height/r.height};};
 const snap=v=>Math.round(v/SNAP)*SNAP;
@@ -882,6 +918,10 @@ function onDown(key,e){
   UI.active=key;const svg=$('#svg-'+key),p=svgPt(svg,e),b=S.boards[key];
   const t=e.target.closest('[data-term]');
   if(t){e.preventDefault();termClick(key,t.dataset.term);return;}
+  if(UI.wire&&UI.wire.key===key&&!e.target.closest('[data-comp]')&&!e.target.closest('[data-wire]')){
+    e.preventDefault();const q=[Math.max(20,Math.min(BL(key).size[0]-20,snap(p.x))),Math.max(20,Math.min(BL(key).size[1]-20,snap(p.y)))];
+    const last=UI.wire.via[UI.wire.via.length-1];if(!last||last[0]!==q[0]||last[1]!==q[1])UI.wire.via.push(q);props(key);redraw(key);return;
+  }
   const ce=e.target.closest('[data-comp]');
   if(ce){
     e.preventDefault();
@@ -933,6 +973,8 @@ function initBench(key){
     const b=S.boards[key];
     switch(a.dataset.act){
       case 'rot':rotComp(key);break;
+      case 'wirepop':if(UI.wire)UI.wire.via.pop();props(key);redraw(key);break;
+      case 'wirecancel':UI.wire=null;props(key);redraw(key);break;
       case 'del':delComp(key);break;
       case 'delwire':b.wires.splice(UI.selWire[key],1);UI.selWire[key]=null;props(key);redraw(key);touch(key);break;
       case 'toggle':{const c=getComp(b,UI.sel[key]);if(c){if(c.type==='interruptor')c.closed=!c.closed;else c.pos=c.pos?0:1;props(key);redraw(key);touch(key);}break;}
@@ -985,7 +1027,7 @@ function blockHTML(bl){
     '<button data-act="verify" class="primary">✓ Comprobar montaje</button><button data-act="save">Guardar montaje</button><button data-act="open">Abrir montaje</button><input type="file" accept=".json" hidden id="file-'+k+'"></div>'+
     '<div class="svgwrap"><svg class="board" id="svg-'+k+'" viewBox="0 0 '+bl.size[0]+' '+bl.size[1]+'"></svg></div>'+
     '<div class="props" id="props-'+k+'"></div><div class="verify" id="ver-'+k+'" role="status"></div>'+
-    (PRESETS[k]?'<details class="schem"><summary>Ver esquema de ayuda</summary><svg class="board" id="prev-'+k+'" viewBox="0 0 '+bl.size[0]+' '+bl.size[1]+'"></svg></details>':'')+
+    (PRESETS[k]?'<details class="schem"><summary>'+(bl.presetLabel||'Ver esquema de ayuda')+'</summary><svg class="board" id="prev-'+k+'" viewBox="0 0 '+bl.size[0]+' '+bl.size[1]+'"></svg></details>':'')+
     (bl.fields.length?'<div class="ex-fields"><h4>Hoja de respuestas</h4>'+bl.fields.map(fieldHTML).join('')+'<p><button class="primary" data-check="'+k+'">Comprobar respuestas</button></p><div class="sumline" id="sum-'+k+'"></div></div>':'')+
     '</div>';
 }
@@ -1090,6 +1132,7 @@ function init(){
   document.addEventListener('keydown',e=>{
     if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
     const key=UI.active,bench=$('#bench-'+key);if(!bench||!bench.offsetParent)return;
+    if(UI.wire&&UI.wire.key===key){if(e.key==='Escape'){UI.wire=null;props(key);redraw(key);}else if(e.key==='Backspace'||e.key==='Delete'){e.preventDefault();UI.wire.via.pop();props(key);redraw(key);}return;}
     if(e.key==='r'||e.key==='R')rotComp(key);
     else if(e.key==='Delete'||e.key==='Backspace'){
       e.preventDefault();
